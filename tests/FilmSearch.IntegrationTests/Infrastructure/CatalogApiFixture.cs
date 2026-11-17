@@ -20,8 +20,10 @@ public sealed class CatalogApiFixture(PostgresFixture postgres) : IAsyncLifetime
 
     public SeedFile Seed { get; private set; } = null!;
 
-    private readonly SemaphoreSlim _embeddingsLock = new(1, 1);
-    private bool _embedded;
+    // Static: every fixture uses the one database of the assembly, so the catalog is embedded once for all of them
+    // (two fixtures embedding at the same time would insert the same rows).
+    private static readonly SemaphoreSlim EmbeddingsLock = new(1, 1);
+    private static bool _embedded;
 
     public static JsonSerializerOptions Json => SeedJson.Options;
 
@@ -45,16 +47,15 @@ public sealed class CatalogApiFixture(PostgresFixture postgres) : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         await Factory.DisposeAsync();
-        _embeddingsLock.Dispose();
     }
 
     /// <summary>
-    /// Embeds the catalog once per fixture with the fake model (<see cref="HashingEmbeddingGenerator"/>) of the active
+    /// Embeds the catalog once per test run with the fake model (<see cref="HashingEmbeddingGenerator"/>) of the active
     /// profile. Embeddings are keyed by model, so other test classes on the shared database see the same vectors.
     /// </summary>
     public async Task EnsureEmbeddingsAsync()
     {
-        await _embeddingsLock.WaitAsync();
+        await EmbeddingsLock.WaitAsync();
         try
         {
             if (_embedded)
@@ -69,7 +70,7 @@ public sealed class CatalogApiFixture(PostgresFixture postgres) : IAsyncLifetime
         }
         finally
         {
-            _embeddingsLock.Release();
+            EmbeddingsLock.Release();
         }
     }
 

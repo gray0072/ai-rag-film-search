@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I09 |
 | **Parallel with** | I07, I08, I10 |
-| **Branch** | `iter/I15-stripe` |
 | **Spec** | [07 Payments §4](../../spec/07-payments.md#4-stripe-test-mode-i15) |
 | **Requirements** | FR-COM-3..5, NFR-7 |
 

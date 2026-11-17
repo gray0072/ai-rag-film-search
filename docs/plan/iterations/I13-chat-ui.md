@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I10, I11 (SSE contract from spec 04 is enough to start) |
 | **Parallel with** | I12 |
-| **Branch** | `iter/I13-chat-ui` |
 | **Spec** | [04 API §SSE events](../../spec/04-api.md#sse-events-post-messages) |
 | **Requirements** | FR-AST-1..3, FR-AST-6, FR-AST-9, NFR-10 |
 

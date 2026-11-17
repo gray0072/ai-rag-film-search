@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I11, I09 |
 | **Parallel with** | I13 |
-| **Branch** | `iter/I12-agent-tools` |
 | **Spec** | [06 AI §2–5](../../spec/06-ai-assistant.md#3-tools) |
 | **Requirements** | FR-AST-5, FR-AST-6, FR-AST-8 |
 

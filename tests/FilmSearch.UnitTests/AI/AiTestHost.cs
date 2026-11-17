@@ -39,7 +39,10 @@ internal static class AiTestHost
         ["AI:Pricing:vendor/cheap-model:OutputPerMTokUsd"] = "2",
     };
 
-    public static IHost Build(FakeProviderHandler handler, Dictionary<string, string?>? overrides = null)
+    public static IHost Build(
+        FakeProviderHandler handler,
+        Dictionary<string, string?>? overrides = null,
+        Action<IServiceCollection>? configureServices = null)
     {
         var builder = Host.CreateEmptyApplicationBuilder(new HostApplicationBuilderSettings { EnvironmentName = "Testing" });
         builder.Configuration.AddInMemoryCollection(BaseConfig);
@@ -49,6 +52,7 @@ internal static class AiTestHost
         builder.AddAiProviders();
         builder.Services.AddHttpClient(AiClientFactory.HttpClientName).ConfigurePrimaryHttpMessageHandler(() => handler);
         builder.Services.AddHttpClient(AiProviderHealthCheck.HttpClientName).ConfigurePrimaryHttpMessageHandler(() => handler);
+        configureServices?.Invoke(builder.Services);
         return builder.Build();
     }
 }
@@ -107,6 +111,13 @@ internal sealed class FakeProviderHandler : HttpMessageHandler
             Encoding.UTF8,
             "text/event-stream"),
     };
+
+    /// <summary>A chat completion whose message content is <paramref name="content"/>.</summary>
+    public static HttpResponseMessage ChatResponse(string content) => Json($$$"""
+        {"id":"c1","object":"chat.completion","created":1,"model":"served-model",
+         "choices":[{"index":0,"message":{"role":"assistant","content":{{{System.Text.Json.JsonSerializer.Serialize(content)}}}},"finish_reason":"stop"}],
+         "usage":{"prompt_tokens":100,"completion_tokens":50,"total_tokens":150}}
+        """);
 
     public static HttpResponseMessage Json(string json, HttpStatusCode status = HttpStatusCode.OK) =>
         new(status) { Content = new StringContent(json, Encoding.UTF8, "application/json") };

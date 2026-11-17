@@ -10,6 +10,12 @@ public sealed record MovieFilter
 
     public IReadOnlyList<string> GenreSlugs { get; init; } = [];
 
+    /// <summary>The movie must have none of these genres (from query understanding, I07: "no horror").</summary>
+    public IReadOnlyList<string> ExcludedGenreSlugs { get; init; } = [];
+
+    /// <summary>Movies left out of the result (the movies named in "movies like X", I07). Not part of the HTTP filters.</summary>
+    public IReadOnlyList<Guid> ExcludedMovieIds { get; init; } = [];
+
     public int? YearFrom { get; init; }
 
     public int? YearTo { get; init; }
@@ -32,6 +38,8 @@ public sealed record MovieFilter
     /// <summary>True when at least one condition is set (a method, so it is not serialized with the filter).</summary>
     public bool HasConditions() =>
         GenreSlugs.Count > 0
+        || ExcludedGenreSlugs.Count > 0
+        || ExcludedMovieIds.Count > 0
         || YearFrom is not null
         || YearTo is not null
         || MinRating is not null

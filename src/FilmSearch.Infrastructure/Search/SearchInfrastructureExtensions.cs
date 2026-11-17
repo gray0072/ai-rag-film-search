@@ -1,5 +1,6 @@
 using FilmSearch.Core.Catalog;
 using FilmSearch.Core.Search;
+using FilmSearch.Infrastructure.Search.Hybrid;
 using FilmSearch.Infrastructure.Search.Keyword;
 using FilmSearch.Infrastructure.Search.Semantic;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +36,15 @@ public static class SearchInfrastructureExtensions
 
         services.AddScoped<SemanticRetriever>();
         services.AddScoped<IMovieEmbeddingIndexer, MovieEmbeddingIndexer>();
+
+        // Hybrid search (I07). Query understanding (IQueryUnderstanding) is registered by AddAiProviders.
+        services.AddOptions<HybridSearchOptions>()
+            .Bind(configuration.GetSection(HybridSearchOptions.SectionName))
+            .Validate(o => o.RrfK is >= 0 and <= 1000, "Search:Hybrid:RrfK must be between 0 and 1000.")
+            .Validate(o => o.CandidatesPerList is >= 1 and <= 1000, "Search:Hybrid:CandidatesPerList must be between 1 and 1000.")
+            .Validate(o => o.KeywordWeight >= 0 && o.RelaxedKeywordWeight >= 0 && o.SemanticWeight >= 0 && o.SimilarTitleWeight >= 0, "Search:Hybrid weights must not be negative.")
+            .Validate(o => o.MaxSimilarTitles is >= 0 and <= 10, "Search:Hybrid:MaxSimilarTitles must be between 0 and 10.")
+            .ValidateOnStart();
         services.AddSingleton<EmbeddingJobRunner>();
         services.AddSingleton<IEmbeddingJobs>(sp => sp.GetRequiredService<EmbeddingJobRunner>());
         services.AddHostedService(sp => sp.GetRequiredService<EmbeddingJobRunner>());

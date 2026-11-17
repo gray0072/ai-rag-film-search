@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I09, I02 |
 | **Parallel with** | I11, I16 |
-| **Branch** | `iter/I17-auth` |
 | **Spec** | [01 Requirements §Users](../../spec/01-requirements.md#users-usr), [10 Security](../../spec/10-ops-security.md#4-security-checklist) |
 | **Requirements** | FR-USR-1..3 |
 

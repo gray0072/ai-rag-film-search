@@ -25,12 +25,12 @@ Instructions for AI coding agents (Claude Code, Codex, Cursor, …) working in t
 1. **Log the prompt first** (see "Prompt logging" below).
 2. Find the iteration: the owner names it (e.g. "do I06"), or take the next `todo` iteration from the roadmap whose dependencies are `done`. Read its plan file and the spec sections it links.
 3. Set the iteration status to `in progress` in [roadmap.md](docs/plan/roadmap.md) and in the plan file.
-4. Work on branch `iter/Ixx-<slug>` (create it from `main` if needed). In a parallel track, work in a git worktree (see the roadmap).
+4. Work directly on `main`. No iteration branches and no pull requests (owner's decision, 2026-11-17). Do not create other branches; delete stray local and remote branches when asked.
 5. Work in small steps. Build and run tests often. Tick tasks in the plan file as they are done.
-6. If the plan or spec turns out wrong, **update the doc** in the same branch and say so. Do not silently deviate. A real decision with alternatives gets an ADR.
+6. If the plan or spec turns out wrong, **update the doc** in the same change and say so. Do not silently deviate. A real decision with alternatives gets an ADR.
 7. At the end of the iteration: fill in the "Result" section of the plan (what was done, deviations, decisions, follow-ups, session ids), set status `done`, update the README if setup changed.
 8. Commit only when the owner asks. Commit message rules are below.
-9. **No pull requests.** When the owner asks to push: push the iteration branch, merge it into `main` with `git merge --ff-only` (rebase the branch on `main` first if needed), push `main`, and check the CI run on `main` (`gh run list --branch main`). Fix a red run right away.
+9. **Before every push, run all checks locally** — do not leave the checking to GitHub. That is: `dotnet build` (warnings are errors), `dotnet format --verify-no-changes`, `git diff --exit-code -- src/web/openapi` after the build, **all** .NET tests (`dotnet test`, unit and integration; start Docker Desktop if it is not running), and in `src/web` `npm run gen:api` (no diff), lint, format check, typecheck, tests and build (see Commands). Push only when everything is green. Then push `main` and check the CI run (`gh run list --branch main`); fix a red run right away.
 
 If a session ends before the iteration is finished, write the current state and next steps in the "Result" section under a "Progress" heading so the next session can continue.
 
@@ -61,7 +61,7 @@ Every prompt from the owner is saved to the prompt history, **in English first, 
 - Minimal APIs with endpoint groups; `TypedResults`; Problem Details for errors; input validation at the boundary.
 - `TimeProvider` instead of `DateTime.UtcNow`; money as integer minor units + currency.
 - Async all the way with `CancellationToken`.
-- EF Core: migrations per module, named after the iteration and change (`I09_AddCommerce`). Never edit an applied migration; if two branches conflict, the second one regenerates its migration (see roadmap).
+- EF Core: migrations per module, named after the iteration and change (`I09_AddCommerce`). Never edit an applied migration; if two parallel sessions both added migrations, the one committed second regenerates its migration (see roadmap).
 
 ### AI code
 - Business code depends only on `IChatClient` and `IEmbeddingGenerator`. No provider SDK types outside `FilmSearch.AI`'s provider factory.
@@ -136,12 +136,13 @@ Notes:
 - Migrations live in `src/FilmSearch.Infrastructure/Persistence/Migrations`. `DesignTimeDbContextFactory` lets `dotnet ef` work without a running DB or the API. The API applies migrations on startup when `Database:MigrateOnStartup` is true (Development, tests).
 - Doc comments (`<summary>`, `<param>`) of types and endpoints that appear in the OpenAPI document must be single-line: the generator joins lines with the OS newline, so a multi-line comment gives `\r\n` in `v1.json` on Windows and fails the CI check "OpenAPI document is up to date".
 - Embeddings (I06): `search.movie_embeddings` has an untyped `vector` column and one partial HNSW index per dimension (ADR-0008); the vector query is raw SQL in `VectorIndex` composed with LINQ filters. Integration tests embed with `HashingEmbeddingGenerator` (bag of words, registered for every profile by `FilmSearchApiFactory`): it checks mechanics, not meaning; cross-language quality is checked by hand or in evaluations. On ~1000 rows the planner rightly prefers an exact scan over HNSW; a plan test must switch off `enable_seqscan` **and** `enable_sort` (the btree `(model, locale)` index plus a sort is the next cheapest plan).
+- Hybrid search and query understanding (I07): integration tests answer chat calls with `ScriptedChatClient` (`FilmSearchApiFactory.Chat.Script(userMessage, answers…)`; an unscripted message gets a non-JSON answer, so QU falls back). QU results are cached in memory per normalized query for the lifetime of the factory: use a unique query text per test. Tuning numbers of hybrid search and QU are in `evals/reports/2026-11-17_I07_*.md`.
 - Testing Cyrillic or Swedish queries with `curl -d "..."` from Git Bash on Windows mangles the text; send a UTF-8 file (`--data-binary @query.json`) or use a script.
 - The AppHost Postgres container is named `filmsearch-postgres`, uses `ContainerLifetime.Persistent` and the named volume `filmsearch-postgres-data`: it keeps running after the AppHost stops. Its password is stored in the AppHost user secrets. To reset the DB: `docker rm -f filmsearch-postgres` and `docker volume rm filmsearch-postgres-data`.
 
 ## Git
 
-- Branches: `main` (always green), `iter/Ixx-<slug>` per iteration. No pull requests: the branch is fast-forward merged into `main` and pushed (see Session workflow, step 9). CI runs on pushes to `main` and to `iter/**` branches.
+- Only one branch: `main` (always green). No iteration branches, no pull requests; commits go straight to `main` after the local checks (see Session workflow, step 9). CI runs on pushes to `main`.
 - Commit message: **one subject line only**, imperative, English, may start with the iteration id: `I06: add HNSW index for movie embeddings`. No body, no trailers, no `Co-Authored-By`, no mention of AI tools.
 - Commit or push only when the owner asks.
 

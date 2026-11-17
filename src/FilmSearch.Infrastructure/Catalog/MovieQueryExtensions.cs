@@ -19,6 +19,18 @@ public static class MovieQueryExtensions
             movies = movies.Where(m => m.Genres.Any(g => slugs.Contains(g.Slug)));
         }
 
+        if (filter.ExcludedGenreSlugs.Count > 0)
+        {
+            var excluded = filter.ExcludedGenreSlugs;
+            movies = movies.Where(m => !m.Genres.Any(g => excluded.Contains(g.Slug)));
+        }
+
+        if (filter.ExcludedMovieIds.Count > 0)
+        {
+            var excludedIds = filter.ExcludedMovieIds;
+            movies = movies.Where(m => !excludedIds.Contains(m.Id));
+        }
+
         if (filter.YearFrom is { } yearFrom)
         {
             movies = movies.Where(m => m.Year >= yearFrom);

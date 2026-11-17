@@ -1,11 +1,14 @@
 using FilmSearch.AI.Diagnostics;
 using FilmSearch.AI.Embeddings;
 using FilmSearch.AI.Health;
+using FilmSearch.AI.Prompts;
+using FilmSearch.AI.QueryUnderstanding;
 using FilmSearch.AI.Telemetry;
 using FilmSearch.Core.Search;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -24,6 +27,7 @@ public static class AiServiceCollectionExtensions
     /// <item><c>IChatClient</c> and <c>IEmbeddingGenerator&lt;string, Embedding&lt;float&gt;&gt;</c> of the active profiles (unkeyed);</item>
     /// <item>the same for any named profile as keyed services: <c>[FromKeyedServices("openrouter")] IChatClient</c>;</item>
     /// <item><see cref="ITextEmbedder"/> over the embedding profiles;</item>
+    /// <item><see cref="IQueryUnderstanding"/> (I07) with the prompt files of this assembly;</item>
     /// <item>health checks of the active providers (tag <c>ai</c>, Degraded on failure).</item>
     /// </list>
     /// Options are validated on start. Clients are singletons and are created on first use.
@@ -63,6 +67,17 @@ public static class AiServiceCollectionExtensions
 
         // Search code embeds through this contract of FilmSearch.Core (I06), not through the generator directly.
         services.AddSingleton<ITextEmbedder, ProfileTextEmbedder>();
+
+        // Query understanding (I07): prompt files, structured output, memory cache of results.
+        services.TryAddSingleton(TimeProvider.System);
+        services.AddMemoryCache();
+        services.AddSingleton<PromptLibrary>();
+        services.AddOptions<QueryUnderstandingOptions>()
+            .Bind(builder.Configuration.GetSection(QueryUnderstandingOptions.SectionName))
+            .Validate(o => o.CacheMinutes is >= 0 and <= 24 * 60, "Search:QueryUnderstanding:CacheMinutes must be between 0 and 1440.")
+            .Validate(o => o.MaxOutputTokens is >= 50 and <= 4000, "Search:QueryUnderstanding:MaxOutputTokens must be between 50 and 4000.")
+            .ValidateOnStart();
+        services.AddScoped<IQueryUnderstanding, QueryUnderstandingService>();
 
         if (section.GetValue(nameof(AiOptions.HealthChecksEnabled), defaultValue: true))
         {

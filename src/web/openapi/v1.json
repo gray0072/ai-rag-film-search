@@ -1268,6 +1268,14 @@
           }
         }
       },
+      "QueryUnderstandingSource": {
+        "enum": [
+          "llm",
+          "cache",
+          "fallback"
+        ],
+        "description": "Where an UnderstoodQuery came from."
+      },
       "ReindexProgress": {
         "required": [
           "total",
@@ -1487,6 +1495,17 @@
             },
             "description": "Genre slugs; a movie matches any of them."
           },
+          "excludeGenres": {
+            "maxItems": 30,
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Genre slugs the movie must not have."
+          },
           "yearFrom": {
             "maximum": 2100,
             "minimum": 1870,
@@ -1636,7 +1655,7 @@
                 "type": "null"
               },
               {
-                "description": "`keyword` (default) or `semantic`. `hybrid` returns 400 until I07.",
+                "description": "`hybrid` (default), `keyword` or `semantic`.",
                 "$ref": "#/components/schemas/SearchMode"
               }
             ]
@@ -1654,7 +1673,7 @@
           },
           "understand": {
             "type": "boolean",
-            "description": "Run query understanding (FR-SRCH-4). Not available until I07: `true` returns 400."
+            "description": "Turn the free text into filters and a search text with the LLM first (FR-SRCH-4); explicit filters win over found ones."
           },
           "page": {
             "maximum": 10000,
@@ -1703,7 +1722,7 @@
             "description": "Found movies, best first."
           },
           "appliedFilters": {
-            "description": "The filters the search used, normalized (later also the ones found by query understanding).",
+            "description": "The filters the search used, normalized: the request's filters merged with the ones found by query understanding.",
             "$ref": "#/components/schemas/SearchFilters"
           },
           "page": {
@@ -1730,8 +1749,24 @@
               "integer",
               "string"
             ],
-            "description": "Number of matching movies.",
+            "description": "Number of matching movies (keyword), or length of the result list (semantic: at most 100; hybrid: union of the fused candidate lists).",
             "format": "int32"
+          },
+          "understoodQuery": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Result of query understanding when `understand` was true.",
+                "$ref": "#/components/schemas/UnderstoodQuery"
+              }
+            ]
+          },
+          "degraded": {
+            "type": "boolean",
+            "description": "Hybrid search returned keyword results only because the query could not be embedded.",
+            "default": false
           }
         }
       },
@@ -1786,6 +1821,117 @@
             "format": "int64"
           }
         }
+      },
+      "UnderstoodFilters": {
+        "type": "object",
+        "properties": {
+          "genresInclude": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Genre slugs the movie should have (any of them)."
+          },
+          "genresExclude": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Genre slugs the movie must not have."
+          },
+          "yearFrom": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "yearTo": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "minRating": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "maxPriceMinor": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Maximum price in minor units (cents).",
+            "format": "int64"
+          },
+          "language": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Original language, ISO 639-1."
+          }
+        },
+        "description": "Filters found by query understanding. Null or empty means \"not mentioned\"."
+      },
+      "UnderstoodQuery": {
+        "required": [
+          "semanticQuery"
+        ],
+        "type": "object",
+        "properties": {
+          "semanticQuery": {
+            "type": "string",
+            "description": "What to search for, without the parts that became filters (English)."
+          },
+          "filters": {
+            "$ref": "#/components/schemas/UnderstoodFilters"
+          },
+          "similarToTitles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Titles from \"movies like X\"; resolved to catalog movies by keyword search."
+          },
+          "detectedLocale": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Language of the query (`en`, `ru`, `sv`) when the model recognized it."
+          },
+          "source": {
+            "$ref": "#/components/schemas/QueryUnderstandingSource"
+          },
+          "promptVersion": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Prompt that produced the result, e.g. `query-understanding.v1`."
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why the result is a fallback (validation or provider error), for debugging."
+          }
+        },
+        "description": "Result of query understanding: the text to search for, the filters found in the query and the titles of movies the user wants something similar to."
       }
     }
   },

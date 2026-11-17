@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I05, I07 |
 | **Parallel with** | I16, I17 |
-| **Branch** | `iter/I11-chat` |
 | **Spec** | [06 AI assistant](../../spec/06-ai-assistant.md), [04 API §Assistant](../../spec/04-api.md#assistant) |
 | **Requirements** | FR-AST-1..4, FR-AST-7, FR-AST-9, NFR-5 |
 

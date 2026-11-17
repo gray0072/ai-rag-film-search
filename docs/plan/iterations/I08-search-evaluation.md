@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I04, I06 (dataset needs only I03) |
 | **Parallel with** | I07, I10, I15 |
-| **Branch** | `iter/I08-search-eval` |
 | **Spec** | [09 Evaluation](../../spec/09-evaluation.md) |
 | **Requirements** | NFR-9 |
 

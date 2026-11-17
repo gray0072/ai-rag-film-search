@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I12, I08 |
 | **Parallel with** | I18 |
-| **Branch** | `iter/I14-assistant-eval` |
 | **Spec** | [09 Evaluation](../../spec/09-evaluation.md), [06 AI §5](../../spec/06-ai-assistant.md#5-guardrails) |
 | **Requirements** | FR-AST-3, FR-AST-6, FR-AST-8, NFR-7, NFR-9 |
 

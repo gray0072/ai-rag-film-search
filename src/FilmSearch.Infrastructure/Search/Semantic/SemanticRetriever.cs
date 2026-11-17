@@ -26,28 +26,57 @@ internal sealed record VectorDistance(Guid MovieId, double Distance);
 /// </summary>
 internal sealed class SemanticRetriever(AppDbContext db, ITextEmbedder embedder, IOptions<SemanticSearchOptions> options)
 {
+    /// <summary>Length of a semantic result list (<c>Search:Semantic:MaxResults</c>).</summary>
+    public int MaxResults => options.Value.MaxResults;
+
     public async Task<IReadOnlyList<VectorHit>> SearchAsync(string text, MovieFilter filter, CancellationToken cancellationToken)
+    {
+        var vector = await EmbedQueryAsync(text, cancellationToken);
+        return await NearestAsync(vector, filter, MaxResults, cancellationToken);
+    }
+
+    /// <summary>The query vector of the active model (query prefix included). Calls the provider only, not the database.</summary>
+    /// <exception cref="AiProviderUnavailableException">The embedding provider failed.</exception>
+    public async Task<ReadOnlyMemory<float>> EmbedQueryAsync(string text, CancellationToken cancellationToken)
     {
         var model = embedder.Active;
         var vectors = await embedder.EmbedAsync(model, [model.FormatQuery(text)], cancellationToken);
-        return await NearestAsync(model, vectors[0], filter, excludeMovieId: null, options.Value.MaxResults, cancellationToken);
+        return vectors[0];
     }
+
+    /// <summary>Movies nearest to <paramref name="vector"/> (a vector of the active model), best first.</summary>
+    public Task<IReadOnlyList<VectorHit>> NearestAsync(ReadOnlyMemory<float> vector, MovieFilter filter, int limit, CancellationToken cancellationToken) =>
+        NearestAsync(embedder.Active, vector, filter, excludeMovieId: null, limit, cancellationToken);
 
     /// <summary>Neighbours of a movie's own vector (English first, when it has several). Empty when the movie has no vector of the active model.</summary>
     public async Task<IReadOnlyList<VectorHit>> SimilarAsync(Guid movieId, MovieFilter filter, int limit, CancellationToken cancellationToken)
     {
-        var model = embedder.Active;
-        var own = await db.Set<MovieEmbedding>()
-            .AsNoTracking()
-            .Where(e => e.MovieId == movieId && e.Model == model.Model && e.Kind == EmbeddingKind.Profile && e.Dimensions == model.Dimensions)
-            .OrderBy(e => e.Locale == Locales.English ? 0 : 1)
-            .ThenBy(e => e.Locale)
-            .Select(e => e.Vector)
-            .FirstOrDefaultAsync(cancellationToken);
+        var own = await GetMovieVectorsAsync([movieId], cancellationToken);
+        return own.TryGetValue(movieId, out var vector)
+            ? await NearestAsync(embedder.Active, vector, filter, movieId, limit, cancellationToken)
+            : [];
+    }
 
-        return own is null
-            ? []
-            : await NearestAsync(model, own.Memory, filter, movieId, limit, cancellationToken);
+    /// <summary>The stored vectors of the active model for these movies (English first, when a movie has several). Movies without a vector are missing.</summary>
+    public async Task<IReadOnlyDictionary<Guid, ReadOnlyMemory<float>>> GetMovieVectorsAsync(IReadOnlyList<Guid> movieIds, CancellationToken cancellationToken)
+    {
+        if (movieIds.Count == 0)
+        {
+            return new Dictionary<Guid, ReadOnlyMemory<float>>();
+        }
+
+        var model = embedder.Active;
+        var rows = await db.Set<MovieEmbedding>()
+            .AsNoTracking()
+            .Where(e => movieIds.Contains(e.MovieId) && e.Model == model.Model && e.Kind == EmbeddingKind.Profile && e.Dimensions == model.Dimensions)
+            .Select(e => new { e.MovieId, e.Locale, e.Vector })
+            .ToListAsync(cancellationToken);
+
+        return rows
+            .GroupBy(r => r.MovieId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderBy(r => r.Locale == Locales.English ? 0 : 1).ThenBy(r => r.Locale, StringComparer.Ordinal).First().Vector.Memory);
     }
 
     private async Task<IReadOnlyList<VectorHit>> NearestAsync(

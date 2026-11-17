@@ -13,14 +13,16 @@ namespace FilmSearch.IntegrationTests.Infrastructure;
 /// <summary>
 /// The API in-process (TestServer) against the Testcontainers database. Migrations run on startup; admin endpoints
 /// are on; AI health checks are off; the seed file is not loaded on startup (tests that need the catalog use <see cref="CatalogApiFixture"/>).
-/// Every embedding profile is served by a <see cref="HashingEmbeddingGenerator"/> of the profile's dimension, so no test
-/// calls a real model. <paramref name="settings"/> are extra configuration values.
+/// Every embedding profile is served by a <see cref="HashingEmbeddingGenerator"/> of the profile's dimension and every
+/// chat profile by <see cref="Chat"/> (a <see cref="ScriptedChatClient"/>), so no test calls a real model. <paramref name="settings"/> are extra configuration values.
 /// </summary>
 public sealed class FilmSearchApiFactory(
     PostgresFixture postgres,
     string? connectionString = null,
     IReadOnlyDictionary<string, string?>? settings = null) : WebApplicationFactory<Program>
 {
+    public ScriptedChatClient Chat { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
@@ -34,9 +36,12 @@ public sealed class FilmSearchApiFactory(
             builder.UseSetting(key, value);
         }
 
-        // Replaces the provider-backed generators: a later AnyKey registration wins over the one of AddAiProviders.
+        // Replaces the provider-backed clients: a later AnyKey registration wins over the one of AddAiProviders.
         builder.ConfigureTestServices(services =>
+        {
             services.AddKeyedSingleton<IEmbeddingGenerator<string, Embedding<float>>>(KeyedService.AnyKey, (sp, key) =>
-                new HashingEmbeddingGenerator(sp.GetRequiredService<IOptions<AiOptions>>().Value.GetEmbeddingProfile((string)key!).Dimensions)));
+                new HashingEmbeddingGenerator(sp.GetRequiredService<IOptions<AiOptions>>().Value.GetEmbeddingProfile((string)key!).Dimensions));
+            services.AddKeyedSingleton<IChatClient>(KeyedService.AnyKey, Chat);
+        });
     }
 }

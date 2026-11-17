@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace FilmSearch.Api.Modules.Search;
 
-/// <summary>Search endpoints (spec 04 "Search", spec 05): keyword mode from I04, semantic mode and similar movies from I06.</summary>
+/// <summary>Search endpoints (spec 04 "Search", spec 05): keyword mode from I04, semantic mode and similar movies from I06, hybrid mode and query understanding from I07.</summary>
 public static class SearchModule
 {
     public const int DefaultSimilarLimit = 10;
@@ -54,15 +54,7 @@ public static class SearchModule
         {
             return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             {
-                ["mode"] = [$"Search mode '{query.Mode.ToString().ToLowerInvariant()}' is not available yet. Use 'keyword' or 'semantic'."],
-            });
-        }
-
-        if (request.Understand)
-        {
-            return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-            {
-                ["understand"] = ["Query understanding is not available yet."],
+                ["mode"] = [$"Search mode '{query.Mode.ToString().ToLowerInvariant()}' is not available."],
             });
         }
 
@@ -71,10 +63,12 @@ public static class SearchModule
             var result = await search.SearchAsync(query, cancellationToken);
             return TypedResults.Ok(new SearchResponse(
                 result.Items,
-                SearchFilters.From(query.Filter),
+                SearchFilters.From(result.AppliedFilter),
                 result.Page,
                 result.PageSize,
-                result.Total));
+                result.Total,
+                result.Understood,
+                result.Degraded));
         }
         catch (AiProviderUnavailableException ex)
         {
@@ -93,7 +87,7 @@ public static class SearchModule
         return items is null ? TypedResults.NotFound() : TypedResults.Ok(items);
     }
 
-    /// <summary>503: the query could not be embedded (LM Studio not running, provider down). Keyword search still works.</summary>
+    /// <summary>503: semantic mode could not embed the query (LM Studio not running, provider down). Keyword search still works; hybrid search degrades to keyword results.</summary>
     private static ProblemHttpResult EmbeddingsUnavailable(AiProviderUnavailableException ex) =>
         TypedResults.Problem(
             statusCode: StatusCodes.Status503ServiceUnavailable,

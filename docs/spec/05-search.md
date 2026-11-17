@@ -12,7 +12,7 @@ flowchart LR
     QU -- no --> F
     F --> KW[Keyword: PostgreSQL FTS<br/>top 50]
     F --> VEC[Semantic: pgvector cosine<br/>top 50]
-    KW --> RRF[Fusion: RRF k=60]
+    KW --> RRF[Fusion: RRF k=20]
     VEC --> RRF
     RRF --> RR[Rerank<br/>stretch]
     RR --> R[Results + debug scores]
@@ -25,7 +25,7 @@ Filters (genre, year, rating, price…) are applied **inside** both the keyword 
 - Three generated `tsvector` columns with GIN indexes: `english`, `russian` and `swedish` configs (each over the texts of its locale). Weights: title A, original title A, keywords and people B, tagline C, overview D. `ё` is folded to `е` in documents and queries (Russian texts use both spellings: TMDB has "Крёстный отец", users type "крестный отец").
 - Query with `websearch_to_tsquery` on all three configs (a movie matches when any config matches), rank with `ts_rank_cd` (normalization 32: `rank / (rank + 1)`, 0–1), take the best score per movie. Ties: popularity, then id. Filters are in the same SQL query.
 - If no movie matches all the words, the query is relaxed once to any word (`a or b or c`); `debug.keywordMatch` is `all` or `any`.
-- Title typos: `pg_trgm` similarity on titles as an extra signal (from I07 if needed).
+- Title typos: `pg_trgm` similarity on titles as an extra signal (not added in I07; decide with I08 numbers on typo queries).
 
 ## 3. Semantic search
 - **Embedding document** of a movie, built by `MovieEmbeddingTextBuilder` (deterministic, versioned):
@@ -46,19 +46,26 @@ Filters (genre, year, rating, price…) are applied **inside** both the keyword 
 - Index: HNSW, `vector_cosine_ops`, a partial expression index per dimension ([ADR-0008](../adr/0008-vector-storage-per-dimension.md)). Per query `hnsw.ef_search = max(40, rows requested)` and `hnsw.iterative_scan = relaxed_order` (pgvector 0.8: keep walking the graph while filters reject candidates). On the seed, HNSW recall@10 vs exact is ≥ 0.999 and a query is 10–40× faster, but the planner still prefers the exact scan at ~1000 rows; both are far below the query embedding time. After changing vectors the indexer runs `VACUUM (ANALYZE)`: dead entries in the graph cost recall, and fresh statistics guide the planner.
 
 ## 4. Hybrid search
-- Reciprocal Rank Fusion: `score = Σ 1 / (k + rank_i)`, `k = 60`, per list. Weights per list are configurable (start 1.0 / 1.0) and tuned with evaluations.
-- Debug output per item: `keywordRank`, `keywordScore`, `vectorRank`, `similarity`, `fusedScore`.
+- Default mode of `POST /api/search` (FR-SRCH-3). Keyword and semantic retrieval each return their top `Search:Hybrid:CandidatesPerList` (50) candidates with the same pre-filters; the lists are fused with Reciprocal Rank Fusion: `score = Σ weight_i / (k + rank_i)` over the lists that contain the movie. RRF uses ranks only, so `ts_rank_cd` and cosine similarity never have to be made comparable. Ties: better best rank, more lists, movie id. The result list (union of the candidates, ≤ 100) is paged in memory; `score` is the fused score.
+- Parameters (`Search:Hybrid`), tuned on manual queries in I07 ([report](../../evals/reports/2026-11-17_I07_hybrid-and-query-understanding.md)), to be checked with the I08 golden set:
+  - `RrfK` = **20** (the paper's 60 flattened the ranks too much: a movie at keyword rank 1 and vector rank 30 beat the vector #1);
+  - `KeywordWeight` = 1.0 when every query word matched (`keywordMatch = all`: titles, names);
+  - `RelaxedKeywordWeight` = **0.1** when the keyword query was relaxed to any word (`keywordMatch = any`). For descriptions ("a man discovers that his life is a TV show") the relaxed list matches every overview with "man" or "life"; with full weight it pushed the right semantic hits down (hybrid MRR 0.51 vs semantic 0.87 on English plot queries);
+  - `SemanticWeight` = 1.0.
+- Latency: the query embedding (an HTTP call to the model) runs while the keyword query runs; the two database queries stay sequential (one `DbContext`). Median ≈ 110 ms vs ≈ 95 ms for one mode on the laptop.
+- When the query cannot be embedded, hybrid returns the keyword list with `degraded: true` (semantic mode returns 503).
+- Debug output per item: `keywordRank`, `keywordScore`, `keywordMatch`, `vectorRank`, `similarity`, `fusedScore`.
 
 ## 5. Query understanding (QU)
 An LLM call with structured output turns free text into:
 ```json
 {
-  "semanticQuery": "time travel story, thoughtful, not action-heavy",
+  "semanticQuery": "outer space, astronauts, space travel",
   "filters": {
-    "genresInclude": ["science-fiction"],
-    "genresExclude": ["action"],
-    "yearFrom": null, "yearTo": null,
-    "minRating": null,
+    "genresInclude": [],
+    "genresExclude": ["horror"],
+    "yearFrom": 1990, "yearTo": 1999,
+    "minRating": 7,
     "maxPriceMinor": null,
     "language": null
   },
@@ -66,11 +73,17 @@ An LLM call with structured output turns free text into:
   "detectedLocale": "ru"
 }
 ```
-- The JSON Schema is generated from a C# record. The answer is validated. On invalid output: one retry with the error message, then fallback to "no filters, full query as semantic text".
-- Genre values must come from the known genre slugs (enum in the schema).
-- `similarToTitles` is resolved to movie ids through keyword search, and their vectors are added to the query (e.g. average with the query vector). Tuned in I07.
-- The prompt is a versioned file in `src/FilmSearch.AI/Prompts/`.
-- QU results are cached per normalized query (memory cache, TTL 1 h).
+(for "фильмы 90-х про космос с рейтингом выше 7, без ужасов").
+- `IQueryUnderstanding` (contract in `FilmSearch.Core`, implementation `QueryUnderstandingService` in `FilmSearch.AI`). The prompt is a versioned embedded file `src/FilmSearch.AI/Prompts/query-understanding.vN.md` loaded by `PromptLibrary` (latest version unless `Search:QueryUnderstanding:PromptVersion` pins one). The prompt id (`query-understanding.v2`) is a span tag (`filmsearch.prompt.id`) and part of the response (`understoodQuery.promptVersion`).
+- The system prompt holds the instructions and the catalog's genre slugs with their en/ru/sv names; the user's query is the user message (untrusted text never goes into the instructions). Temperature 0.
+- The JSON Schema is generated from a C# record (`QueryUnderstandingOutput`, `AIJsonUtilities.CreateJsonSchema`, all properties required, no extra properties); the genre arrays get an `enum` of the known slugs at run time, so providers with constrained decoding cannot return an unknown genre. It is sent as `response_format: json_schema`.
+- The answer is validated (known genres, include ∩ exclude empty, years 1870–2100 and from ≤ to, rating 0–10, price ≥ 0, ISO 639-1 language, ≤ 5 titles). On invalid output: one retry with the model's answer and the error message, then fallback to "no filters, full query as semantic text". A provider error falls back at once. `understoodQuery.source` is `llm`, `cache` or `fallback`.
+- Genres are filters only when the user asks for a genre ("sci-fi"), not guessed from the plot ("about space"): a guessed genre is a hard pre-filter and would hide good matches. Excluded genres become `MovieFilter.ExcludedGenreSlugs`.
+- Merging: a filter set explicitly in the request wins over the same filter found in the text; excluded genres add up.
+- Both retrievers search for `semanticQuery` (filter words removed); an empty `semanticQuery` falls back to the original text.
+- `similarToTitles` ("movies like X", only when the user asks for similar movies — a bare title or name is a normal search) is resolved to movie ids through keyword search (best hit with all words matched, at most `Search:Hybrid:MaxSimilarTitles` = 3). The named movies are left out of the results (`MovieFilter.ExcludedMovieIds`), and the vector search is steered by them. Two strategies (`Search:Hybrid:SimilarTitles`): **`AverageVector`** (default) — `normalize(normalize(query) + mean(normalize(movie vectors)))`; `ExtraList` — the neighbours of each named movie are an extra RRF list (hybrid mode only). On 10 manual queries they were equally good (I07 report); `AverageVector` needs one vector query instead of one per title. Semantic mode always averages.
+- QU results are cached per normalized query (case, whitespace, ё/е), prompt id and chat profile (memory cache, `Search:QueryUnderstanding:CacheMinutes` = 60). Fallbacks are not cached.
+- Latency with `google/gemma-4-e4b` on the laptop: ≈ 2.6–3.2 s per call (first call after loading ≈ 7 s); a cached query adds nothing.
 
 ## 6. Reranking (stretch)
 Options to compare in an evaluation: (a) LLM as listwise reranker on top 20, (b) a cross-encoder reranker model behind an HTTP endpoint (e.g. a local `bge-reranker` service), (c) no reranker. Recorded as an ADR if adopted.

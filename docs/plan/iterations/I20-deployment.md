@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I15, I17 |
 | **Parallel with** | I19 |
-| **Branch** | `iter/I20-deploy` |
 | **Spec** | [10 Ops §5–6](../../spec/10-ops-security.md#6-deployment-i20) |
 | **Requirements** | NFR-7, NFR-9 |
 

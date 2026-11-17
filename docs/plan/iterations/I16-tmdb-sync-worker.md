@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I06 |
 | **Parallel with** | I11, I17 |
-| **Branch** | `iter/I16-tmdb-worker` |
 | **Spec** | [08 Ingestion §3–4](../../spec/08-data-ingestion.md#3-tmdb-import-i16) |
 | **Requirements** | FR-DATA-2..5 |
 

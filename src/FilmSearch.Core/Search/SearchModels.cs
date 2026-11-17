@@ -21,6 +21,7 @@ public enum SearchMode
 /// <param name="Page">Page number, starting at 1.</param>
 /// <param name="PageSize">Items per page.</param>
 /// <param name="Debug">Return per-item retrieval scores (<see cref="SearchDebug"/>).</param>
+/// <param name="Understand">Run query understanding first (<see cref="IQueryUnderstanding"/>, from I07).</param>
 public sealed record SearchQuery(
     string Text,
     SearchMode Mode,
@@ -28,9 +29,24 @@ public sealed record SearchQuery(
     string Locale,
     int Page = 1,
     int PageSize = 20,
-    bool Debug = false);
+    bool Debug = false,
+    bool Understand = false);
 
-public sealed record SearchResult(IReadOnlyList<SearchItem> Items, int Page, int PageSize, int Total);
+/// <param name="Items">One page, best first.</param>
+/// <param name="Page">Page number, starting at 1.</param>
+/// <param name="PageSize">Items per page.</param>
+/// <param name="Total">Length of the whole result list.</param>
+public sealed record SearchResult(IReadOnlyList<SearchItem> Items, int Page, int PageSize, int Total)
+{
+    /// <summary>The filters the retrievers used: the query's filters merged with the ones found by query understanding.</summary>
+    public MovieFilter AppliedFilter { get; init; } = MovieFilter.None;
+
+    /// <summary>Result of query understanding when it was requested.</summary>
+    public UnderstoodQuery? Understood { get; init; }
+
+    /// <summary>Hybrid search returned keyword results only because the query could not be embedded (provider down).</summary>
+    public bool Degraded { get; init; }
+}
 
 /// <param name="Movie">The movie in the requested locale.</param>
 /// <param name="Score">Score of the mode that produced the list: keyword rank score, similarity or fused score. Higher is better.</param>

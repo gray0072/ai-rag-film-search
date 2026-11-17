@@ -57,3 +57,4 @@ Rules:
 | [S05](sessions/2026-11-17_S05_keyword-search.md) | 2026-11-17 | I04 | Keyword search and filters |
 | [S06](sessions/2026-11-17_S06_ai-providers.md) | 2026-11-17 | I05 | AI provider layer, model benchmark |
 | [S07](sessions/2026-11-17_S07_embeddings-semantic-search.md) | 2026-11-17 | I06 | Embeddings and semantic search |
+| [S08](sessions/2026-11-17_S08_hybrid-query-understanding.md) | 2026-11-17 | I07 | Hybrid search and query understanding |

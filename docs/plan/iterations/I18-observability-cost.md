@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I12 |
 | **Parallel with** | I14 |
-| **Branch** | `iter/I18-observability` |
 | **Spec** | [10 Ops §3](../../spec/10-ops-security.md#3-observability) |
 | **Requirements** | NFR-4, NFR-5 |
 

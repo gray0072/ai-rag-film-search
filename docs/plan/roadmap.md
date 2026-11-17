@@ -1,6 +1,6 @@
 # Roadmap
 
-Work goes in **iterations** (`Ixx`). One iteration = one feature branch = one or more sessions with an AI agent. Each iteration has a plan file in [iterations/](iterations/) with tasks, acceptance criteria and a "Result" section filled in at the end.
+Work goes in **iterations** (`Ixx`). One iteration = one or more sessions with an AI agent, committed directly to `main` (no feature branches). Each iteration has a plan file in [iterations/](iterations/) with tasks, acceptance criteria and a "Result" section filled in at the end.
 
 Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the single source of truth for status.** Update it when an iteration starts and ends.
 
@@ -26,7 +26,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I04 | [Keyword search and filters](iterations/I04-keyword-search.md) | I03 | 3 | 1 | done |
 | I06 | [Embeddings and semantic search](iterations/I06-embeddings-semantic-search.md) | I03, I05 | 3 | 2 | done |
 | I09 | [Cart, orders, fake payment](iterations/I09-cart-orders-fake-payment.md) | I03 | 3 | 2 | todo |
-| I07 | [Hybrid search and query understanding](iterations/I07-hybrid-query-understanding.md) | I04, I06 | 4 | 2 | todo |
+| I07 | [Hybrid search and query understanding](iterations/I07-hybrid-query-understanding.md) | I04, I06 | 4 | 2 | done |
 | I08 | [Search evaluation harness](iterations/I08-search-evaluation.md) | I04, I06 (dataset: I03) | 4 | 1–2 | todo |
 | I10 | [Store UI: catalog, search, cart, checkout](iterations/I10-store-ui.md) | I02, I04, I09 | 4 | 2 | todo |
 | I15 | [Stripe test mode](iterations/I15-stripe-test-mode.md) | I09 | 4 | 1–2 | todo |
@@ -101,9 +101,8 @@ Blue = AI-focused iterations.
 Shortest path to a working AI assistant: I01 → I03 + I05 → I06 → I04 → I07 → I11 → I12 (+ I09 for checkout, I02/I10/I13 for UI).
 
 ### How to run parallel tracks
-- One git **worktree** per iteration: `git worktree add ../fs-I06 -b iter/I06-embeddings`. Start a separate agent session in each worktree.
-- **Merge order** inside a wave: whoever finishes first merges first (fast-forward into `main`, no pull requests); the others rebase.
-- **EF Core migrations** are the main conflict point. Rule: each iteration adds migrations only for its own module. If two branches both added migrations, the one merged second **deletes its migration and regenerates it** after rebase (never hand-merge the model snapshot).
+- Everything is committed to `main` (no branches since 2026-11-17). Parallel sessions work in separate clones or worktrees in detached state and rebase onto `origin/main` before pushing; whoever finishes first pushes first.
+- **EF Core migrations** are the main conflict point. Rule: each iteration adds migrations only for its own module. If two parallel sessions both added migrations, the one pushed second **deletes its migration and regenerates it** after rebase (never hand-merge the model snapshot).
 - Shared files (`Program.cs`, `Directory.Packages.props`, AppHost): only add lines, through module extension methods. Expect small conflicts and resolve them by keeping both sides.
 
 ## Stretch goals (after M5, or when a topic is interesting)

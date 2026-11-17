@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I12 |
 | **Parallel with** | I20 |
-| **Branch** | `iter/I19-resilience` |
 | **Spec** | [01 NFR-6, NFR-7](../../spec/01-requirements.md#non-functional-requirements) |
 | **Requirements** | NFR-6, NFR-7 |
 

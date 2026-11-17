@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I03 |
 | **Parallel with** | I04, I06 |
-| **Branch** | `iter/I09-commerce` |
 | **Spec** | [03 Domain](../../spec/03-domain-model.md), [04 API](../../spec/04-api.md#commerce), [07 Payments](../../spec/07-payments.md), [ADR-0004](../../adr/0004-payment-gateway-abstraction.md) |
 | **Requirements** | FR-COM-1..7 |
 

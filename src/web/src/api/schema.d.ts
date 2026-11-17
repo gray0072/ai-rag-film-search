@@ -350,6 +350,11 @@ export interface components {
             id: string;
             name: string;
         };
+        /**
+         * @description Where an UnderstoodQuery came from.
+         * @enum {unknown}
+         */
+        QueryUnderstandingSource: "llm" | "cache" | "fallback";
         /** @description Progress of a reindex: `Processed` of `Total` movie texts (movies × locales) checked so far. */
         ReindexProgress: {
             /** Format: int32 */
@@ -408,6 +413,8 @@ export interface components {
         SearchFilters: {
             /** @description Genre slugs; a movie matches any of them. */
             genres?: null | string[];
+            /** @description Genre slugs the movie must not have. */
+            excludeGenres?: null | string[];
             /** Format: int32 */
             yearFrom?: null | number | string;
             /** Format: int32 */
@@ -445,7 +452,7 @@ export interface components {
             query: string;
             mode?: null | components["schemas"]["SearchMode"];
             filters?: null | components["schemas"]["SearchFilters"];
-            /** @description Run query understanding (FR-SRCH-4). Not available until I07: `true` returns 400. */
+            /** @description Turn the free text into filters and a search text with the LLM first (FR-SRCH-4); explicit filters win over found ones. */
             understand?: boolean;
             /** Format: int32 */
             page?: null | number | string;
@@ -457,7 +464,7 @@ export interface components {
         SearchResponse: {
             /** @description Found movies, best first. */
             items: components["schemas"]["SearchItem"][];
-            /** @description The filters the search used, normalized (later also the ones found by query understanding). */
+            /** @description The filters the search used, normalized: the request's filters merged with the ones found by query understanding. */
             appliedFilters: components["schemas"]["SearchFilters"];
             /**
              * Format: int32
@@ -471,9 +478,15 @@ export interface components {
             pageSize: number | string;
             /**
              * Format: int32
-             * @description Number of matching movies.
+             * @description Number of matching movies (keyword), or length of the result list (semantic: at most 100; hybrid: union of the fused candidate lists).
              */
             total: number | string;
+            understoodQuery?: null | components["schemas"]["UnderstoodQuery"];
+            /**
+             * @description Hybrid search returned keyword results only because the query could not be embedded.
+             * @default false
+             */
+            degraded: boolean;
         };
         SeedResult: {
             /** Format: int32 */
@@ -486,6 +499,41 @@ export interface components {
             unchanged: number | string;
             /** Format: int64 */
             elapsedMilliseconds: number | string;
+        };
+        /** @description Filters found by query understanding. Null or empty means "not mentioned". */
+        UnderstoodFilters: {
+            /** @description Genre slugs the movie should have (any of them). */
+            genresInclude?: string[];
+            /** @description Genre slugs the movie must not have. */
+            genresExclude?: string[];
+            /** Format: int32 */
+            yearFrom?: null | number | string;
+            /** Format: int32 */
+            yearTo?: null | number | string;
+            /** Format: double */
+            minRating?: null | number | string;
+            /**
+             * Format: int64
+             * @description Maximum price in minor units (cents).
+             */
+            maxPriceMinor?: null | number | string;
+            /** @description Original language, ISO 639-1. */
+            language?: null | string;
+        };
+        /** @description Result of query understanding: the text to search for, the filters found in the query and the titles of movies the user wants something similar to. */
+        UnderstoodQuery: {
+            /** @description What to search for, without the parts that became filters (English). */
+            semanticQuery: string;
+            filters?: components["schemas"]["UnderstoodFilters"];
+            /** @description Titles from "movies like X"; resolved to catalog movies by keyword search. */
+            similarToTitles?: string[];
+            /** @description Language of the query (`en`, `ru`, `sv`) when the model recognized it. */
+            detectedLocale?: null | string;
+            source?: components["schemas"]["QueryUnderstandingSource"];
+            /** @description Prompt that produced the result, e.g. `query-understanding.v1`. */
+            promptVersion?: null | string;
+            /** @description Why the result is a fallback (validation or provider error), for debugging. */
+            error?: null | string;
         };
     };
     responses: never;

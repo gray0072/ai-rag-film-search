@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | Ixx |
 | **Parallel with** | Ixx |
-| **Branch** | `iter/Ixx-<slug>` |
 | **Spec** | links to spec sections |
 | **Requirements** | FR-…, NFR-… |
 
@@ -23,7 +22,7 @@ AI-engineering or production skills this iteration trains.
 
 ## Acceptance criteria
 - [ ] … (observable, testable)
-- [ ] Build, format and tests pass locally and in CI.
+- [ ] Build, format and all tests (.NET unit + integration, web) pass locally before the push, and in CI.
 - [ ] Docs updated (spec if behavior changed, ADR if a decision was made, README if setup changed).
 
 ## Open questions

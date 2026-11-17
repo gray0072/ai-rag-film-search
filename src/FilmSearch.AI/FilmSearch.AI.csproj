@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Versioned prompt files (AGENTS.md "AI code"), loaded by PromptLibrary under a fixed resource name. -->
+    <EmbeddedResource Include="Prompts\*.v*.md" LogicalName="FilmSearch.AI.Prompts.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="FilmSearch.UnitTests" />
   </ItemGroup>
 

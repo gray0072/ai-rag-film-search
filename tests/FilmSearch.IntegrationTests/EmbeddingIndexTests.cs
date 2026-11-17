@@ -173,7 +173,7 @@ public sealed class EmbeddingIndexTests(PostgresFixture postgres)
     }
 
     [Fact]
-    public async Task Semantic_search_returns_503_when_the_embedding_provider_fails()
+    public async Task Semantic_search_returns_503_and_hybrid_search_degrades_to_keyword_when_the_embedding_provider_fails()
     {
         await using var catalog = await CreateCatalogAsync("emb_down");
         await using var factory = catalog.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
@@ -181,11 +181,17 @@ public sealed class EmbeddingIndexTests(PostgresFixture postgres)
         using var client = factory.CreateClient();
 
         using var semantic = await client.PostAsJsonAsync("/api/search", new { query = "dreams", mode = "semantic" }, Ct);
-        using var keyword = await client.PostAsJsonAsync("/api/search", new { query = "dreams" }, Ct);
+        using var keyword = await client.PostAsJsonAsync("/api/search", new { query = "dreams", mode = "keyword" }, Ct);
+        using var hybrid = await client.PostAsJsonAsync("/api/search", new { query = "dreams", debug = true }, Ct);
 
         semantic.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
         (await semantic.Content.ReadAsStringAsync(Ct)).ShouldContain("Connection refused");
         keyword.StatusCode.ShouldBe(HttpStatusCode.OK);
+        hybrid.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var degraded = (await hybrid.Content.ReadFromJsonAsync<SearchResponse>(CatalogApiFixture.Json, Ct)).ShouldNotBeNull();
+        degraded.Degraded.ShouldBeTrue();
+        degraded.Items.ShouldNotBeEmpty();
+        degraded.Items.ShouldAllBe(i => i.Debug!.KeywordRank != null && i.Debug.VectorRank == null);
     }
 
     private static MovieImport Dreams => Movie(990_601, "Dream Thieves", "Похитители снов", "Thieves enter dreams to plant an idea in a sleeping mind.", 2012);

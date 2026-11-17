@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using FilmSearch.Api.Modules.Search;
 using FilmSearch.Core.Catalog;
 using FilmSearch.IntegrationTests.Infrastructure;
@@ -8,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FilmSearch.IntegrationTests;
 
-/// <summary>Keyword search over the committed seed (FR-SRCH-1, FR-SRCH-5, FR-SRCH-6; spec 05 §2).</summary>
+/// <summary>Keyword search over the committed seed (FR-SRCH-1, FR-SRCH-5, FR-SRCH-6; spec 05 §2). Requests without a mode get <c>mode = keyword</c> here (the API default is hybrid since I07).</summary>
 public sealed class SearchApiTests(CatalogApiFixture fixture) : IClassFixture<CatalogApiFixture>
 {
     private static readonly string[] DramaOrCrime = ["drama", "crime"];
@@ -180,8 +182,6 @@ public sealed class SearchApiTests(CatalogApiFixture fixture) : IClassFixture<Ca
 
     [Theory]
     [InlineData("""{ "query": "" }""", "Query")]
-    [InlineData("""{ "query": "godfather", "mode": "hybrid" }""", "mode")]
-    [InlineData("""{ "query": "godfather", "understand": true }""", "understand")]
     [InlineData("""{ "query": "godfather", "pageSize": 51 }""", "PageSize")]
     [InlineData("""{ "query": "godfather", "filters": { "yearFrom": 2000, "yearTo": 1990 } }""", "YearFrom")]
     [InlineData("""{ "query": "godfather", "filters": { "minRating": 11 } }""", "MinRating")]
@@ -247,15 +247,23 @@ public sealed class SearchApiTests(CatalogApiFixture fixture) : IClassFixture<Ca
 
         static async Task PostAsync(HttpClient client, object body)
         {
-            using var response = await client.PostAsJsonAsync("/api/search", body, CatalogApiFixture.Json, Ct);
+            using var response = await client.PostAsJsonAsync("/api/search", Keyword(body), CatalogApiFixture.Json, Ct);
             response.EnsureSuccessStatusCode();
         }
+    }
+
+    /// <summary>The body as JSON with <c>mode = keyword</c> unless it sets a mode.</summary>
+    private static JsonObject Keyword(object body)
+    {
+        var json = JsonSerializer.SerializeToNode(body, CatalogApiFixture.Json)!.AsObject();
+        json.TryAdd("mode", "keyword");
+        return json;
     }
 
     private async Task<SearchResponse> SearchAsync(object body, string locale = "en")
     {
         using var client = fixture.CreateClient(locale);
-        using var response = await client.PostAsJsonAsync("/api/search", body, CatalogApiFixture.Json, Ct);
+        using var response = await client.PostAsJsonAsync("/api/search", Keyword(body), CatalogApiFixture.Json, Ct);
         if (!response.IsSuccessStatusCode)
         {
             throw new InvalidOperationException($"{(int)response.StatusCode}: {await response.Content.ReadAsStringAsync(Ct)}");

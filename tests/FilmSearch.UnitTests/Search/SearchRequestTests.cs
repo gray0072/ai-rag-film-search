@@ -7,12 +7,13 @@ namespace FilmSearch.UnitTests.Search;
 public sealed class SearchRequestTests
 {
     [Fact]
-    public void Defaults_to_keyword_mode_first_page_and_no_filters()
+    public void Defaults_to_hybrid_mode_first_page_no_filters_and_no_understanding()
     {
         var query = new SearchRequest { Query = "  godfather  " }.ToQuery("sv");
 
         query.Text.ShouldBe("godfather");
-        query.Mode.ShouldBe(SearchMode.Keyword);
+        query.Mode.ShouldBe(SearchMode.Hybrid);
+        query.Understand.ShouldBeFalse();
         query.Locale.ShouldBe("sv");
         query.Page.ShouldBe(1);
         query.PageSize.ShouldBe(SearchRequest.DefaultPageSize);
@@ -27,6 +28,7 @@ public sealed class SearchRequestTests
         var filters = new SearchFilters
         {
             Genres = [" Drama", "crime", "DRAMA"],
+            ExcludeGenres = ["Horror "],
             Language = " SV ",
             OfferType = OfferType.Rent,
             PriceMax = 399,
@@ -35,6 +37,7 @@ public sealed class SearchRequestTests
         var filter = filters.ToFilter();
 
         filter.GenreSlugs.ShouldBe(["drama", "crime"]);
+        filter.ExcludedGenreSlugs.ShouldBe(["horror"]);
         filter.Language.ShouldBe("sv");
         filter.OfferType.ShouldBe(OfferType.Rent);
         filter.PriceMax.ShouldBe(399);

@@ -5,7 +5,6 @@
 | **Status** | todo |
 | **Depends on** | I02, I04, I09 (I07 for hybrid / understood filters, can be added later) |
 | **Parallel with** | I07, I08, I15 |
-| **Branch** | `iter/I10-store-ui` |
 | **Spec** | [01 Requirements](../../spec/01-requirements.md), [04 API](../../spec/04-api.md) |
 | **Requirements** | FR-CAT-*, FR-SRCH-4/5, FR-COM-*, NFR-10/11 |
 
