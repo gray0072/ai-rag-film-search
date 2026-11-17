@@ -31,7 +31,7 @@ Real pages (I10), chat (I13).
 ## Acceptance criteria
 - [x] AppHost starts the web app; header language switcher changes all visible texts.
 - [x] A health / ping call through the generated client works.
-- [x] Lint, typecheck, test and build pass in CI.
+- [x] Lint, typecheck, test and build pass in CI ([#3](https://github.com/gray0072/ai-rag-film-search/pull/3), run 44138696194: web 2 min, .NET 1 min, OpenAPI drift check green on Linux).
 
 ## Result
 
