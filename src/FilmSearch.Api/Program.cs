@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FilmSearch.AI.Providers;
 using FilmSearch.Api.Localization;
 using FilmSearch.Api.Modules.Admin;
 using FilmSearch.Api.Modules.AppInfo;
@@ -24,6 +25,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
 builder.Services.AddOwnerContext();
 builder.Services.AddRequestLocales();
+builder.AddAiProviders();
 
 // Modules
 builder.Services.AddAppInfoModule();

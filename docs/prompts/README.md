@@ -55,3 +55,4 @@ Rules:
 | [S03](sessions/2026-11-17_S03_web-skeleton.md) | 2026-11-17 | I02 | Web app skeleton: React, i18n, API client |
 | [S04](sessions/2026-11-17_S04_catalog-seed.md) | 2026-11-17 | I03 | Catalog module and movie seed |
 | [S05](sessions/2026-11-17_S05_keyword-search.md) | 2026-11-17 | I04 | Keyword search and filters |
+| [S06](sessions/2026-11-17_S06_ai-providers.md) | 2026-11-17 | I05 | AI provider layer, model benchmark |

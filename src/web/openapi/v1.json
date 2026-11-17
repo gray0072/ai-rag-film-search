@@ -317,10 +317,123 @@
           }
         }
       }
+    },
+    "/api/admin/ai/chat": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Sends one message to a chat profile (default: the active one) and returns the answer with token usage.",
+        "operationId": "AdminAiChat",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminAiChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAiChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AdminAiChatRequest": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string",
+            "description": "The user message."
+          },
+          "profile": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Chat profile name from `AI:ChatProfiles`; the active profile when empty."
+          }
+        },
+        "description": "Body of `POST /api/admin/ai/chat`."
+      },
+      "AdminAiChatResponse": {
+        "required": [
+          "profile",
+          "model",
+          "text",
+          "inputTokens",
+          "outputTokens",
+          "estimatedCostUsd"
+        ],
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "inputTokens": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "outputTokens": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "estimatedCostUsd": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        },
+        "description": "Answer of a chat profile with token usage and estimated cost (null when the model has no price)."
+      },
       "AppInfoResponse": {
         "required": [
           "name",

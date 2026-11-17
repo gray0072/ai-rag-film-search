@@ -21,6 +21,9 @@ public static class Extensions
     /// <summary>Meter and activity source name for custom FilmSearch telemetry (spec 10 §3).</summary>
     public const string FilmSearchTelemetryName = "FilmSearch";
 
+    /// <summary>Activity source and meter of the Microsoft.Extensions.AI GenAI telemetry (FilmSearch.AI, spec 10 §3).</summary>
+    public const string AiTelemetryName = "FilmSearch.AI";
+
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
@@ -51,10 +54,12 @@ public static class Extensions
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation()
-                .AddMeter(FilmSearchTelemetryName))
+                .AddMeter(FilmSearchTelemetryName)
+                .AddMeter(AiTelemetryName))
             .WithTracing(tracing => tracing
                 .AddSource(builder.Environment.ApplicationName)
                 .AddSource(FilmSearchTelemetryName)
+                .AddSource(AiTelemetryName)
                 .AddAspNetCoreInstrumentation(options =>
                     // Health probes are noise in traces.
                     options.Filter = context =>

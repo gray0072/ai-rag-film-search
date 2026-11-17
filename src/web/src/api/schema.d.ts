@@ -106,10 +106,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/ai/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sends one message to a chat profile (default: the active one) and returns the answer with token usage. */
+        post: operations["AdminAiChat"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Body of `POST /api/admin/ai/chat`. */
+        AdminAiChatRequest: {
+            /** @description The user message. */
+            message: string;
+            /** @description Chat profile name from `AI:ChatProfiles`; the active profile when empty. */
+            profile?: null | string;
+        };
+        /** @description Answer of a chat profile with token usage and estimated cost (null when the model has no price). */
+        AdminAiChatResponse: {
+            profile: string;
+            model: string;
+            text: string;
+            /** Format: int64 */
+            inputTokens: number | string;
+            /** Format: int64 */
+            outputTokens: number | string;
+            /** Format: double */
+            estimatedCostUsd: null | number | string;
+        };
         AppInfoResponse: {
             name: string;
             version: string;
@@ -472,6 +508,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeedResult"];
+                };
+            };
+        };
+    };
+    AdminAiChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminAiChatRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAiChatResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
                 };
             };
         };

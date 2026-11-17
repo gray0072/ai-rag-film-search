@@ -26,6 +26,8 @@ public static class AdminModule
             .WithName("LoadSeed")
             .WithSummary("Loads the seed file into the catalog. Idempotent: upsert by TMDB id.");
 
+        group.MapAdminAiEndpoints();
+
         return app;
     }
 

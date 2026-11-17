@@ -118,6 +118,14 @@ Seed file (needs a TMDB key in the tool's user secrets, see [data/seed/README.md
 dotnet run --project tools/seed-builder       # writes data/seed/movies.seed.json; cached responses in tools/seed-builder/.cache
 ```
 
+AI playground (I05; uses the API's AI config and user secrets, needs LM Studio, see [tools/ai-playground](tools/ai-playground/README.md)):
+
+```bash
+dotnet run --project tools/ai-playground -- chat "Recommend a sci-fi movie"     # also: stream, tools, json, embed
+dotnet run --project tools/ai-playground -- bench-chat --chat-model <id> --reasoning None --out <file>
+dotnet run --project tools/ai-playground -- bench-embed --embedding-model <id> --query-prefix "..." --document-prefix "..."
+```
+
 Expected later: `dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>` (I08).
 
 Notes:
@@ -138,7 +146,8 @@ Notes:
 ## Local environment notes
 
 - OS of the owner: Windows 11; shells: PowerShell and Git Bash.
-- LM Studio local server: `http://localhost:1234/v1` (OpenAI-compatible). Model ids are in `appsettings.json` profiles after I05. The `lms` CLI is installed and can run it from the console: `lms server start`, `lms load <model> -y`, `lms ps`, `lms unload --all`, `lms server stop`, `lms ls`. Owner's preferred models: chat `google/gemma-4-e4b`, embeddings `text-embedding-embeddinggemma-300m` (768 dimensions). Unload models and stop the server when a session no longer needs them.
+- LM Studio local server: `http://localhost:1234/v1` (OpenAI-compatible). Gemma 4 / Qwen 3.5 think before answering unless the request has `reasoning_effort: "none"` (profile `ReasoningEffort: None`); a hung LM Studio queue (requests left from a killed process) is cleared with `lms unload --all` and loading again. On battery power the laptop runs models on the CPU and calls time out. Model ids are in `appsettings.json` profiles after I05. The `lms` CLI is installed and can run it from the console: `lms server start`, `lms load <model> -y`, `lms ps`, `lms unload --all`, `lms server stop`, `lms ls`. Owner's preferred models: chat `google/gemma-4-e4b`, embeddings `text-embedding-embeddinggemma-300m` (768 dimensions). Unload models and stop the server when a session no longer needs them.
+- Stripe test keys are in the API user secrets (`Stripe:SecretKey`, `Stripe:PublishableKey`). An OpenRouter key, when the owner adds one, goes to `AI:ChatProfiles:openrouter:ApiKey` in the same place.
 - TMDB credentials are in the user secrets of `tools/seed-builder` (`Tmdb:ApiKey` = v4 read access token, `Tmdb:ApiKeyV3` = v3 key). Never write them to files in the repository.
 - Docker Desktop is required for PostgreSQL (Aspire) and Testcontainers.
 - `gh` CLI is available for GitHub operations.

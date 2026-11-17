@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Console to try the AI providers (chat, streaming, tools, JSON output, embeddings) and to benchmark models. See README.md. -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <!-- Shares the user secrets of the API, so an OpenRouter key set for the API works here too. -->
+    <UserSecretsId>filmsearch-api-6f1d2c9e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FilmSearch.AI\FilmSearch.AI.csproj" />
+  </ItemGroup>
+
+</Project>

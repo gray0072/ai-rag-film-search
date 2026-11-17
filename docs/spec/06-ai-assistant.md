@@ -12,23 +12,35 @@ Both LM Studio and OpenRouter expose an **OpenAI-compatible API**, so one client
 // appsettings.json (no secrets here; keys go to user-secrets / env vars)
 "AI": {
   "ActiveChatProfile": "local",
-  "ActiveEmbeddingProfile": "local-multilingual",
+  "ActiveEmbeddingProfile": "local",
   "ChatProfiles": {
-    "local":      { "Endpoint": "http://localhost:1234/v1", "Model": "<lm-studio-model-id>", "ApiKey": "lm-studio", "Temperature": 0.3, "MaxOutputTokens": 1024, "SupportsTools": true },
-    "openrouter": { "Endpoint": "https://openrouter.ai/api/v1", "Model": "<vendor/model>", "ApiKey": "<secret>", "Temperature": 0.3 }
+    "local":      { "Endpoint": "http://localhost:1234/v1", "Model": "<lm-studio-model-id>", "ApiKey": "lm-studio", "Temperature": 0.3, "MaxOutputTokens": 1024, "ReasoningEffort": "None", "SupportsTools": true, "TimeoutSeconds": 300 },
+    "openrouter": { "Endpoint": "https://openrouter.ai/api/v1", "Model": "<vendor/model>", "Temperature": 0.3 }   // ApiKey in user secrets
   },
   "EmbeddingProfiles": {
-    "local-multilingual": { "Endpoint": "http://localhost:1234/v1", "Model": "<multilingual-embedding-model>", "Dimensions": 1024, "QueryPrefix": "", "DocumentPrefix": "" }
+    "local": { "Endpoint": "http://localhost:1234/v1", "Model": "<multilingual-embedding-model>", "ApiKey": "lm-studio", "Dimensions": 768, "QueryPrefix": "", "DocumentPrefix": "" }
   },
-  "Pricing": { "<model>": { "InputPerMTokUsd": 0, "OutputPerMTokUsd": 0 } }
+  "Pricing": { "<model>": { "InputPerMTokUsd": 0, "OutputPerMTokUsd": 0 } },
+  "EnableSensitiveData": false,   // prompt/completion text in traces; true in Development
+  "LogRawHttp": false,            // Development only: log raw provider HTTP (request JSON, SSE events), never headers
+  "HealthChecksEnabled": true
 }
 ```
 
-Model choice is made in **I05** after a small benchmark on the owner's hardware. Requirements:
-- Chat model: reliable **tool calling** and **JSON output**, good Russian and Swedish. Candidates: recent 7–14B instruct models with tool support (Qwen family and similar) in LM Studio.
-- Embedding model: **multilingual** (en, ru and sv in one space), e.g. bge-m3 or multilingual-e5 family. Dimension is recorded in the profile and in every stored vector.
+- Every profile also has `TimeoutSeconds` (network timeout of one attempt) and `MaxRetries` (transient HTTP errors).
+- `ReasoningEffort` (`None`, `Low`, `Medium`, `High`) is sent as `reasoning_effort`. Thinking models (Gemma 4, Qwen 3.5, gpt-oss) otherwise spend hundreds of hidden tokens before a tool call or a JSON answer; `None` turns thinking off where the model supports it.
+- Options are validated on start (`AI:ActiveChatProfile` exists, endpoints are absolute URLs, the **active** profiles have an `ApiKey`, …). An inactive cloud profile may have no key.
+- Registration (`builder.AddAiProviders()` in `FilmSearch.AI`): unkeyed `IChatClient` / `IEmbeddingGenerator<string, Embedding<float>>` = active profiles; every profile is also a keyed service (`[FromKeyedServices("openrouter")] IChatClient`).
+- Health checks `ai-chat` and `ai-embeddings` call `GET {Endpoint}/models` and check that the model is listed. Failure status is **Degraded**, not Unhealthy: the store without AI keeps working and Aspire does not block on LM Studio.
+- `POST /api/admin/ai/chat` (admin, Development) sends one message to any profile; it is the quickest way to check a provider and to see a GenAI trace in the Aspire dashboard. `tools/ai-playground` does the same from the console, plus streaming, tools, JSON and embeddings.
 
-Pipeline on every `IChatClient` (builder): `UseOpenTelemetry()` → `UseLogging()` → usage/cost tracking middleware → resilience (timeouts, retries) → provider client. Function invocation is **not** done by the built-in middleware at first (see ADR-0006): our own loop runs tools so their behavior can be studied and controlled.
+Model choice is made in **I05** after a small benchmark on the owner's hardware (RTX 4070 Laptop, 8 GB VRAM): see the [I05 benchmark report](../../evals/reports/2026-11-17_I05_model-benchmark.md). Requirements:
+- Chat model: reliable **tool calling** and **JSON output**, good Russian and Swedish.
+- Embedding model: **multilingual** (en, ru and sv in one space). Dimension is recorded in the profile and in every stored vector. Task prefixes (`QueryPrefix`, `DocumentPrefix`) belong to the model and are part of the profile.
+
+Pipeline on every `IChatClient` (outermost first): profile defaults (`ConfigureOptions`: model, temperature, max tokens, reasoning effort) → `UseOpenTelemetry()` (GenAI span, source `FilmSearch.AI`) → `UseLogging()` → usage/cost tracking (metrics `ai.tokens`, `ai.cost_usd`, span tag `filmsearch.ai.cost_usd`, `AiUsage` in `ChatResponse.AdditionalProperties`) → OpenAI client (timeout and retries of the profile: the SDK retry policy with backoff on 408/429/5xx) → `IHttpClientFactory` client `FilmSearch.AI` (HTTP spans; raw logging handler in Development). The default 10-second resilience handler of ServiceDefaults is removed from that client: local generation takes longer. Embedding generators have the same pipeline without `ConfigureOptions`. Function invocation is **not** done by the built-in middleware at first (see ADR-0006): our own loop runs tools so their behavior can be studied and controlled.
+
+Structured output: use **enums** for closed sets (language, genre slugs) in the C# type. The JSON Schema then has `enum` and LM Studio constrains generation to it; descriptions such as "in English" or "en, ru or sv" are often ignored by small models (measured in I05).
 
 ## 2. Agent loop (own implementation first)
 

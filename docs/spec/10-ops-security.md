@@ -23,7 +23,7 @@ Never committed: `.env`, `appsettings.*.local.json`, user-secrets, keys of any k
 ## 3. Observability
 
 - ServiceDefaults: OpenTelemetry logs, traces, metrics; OTLP exporter to the Aspire dashboard.
-- AI calls: `UseOpenTelemetry()` on chat and embedding clients (GenAI semantic conventions: `gen_ai.request.model`, `gen_ai.usage.input_tokens`, …). Recording of prompt / completion content is on in Development, off by default elsewhere.
+- AI calls: `UseOpenTelemetry()` on chat and embedding clients, activity source and meter `FilmSearch.AI` (GenAI semantic conventions: `gen_ai.request.model`, `gen_ai.usage.input_tokens`, …; MEAI metrics `gen_ai.client.token.usage`, `gen_ai.client.operation.duration`). Spans also carry `filmsearch.ai.profile` and `filmsearch.ai.cost_usd`. Recording of prompt / completion content (`AI:EnableSensitiveData`) is on in Development, off by default elsewhere.
 - Custom metrics (meter `FilmSearch`): `search.requests` (by mode), `search.latency`, `assistant.turns`, `assistant.tool_calls` (by tool, ok/error), `assistant.iteration_limit_hits`, `assistant.grounding_violations`, `ai.tokens` (by model, direction), `ai.cost_usd`, `payments.webhooks` (by type, result), `orders.status_changes`.
 - Trace per chat turn: HTTP request → agent loop → each LLM call → each tool → DB queries.
 - Optional (I18): Langfuse (self-hosted container in AppHost) as an LLM-specific trace viewer through its OTLP endpoint, for prompt / conversation inspection and scores.

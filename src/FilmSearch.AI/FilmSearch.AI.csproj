@@ -1,6 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- AI providers, embeddings, ranking, agent loop and prompts. Filled in from I05. -->
+  <!-- AI providers, embeddings, ranking, agent loop and prompts. -->
+
+  <ItemGroup>
+    <!-- Options, logging, IHttpClientFactory and health checks from the shared framework. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FilmSearch.UnitTests" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FilmSearch.Core\FilmSearch.Core.csproj" />

@@ -15,6 +15,11 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.11.0" />
   </ItemGroup>
+  <ItemGroup Label="AI">
+    <!-- ADR-0002: IChatClient / IEmbeddingGenerator and the OpenAI-compatible adapter (LM Studio, OpenRouter). Same release train as Microsoft.Extensions.Http.Resilience. -->
+    <PackageVersion Include="Microsoft.Extensions.AI" Version="10.11.0" />
+    <PackageVersion Include="Microsoft.Extensions.AI.OpenAI" Version="10.11.0" />
+  </ItemGroup>
   <ItemGroup Label="Data">
     <!-- EF Core is pinned so transitive references (Npgsql, Aspire) and Design use the same version. -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.15" />
