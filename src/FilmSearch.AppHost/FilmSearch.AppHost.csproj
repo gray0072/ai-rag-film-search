@@ -1,0 +1,19 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.6.5">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- Aspire stores generated parameters (e.g. the Postgres password) here, so the data volume keeps working. -->
+    <UserSecretsId>filmsearch-apphost-3b8a7e41</UserSecretsId>
+    <!-- DCP and the dashboard come from NuGet packages, so plain `dotnet run` works without the Aspire CLI. -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FilmSearch.Api\FilmSearch.Api.csproj" />
+  </ItemGroup>
+
+</Project>

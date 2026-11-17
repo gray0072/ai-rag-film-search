@@ -10,7 +10,7 @@
 | **Requirements** | FR-SRCH-2, FR-DATA-3, FR-DATA-4 |
 
 ## Goal
-Every movie has an embedding. `POST /api/search` with `mode=semantic` finds movies by meaning, including Russian queries against English texts. `GET /api/movies/{id}/similar` works.
+Every movie has an embedding. `POST /api/search` with `mode=semantic` finds movies by meaning, including Russian and Swedish queries against English texts. `GET /api/movies/{id}/similar` works.
 
 ## You will learn
 Embeddings in practice: what text to embed, query vs document prefixes, cosine similarity, HNSW index, reindexing, model/dimension management.
@@ -22,7 +22,7 @@ Embeddings in practice: what text to embed, query vs document prefixes, cosine s
 - [ ] Embedding indexer: find stale rows by `ContentHash`, batch, call `IEmbeddingGenerator`, upsert. Admin endpoint `POST /api/admin/embeddings/reindex` + run after seed in Development.
 - [ ] Semantic search implementation in `Search/Semantic` with pre-filtering (shared filter builder from I04, or a temporary copy if I04 is not merged yet; reconcile on merge).
 - [ ] Similar movies endpoint.
-- [ ] Experiment: exact scan vs HNSW results on the seed (same top-10?). Experiment: en-only vectors vs en+ru vectors for Russian queries (quick manual check now, proper numbers in I08).
+- [ ] Experiment: exact scan vs HNSW results on the seed (same top-10?). Experiment: en-only vectors vs per-locale (en+ru+sv) vectors for Russian and Swedish queries (quick manual check now, proper numbers in I08).
 - [ ] Integration tests with a **fake deterministic embedding generator** (e.g. hashed bag of words) so tests do not need LM Studio.
 
 ## Acceptance criteria

@@ -2,9 +2,16 @@
 
 Base path: `/api`. JSON with camelCase. Errors: RFC 9457 Problem Details. The OpenAPI document is served at `/openapi/v1.json` in Development, and the frontend generates its types from it.
 
-Owner identification: anonymous cookie `fs_sid` (HttpOnly, SameSite=Lax) before auth; Identity cookie after I17. Every user-scoped endpoint resolves `OwnerId` from them.
+Owner identification: anonymous cookie `fs_sid` (HttpOnly, Secure, SameSite=Lax, 128 random bits as 32 hex chars, max-age 1 year; set on the first `/api` request) before auth; Identity cookie after I17. Every user-scoped endpoint resolves `OwnerId` from them.
 
-Locale: `Accept-Language` (`en`, `ru`) selects translated titles and overviews.
+Locale: `Accept-Language` (`en`, `ru`, `sv`) selects translated titles and overviews; unknown locales fall back to `en`.
+
+## Service
+| Method | Path | Description |
+|---|---|---|
+| GET | `/health` | Readiness: all health checks, including the database. Plain text `Healthy` / `Unhealthy`. |
+| GET | `/alive` | Liveness: the process is up. |
+| GET | `/api/info` | `{ name, version }`. Example module from I01. |
 
 ## Catalog
 | Method | Path | Description |

@@ -27,7 +27,7 @@ erDiagram
 | Entity | Fields |
 |---|---|
 | **Movie** | `Id` (Guid), `TmdbId` (int, unique, nullable for manual), `ImdbId` (string?), `Title`, `OriginalTitle`, `OriginalLanguage`, `ReleaseDate`, `Year` (computed), `RuntimeMinutes`, `Overview`, `Tagline`, `PosterPath`, `BackdropPath`, `VoteAverage` (decimal), `VoteCount`, `Popularity`, `Keywords` (text[]), `AgeRating?`, `SearchVectorEn` / `SearchVectorRu` (tsvector, generated), `Source` (Seed/Tmdb/Manual), `CreatedAt`, `UpdatedAt` |
-| **MovieTranslation** | `MovieId`, `Locale` (`en`/`ru`), `Title`, `Overview`, `Tagline`. `en` values are also kept on `Movie` for simple queries. |
+| **MovieTranslation** | `MovieId`, `Locale` (`en`/`ru`/`sv`), `Title`, `Overview`, `Tagline`. `en` values are also kept on `Movie` for simple queries. |
 | **Genre** | `Id` (int, TMDB genre id), `Slug`, `NameEn`, `NameRu` |
 | **Person** | `Id`, `TmdbId`, `Name` |
 | **MovieCredit** | `MovieId`, `PersonId`, `Role` (Director/Cast/Writer), `Character?`, `Order` (cast order, top 10 stored) |

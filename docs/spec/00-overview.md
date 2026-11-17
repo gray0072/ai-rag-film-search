@@ -11,7 +11,7 @@ An online store that sells digital movies (buy or rent). The customer can:
 
 Payment: first a **fake gateway** (simulated checkout page and webhooks), then **Stripe in test mode** (Checkout Session and webhooks).
 
-Movie data: first a **seed of about 100 top movies** in a JSON file, then **TMDB API** sync. See [ADR-0003](../adr/0003-movie-data-source-tmdb.md) for why TMDB and not IMDb.
+Movie data: first a **seed of about 1000 top movies** in a JSON file, then **TMDB API** sync. See [ADR-0003](../adr/0003-movie-data-source-tmdb.md) for why TMDB and not IMDb.
 
 ## 2. Why: learning goals
 
@@ -34,11 +34,12 @@ The full learning map is in [learning-path.md](../learning-path.md).
 ## 3. Languages
 
 - **Primary language: English.** Code, docs, UI default locale, API messages, commit messages.
-- **Russian is supported** in:
-  - UI: i18n with `en` (default) and `ru` locales and a language switcher.
-  - Search and AI: the customer can type queries and chat in Russian. The assistant answers in the language of the customer's message.
-  - Catalog data: titles and overviews are stored in `en` and `ru` when the source has them (TMDB gives both).
-- Consequence for AI: the embedding model must be **multilingual**, so that a Russian query finds a movie with an English description. Evaluation datasets contain queries in both languages.
+- **Russian and Swedish are supported** in:
+  - UI: i18n with `en` (default), `ru` and `sv` locales and a language switcher.
+  - Search and AI: the customer can type queries and chat in Russian or Swedish. The assistant answers in the language of the customer's message.
+  - Catalog data: titles and overviews are stored in `en`, `ru` and `sv` when the source has them (TMDB has translations for all three).
+- Supported locales are one list in configuration (`en`, `ru`, `sv`), so adding a language later means resources, translations and evaluation cases, not code changes.
+- Consequence for AI: the embedding model must be **multilingual**, so that a Russian or Swedish query finds a movie with an English description. Evaluation datasets contain queries in all three languages.
 
 ## 4. Scope
 
@@ -47,7 +48,7 @@ The full learning map is in [learning-path.md](../learning-path.md).
 - Search: keyword (full-text), semantic (vector), hybrid, and natural language to filters.
 - AI chat assistant: streaming, conversation history, tool calling, recommendations with explanations, cart, starting checkout.
 - Cart, orders, payment (fake, then Stripe test), entitlements ("My library").
-- Data: seed of top 100, then TMDB import and sync with re-embedding.
+- Data: seed of about 1000 top movies, then TMDB import and sync with re-embedding.
 - Authentication (ASP.NET Core Identity) for order history and the library. Before it exists, an anonymous session is used.
 - Observability, evaluation, guardrails, CI, containerized deployment.
 

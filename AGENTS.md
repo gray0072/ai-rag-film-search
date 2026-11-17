@@ -44,7 +44,7 @@ Every prompt from the owner is saved **verbatim** to the prompt history:
 ## Languages
 
 - **English** for code, comments, docs, commit messages, UI default locale, API messages.
-- **Russian is supported** in the UI (i18n `ru` locale) and in search / assistant queries. Every user-facing string goes to `en` and `ru` resource files. Evaluation datasets contain Russian and English cases.
+- **Russian and Swedish are supported** in the UI (i18n `ru` and `sv` locales) and in search / assistant queries. Every user-facing string goes to `en`, `ru` and `sv` resource files. Evaluation datasets contain English, Russian and Swedish cases.
 - The owner may write prompts in Russian. Answer the owner in the language of the prompt; write project files in English.
 
 ## Engineering rules
@@ -90,17 +90,24 @@ An iteration (or task) is done when:
 
 ## Commands
 
-_Filled in during I01 / I02 with the real commands. Expected:_
-
 ```bash
-dotnet run --project src/FilmSearch.AppHost          # run everything (Aspire)
-dotnet build                                          # build
+dotnet run --project src/FilmSearch.AppHost          # run everything (Aspire); dashboard URL is printed in the console
+dotnet build                                          # build (warnings are errors)
 dotnet test                                           # all .NET tests (Docker needed for integration tests)
-dotnet format --verify-no-changes                     # format check
-cd src/web && npm run lint && npm run typecheck && npm test   # frontend checks
-cd src/web && npm run gen:api                         # regenerate API client from OpenAPI
-dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>   # evaluations (from I08)
+dotnet test --project tests/FilmSearch.UnitTests      # unit tests only (no Docker)
+dotnet format --verify-no-changes                     # format check (same as CI)
+dotnet tool restore                                   # once: installs dotnet-ef from .config/dotnet-tools.json
+dotnet ef migrations add I03_AddCatalog --project src/FilmSearch.Infrastructure --output-dir Persistence/Migrations   # new migration
 ```
+
+Expected later: `cd src/web && npm run lint && npm run typecheck && npm test` and `npm run gen:api` (I02); `dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>` (I08).
+
+Notes:
+- Tests run on **Microsoft.Testing.Platform** (`global.json` → `test.runner`), xUnit v3. Pass runner options after `--`, e.g. `dotnet test -- --filter-method "*Health*"`.
+- Assertions: **Shouldly** (MIT). FluentAssertions v8 is not used because of its commercial license.
+- Integration tests: one shared `pgvector/pgvector:pg17` container per test assembly (`PostgresFixture`), API in-process through `FilmSearchApiFactory` (`WebApplicationFactory<Program>`), migrations applied on startup.
+- Migrations live in `src/FilmSearch.Infrastructure/Persistence/Migrations`. `DesignTimeDbContextFactory` lets `dotnet ef` work without a running DB or the API. The API applies migrations on startup when `Database:MigrateOnStartup` is true (Development, tests).
+- The AppHost Postgres container is named `filmsearch-postgres`, uses `ContainerLifetime.Persistent` and the named volume `filmsearch-postgres-data`: it keeps running after the AppHost stops. Its password is stored in the AppHost user secrets. To reset the DB: `docker rm -f filmsearch-postgres` and `docker volume rm filmsearch-postgres-data`.
 
 ## Git
 

@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Domain and module contracts. No references to other projects, EF Core, Stripe or AI SDKs (spec 02 §4). -->
+
+</Project>

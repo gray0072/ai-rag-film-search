@@ -10,14 +10,14 @@ IDs are referenced from iteration plans and tests. `FR` = functional, `NFR` = no
 | FR-CAT-1 | Paged list of movies with sorting by rating, year, popularity, title. |
 | FR-CAT-2 | Filters: genres (any of), year range, min rating, runtime range, original language, price range, offer type. |
 | FR-CAT-3 | Movie page: title, original title, year, runtime, genres, overview, tagline, director(s), top cast, rating and vote count, poster, offers with prices, similar movies. |
-| FR-CAT-4 | Title and overview are shown in the UI locale (`en`/`ru`), falling back to `en`. |
+| FR-CAT-4 | Title and overview are shown in the UI locale (`en`/`ru`/`sv`), falling back to `en`. |
 | FR-CAT-5 | Prices are stored in the DB. Prices shown to the user (in UI or by the assistant) always come from the DB. |
 
 ### Search (SRCH)
 | ID | Requirement |
 |---|---|
-| FR-SRCH-1 | Keyword search over title, original title, overview, tagline, people, keywords (PostgreSQL full-text, `en` and `ru` configs). |
-| FR-SRCH-2 | Semantic search: the query is embedded and compared with movie embeddings (cosine). Works across languages (ru query, en text). |
+| FR-SRCH-1 | Keyword search over title, original title, overview, tagline, people, keywords (PostgreSQL full-text, `english`, `russian` and `swedish` configs). |
+| FR-SRCH-2 | Semantic search: the query is embedded and compared with movie embeddings (cosine). Works across languages (ru or sv query, en text). |
 | FR-SRCH-3 | Hybrid search: keyword and semantic results fused with Reciprocal Rank Fusion (RRF). This is the default mode in the UI. |
 | FR-SRCH-4 | Query understanding: a natural language query is turned into structured filters plus a free-text "semantic part" with an LLM and JSON Schema structured output. The UI shows the extracted filters as chips that can be removed. |
 | FR-SRCH-5 | All filters from FR-CAT-2 can be combined with every search mode. |
@@ -32,7 +32,7 @@ IDs are referenced from iteration plans and tests. `FR` = functional, `NFR` = no
 | FR-AST-4 | The assistant explains why each movie fits the request. |
 | FR-AST-5 | The assistant can: search, get details, find similar movies, show / add to / remove from the cart, start checkout. |
 | FR-AST-6 | Checkout started by the assistant needs an **explicit click** by the user on a confirmation button. The LLM can never create a payment by itself. |
-| FR-AST-7 | The assistant answers in the language of the user's last message (`en` or `ru`). |
+| FR-AST-7 | The assistant answers in the language of the user's last message (`en`, `ru` or `sv`). |
 | FR-AST-8 | Off-topic requests are politely declined and steered back to movies. |
 | FR-AST-9 | The user can rate an answer (thumbs up/down). The feedback is stored for evaluation. |
 
@@ -51,7 +51,7 @@ IDs are referenced from iteration plans and tests. `FR` = functional, `NFR` = no
 ### Data (DATA)
 | ID | Requirement |
 |---|---|
-| FR-DATA-1 | Seed: about 100 top movies from a committed JSON file, loaded on first start (idempotent). |
+| FR-DATA-1 | Seed: about 1000 top movies from a committed JSON file, loaded on first start (idempotent, batched, under 1 minute). |
 | FR-DATA-2 | TMDB import: by list (top rated / popular) and by id. Upsert by `TmdbId`. |
 | FR-DATA-3 | When text fields used for embeddings change, the movie is re-embedded (detected by content hash). |
 | FR-DATA-4 | Full reindex when the embedding model changes. Old and new vectors can live side by side while it runs. |
@@ -77,5 +77,5 @@ IDs are referenced from iteration plans and tests. `FR` = functional, `NFR` = no
 | NFR-7 Security | Secrets only in user-secrets or environment variables. Stripe webhook signature check. Rate limiting on chat and search. Input length limits. Prompt-injection defenses (see spec 06). |
 | NFR-8 Testability | Unit tests for domain logic. Integration tests with Testcontainers (PostgreSQL + pgvector). AI calls in tests use a fake `IChatClient` or recorded responses. Evaluations are a separate suite. |
 | NFR-9 Quality gate | CI: build, lint, unit and integration tests. Changes to AI behavior (prompts, models, search parameters) come with an evaluation report. |
-| NFR-10 i18n | All UI strings in resource files (`en`, `ru`). No hard-coded user-facing text. |
+| NFR-10 i18n | All UI strings in resource files (`en`, `ru`, `sv`). No hard-coded user-facing text. |
 | NFR-11 Accessibility | Keyboard navigation, alt texts, sufficient contrast (basic level). |
