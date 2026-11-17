@@ -21,7 +21,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I00 | [Preparation: spec, plan, conventions](iterations/I00-preparation.md) | — | 0 | 1 | done |
 | I01 | [Solution skeleton, Aspire, DB, CI](iterations/I01-solution-skeleton.md) | I00 | 1 | 1–2 | done |
 | I02 | [Web app skeleton (React, i18n, API client)](iterations/I02-web-skeleton.md) | I01 | 2 | 1 | done |
-| I03 | [Catalog module and 1000-movie seed](iterations/I03-catalog-seed.md) | I01 | 2 | 1–2 | todo |
+| I03 | [Catalog module and 1000-movie seed](iterations/I03-catalog-seed.md) | I01 | 2 | 1–2 | done |
 | I05 | [AI provider layer (LM Studio / OpenRouter)](iterations/I05-ai-providers.md) | I01 | 2 | 1–2 | todo |
 | I04 | [Keyword search and filters](iterations/I04-keyword-search.md) | I03 | 3 | 1 | todo |
 | I06 | [Embeddings and semantic search](iterations/I06-embeddings-semantic-search.md) | I03, I05 | 3 | 2 | todo |
@@ -102,7 +102,7 @@ Shortest path to a working AI assistant: I01 → I03 + I05 → I06 → I04 → I
 
 ### How to run parallel tracks
 - One git **worktree** per iteration: `git worktree add ../fs-I06 -b iter/I06-embeddings`. Start a separate agent session in each worktree.
-- **Merge order** inside a wave: whoever finishes first merges first; the others rebase.
+- **Merge order** inside a wave: whoever finishes first merges first (fast-forward into `main`, no pull requests); the others rebase.
 - **EF Core migrations** are the main conflict point. Rule: each iteration adds migrations only for its own module. If two branches both added migrations, the one merged second **deletes its migration and regenerates it** after rebase (never hand-merge the model snapshot).
 - Shared files (`Program.cs`, `Directory.Packages.props`, AppHost): only add lines, through module extension methods. Expect small conflicts and resolve them by keeping both sides.
 

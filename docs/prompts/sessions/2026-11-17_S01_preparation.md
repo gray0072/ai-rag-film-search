@@ -8,6 +8,22 @@
 
 ## Prompt 1
 
+English:
+
+```text
+Right now I'm an AI-assisted full-stack developer, .NET + React.
+I want to become an AI engineer.
+Suggest a pet project for learning, and its stages. I like a project for searching movies, ordering them, and Stripe for payment. You can search yourself or ask an AI assistant. It somehow searches the DB by the described parameters and sells to the customer. In the end the customer has to pay in Stripe.
+Write a spec.
+Stripe fake at first, then we'll hook up the test one. And an integration with IMDb or some open movie DB. To start, we can add the top 100 movies with info.
+We use local AI and embeddings, there is LM Studio. But with the option to connect OpenRouter or similar.
+This is a pet project, the goal is to learn and practice, as close to production as possible. Make a work plan, structure it, split it into folders, including the spec. Create agents.md and whatever else is needed.
+Preparation first; we write the code later in sessions, iteration by iteration, following the plan. Where possible, make parallel iterations.
+Write all my prompts to a separate file as history, preferably split by session
+```
+
+Original (ru):
+
 ```text
 Сейчас я ai assisted fullstack developer. .net + react.
 Хочу стать ai-ingeneer.
@@ -22,11 +38,27 @@
 
 ## Prompt 2
 
+English:
+
+```text
+The main language is English, but with Russian support in the UI and in queries to the AI
+```
+
+Original (ru):
+
 ```text
 основной язык англ, но с поддержкой русского в UI и запросах к ИИ
 ```
 
 ## Prompt 3
+
+English:
+
+```text
+Commit; we continue in another session
+```
+
+Original (ru):
 
 ```text
 коммит, дальше в другой сессии

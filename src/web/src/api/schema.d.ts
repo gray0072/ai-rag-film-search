@@ -21,6 +21,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/movies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Paged movie list with filters and sorting. Texts in the Accept-Language locale. */
+        get: operations["ListMovies"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/movies/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Movie details with genres, credits and offers. Texts in the Accept-Language locale. */
+        get: operations["GetMovie"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/genres": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Genres with names in the Accept-Language locale. */
+        get: operations["ListGenres"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/ingestion/seed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Loads the seed file into the catalog. Idempotent: upsert by TMDB id. */
+        post: operations["LoadSeed"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -28,6 +96,104 @@ export interface components {
         AppInfoResponse: {
             name: string;
             version: string;
+        };
+        CastItem: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            character: null | string;
+        };
+        GenreItem: {
+            /** Format: int32 */
+            id: number | string;
+            slug: string;
+            name: string;
+        };
+        MovieDetails: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            tmdbId: null | number | string;
+            imdbId: null | string;
+            title: string;
+            originalTitle: string;
+            originalLanguage: string;
+            /** Format: date */
+            releaseDate: null | string;
+            /** Format: int32 */
+            year: null | number | string;
+            /** Format: int32 */
+            runtimeMinutes: null | number | string;
+            overview: null | string;
+            tagline: null | string;
+            posterPath: null | string;
+            backdropPath: null | string;
+            /** Format: double */
+            voteAverage: number | string;
+            /** Format: int32 */
+            voteCount: number | string;
+            keywords: string[];
+            genres: components["schemas"]["GenreItem"][];
+            directors: components["schemas"]["PersonItem"][];
+            writers: components["schemas"]["PersonItem"][];
+            cast: components["schemas"]["CastItem"][];
+            offers: components["schemas"]["OfferItem"][];
+        };
+        MovieSummary: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            originalTitle: string;
+            /** Format: int32 */
+            year: null | number | string;
+            /** Format: int32 */
+            runtimeMinutes: null | number | string;
+            overview: null | string;
+            posterPath: null | string;
+            /** Format: double */
+            voteAverage: number | string;
+            /** Format: int32 */
+            voteCount: number | string;
+            genres: components["schemas"]["GenreItem"][];
+            offers: components["schemas"]["OfferItem"][];
+        };
+        OfferItem: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["OfferType"];
+            /** Format: int64 */
+            priceMinor: number | string;
+            currency: string;
+            /** Format: int32 */
+            rentalHours: null | number | string;
+        };
+        /** @enum {unknown} */
+        OfferType: "buy" | "rent";
+        PagedResultOfMovieSummary: {
+            items: components["schemas"]["MovieSummary"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            total: number | string;
+        };
+        PersonItem: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        SeedResult: {
+            /** Format: int32 */
+            genres: number | string;
+            /** Format: int32 */
+            created: number | string;
+            /** Format: int32 */
+            updated: number | string;
+            /** Format: int32 */
+            unchanged: number | string;
+            /** Format: int64 */
+            elapsedMilliseconds: number | string;
         };
     };
     responses: never;
@@ -54,6 +220,108 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AppInfoResponse"];
+                };
+            };
+        };
+    };
+    ListMovies: {
+        parameters: {
+            query?: {
+                page?: number | string;
+                pageSize?: number | string;
+                sort?: string;
+                genres?: string;
+                yearFrom?: number | string;
+                yearTo?: number | string;
+                minRating?: number | string;
+                runtimeMin?: number | string;
+                runtimeMax?: number | string;
+                language?: string;
+                priceMax?: number | string;
+                offerType?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResultOfMovieSummary"];
+                };
+            };
+        };
+    };
+    GetMovie: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MovieDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ListGenres: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenreItem"][];
+                };
+            };
+        };
+    };
+    LoadSeed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeedResult"];
                 };
             };
         };

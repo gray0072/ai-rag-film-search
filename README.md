@@ -13,7 +13,7 @@ Stack: .NET 10, ASP.NET Core, EF Core, PostgreSQL + pgvector, .NET Aspire, Micro
 
 ## Status
 
-The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), and a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02); tests and CI for both. See the [roadmap](docs/plan/roadmap.md).
+The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file (I03); tests and CI for all of it. The seed is hand-made (34 movies) until it is rebuilt from TMDB, see [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
 
 ## Documentation
 
@@ -52,9 +52,11 @@ The API listens on `https://localhost:7180`:
 
 - `GET /health`: readiness (includes the database), `GET /alive`: liveness
 - `GET /api/info`: application name and version
+- `GET /api/movies`, `GET /api/movies/{id}`, `GET /api/genres`: catalog; texts follow `Accept-Language` (`en`, `ru`, `sv`)
+- `POST /api/admin/ingestion/seed`: reload the seed file (Development only, idempotent)
 - `GET /openapi/v1.json`: OpenAPI document (Development)
 
-On first start the API applies EF Core migrations (Development only). The Postgres container `filmsearch-postgres` is persistent: it keeps running after you stop the AppHost, and its data lives in the Docker volume `filmsearch-postgres-data`.
+On first start the API applies EF Core migrations and, if the catalog is empty, loads `data/seed/movies.seed.json` (Development only). The Postgres container `filmsearch-postgres` is persistent: it keeps running after you stop the AppHost, and its data lives in the Docker volume `filmsearch-postgres-data`.
 
 ### Build and test
 
@@ -73,7 +75,7 @@ npm run lint && npm run typecheck && npm test && npm run build
 npm run gen:api                      # regenerate API types after an API change (the API build writes openapi/v1.json)
 ```
 
-More commands (migrations, single test project) are in [AGENTS.md](AGENTS.md#commands).
+More commands (migrations, single test project) are in [AGENTS.md](AGENTS.md#commands). Rebuilding the seed file from TMDB: [data/seed/README.md](data/seed/README.md).
 
 ---
 

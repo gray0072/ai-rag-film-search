@@ -16,10 +16,12 @@ Locale: `Accept-Language` (`en`, `ru`, `sv`) selects translated titles and overv
 ## Catalog
 | Method | Path | Description |
 |---|---|---|
-| GET | `/api/movies` | Paged list. Query: `page`, `pageSize` (≤ 50), `sort` (`rating`, `year`, `popularity`, `title`), `genres` (csv slugs), `yearFrom`, `yearTo`, `minRating`, `runtimeMin`, `runtimeMax`, `language`, `priceMax`, `offerType`. |
-| GET | `/api/movies/{id}` | Movie details with offers, credits, translations for the locale. |
+| GET | `/api/movies` | Paged list. Query: `page` (default 1), `pageSize` (default 20, ≤ 50), `sort` (`popularity` default, `rating`, `year`, `title`; case-insensitive; `title` uses the localized title), `genres` (csv slugs, any of), `yearFrom`, `yearTo`, `minRating`, `runtimeMin`, `runtimeMax`, `language` (original language), `priceMax` (minor units), `offerType` (`buy`/`rent`; with `priceMax` both apply to the same offer). Response `{ items: [MovieSummary], page, pageSize, total }`. Invalid input → 400 Problem Details. |
+| GET | `/api/movies/{id}` | Movie details: localized texts, genres, keywords, `directors`, `writers`, `cast` (top 10), active offers. 404 Problem Details for an unknown id. |
 | GET | `/api/movies/{id}/similar` | Similar movies (vector neighbors, from I06). |
-| GET | `/api/genres` | Genres with localized names. |
+| GET | `/api/genres` | Genres `{ id, slug, name }` with localized names, sorted by name. |
+
+Locale: from `Accept-Language` (`en`, `ru`, `sv`; `sv-SE` → `sv`; anything else → `en`), echoed in `Content-Language`. Missing texts fall back to English per field. JSON enums are camelCase strings (`buy`, `rent`). Posters are TMDB paths (`posterPath`); the UI builds the image URL.
 
 ## Search
 | Method | Path | Description |

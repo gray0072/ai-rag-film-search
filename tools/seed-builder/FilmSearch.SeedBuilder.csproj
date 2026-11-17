@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Builds data/seed/movies.seed.json from the TMDB API. See data/seed/README.md. -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <UserSecretsId>filmsearch-seed-builder-3b7e1a52</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Configuration (user secrets, environment, command line) and logging from the shared framework: no extra packages. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FilmSearch.Infrastructure\FilmSearch.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

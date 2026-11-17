@@ -8,11 +8,29 @@
 
 ## Prompt 1
 
+English:
+
+```text
+Let's do I01
+```
+
+Original (ru):
+
 ```text
 делаем I01
 ```
 
 ## Prompt 2
+
+English:
+
+```text
+Fix the spec. We also support Swedish. And 1000 movies to start with.
+Also name the DB in Docker something with FilmSearch.
+Push.
+```
+
+Original (ru):
 
 ```text
 поправь спеку. еще поддерживаем шведский. и 1000 фильмов для начала.

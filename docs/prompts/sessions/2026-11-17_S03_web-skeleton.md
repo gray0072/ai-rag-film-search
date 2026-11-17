@@ -8,6 +8,14 @@
 
 ## Prompt 1
 
+English:
+
+```text
+Merged. Let's do I02 and push
+```
+
+Original (ru):
+
 ```text
 смержил. делаем I02 и пуш
 ```

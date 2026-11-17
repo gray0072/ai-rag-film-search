@@ -1,0 +1,2524 @@
+{
+  "version": 1,
+  "source": "hand-made",
+  "generatedAt": "2026-11-17T00:00:00+00:00",
+  "genres": [
+    {
+      "id": 28,
+      "slug": "action",
+      "names": {
+        "en": "Action",
+        "ru": "Боевик",
+        "sv": "Action"
+      }
+    },
+    {
+      "id": 12,
+      "slug": "adventure",
+      "names": {
+        "en": "Adventure",
+        "ru": "Приключения",
+        "sv": "Äventyr"
+      }
+    },
+    {
+      "id": 16,
+      "slug": "animation",
+      "names": {
+        "en": "Animation",
+        "ru": "Мультфильм",
+        "sv": "Animerat"
+      }
+    },
+    {
+      "id": 35,
+      "slug": "comedy",
+      "names": {
+        "en": "Comedy",
+        "ru": "Комедия",
+        "sv": "Komedi"
+      }
+    },
+    {
+      "id": 80,
+      "slug": "crime",
+      "names": {
+        "en": "Crime",
+        "ru": "Криминал",
+        "sv": "Kriminal"
+      }
+    },
+    {
+      "id": 99,
+      "slug": "documentary",
+      "names": {
+        "en": "Documentary",
+        "ru": "Документальный",
+        "sv": "Dokumentär"
+      }
+    },
+    {
+      "id": 18,
+      "slug": "drama",
+      "names": {
+        "en": "Drama",
+        "ru": "Драма",
+        "sv": "Drama"
+      }
+    },
+    {
+      "id": 10751,
+      "slug": "family",
+      "names": {
+        "en": "Family",
+        "ru": "Семейный",
+        "sv": "Familj"
+      }
+    },
+    {
+      "id": 14,
+      "slug": "fantasy",
+      "names": {
+        "en": "Fantasy",
+        "ru": "Фэнтези",
+        "sv": "Fantasy"
+      }
+    },
+    {
+      "id": 36,
+      "slug": "history",
+      "names": {
+        "en": "History",
+        "ru": "История",
+        "sv": "Historia"
+      }
+    },
+    {
+      "id": 27,
+      "slug": "horror",
+      "names": {
+        "en": "Horror",
+        "ru": "Ужасы",
+        "sv": "Skräck"
+      }
+    },
+    {
+      "id": 10402,
+      "slug": "music",
+      "names": {
+        "en": "Music",
+        "ru": "Музыка",
+        "sv": "Musik"
+      }
+    },
+    {
+      "id": 9648,
+      "slug": "mystery",
+      "names": {
+        "en": "Mystery",
+        "ru": "Детектив",
+        "sv": "Mysterium"
+      }
+    },
+    {
+      "id": 10749,
+      "slug": "romance",
+      "names": {
+        "en": "Romance",
+        "ru": "Мелодрама",
+        "sv": "Romantik"
+      }
+    },
+    {
+      "id": 878,
+      "slug": "science-fiction",
+      "names": {
+        "en": "Science Fiction",
+        "ru": "Фантастика",
+        "sv": "Science fiction"
+      }
+    },
+    {
+      "id": 10770,
+      "slug": "tv-movie",
+      "names": {
+        "en": "TV Movie",
+        "ru": "Телевизионный фильм",
+        "sv": "TV-film"
+      }
+    },
+    {
+      "id": 53,
+      "slug": "thriller",
+      "names": {
+        "en": "Thriller",
+        "ru": "Триллер",
+        "sv": "Thriller"
+      }
+    },
+    {
+      "id": 10752,
+      "slug": "war",
+      "names": {
+        "en": "War",
+        "ru": "Военный",
+        "sv": "Krig"
+      }
+    },
+    {
+      "id": 37,
+      "slug": "western",
+      "names": {
+        "en": "Western",
+        "ru": "Вестерн",
+        "sv": "Western"
+      }
+    }
+  ],
+  "movies": [
+    {
+      "tmdbId": 13,
+      "imdbId": "tt0109830",
+      "originalTitle": "Forrest Gump",
+      "originalLanguage": "en",
+      "releaseDate": "1994-06-23",
+      "runtimeMinutes": 142,
+      "voteAverage": 8.5,
+      "voteCount": 28000,
+      "popularity": 95.0,
+      "genreIds": [
+        35,
+        18,
+        10749
+      ],
+      "keywords": [
+        "vietnam war",
+        "running",
+        "life story",
+        "first love",
+        "american history"
+      ],
+      "translations": {
+        "en": {
+          "title": "Forrest Gump",
+          "overview": "A kind man with a low IQ lives through decades of American history by chance, from Vietnam to ping-pong diplomacy, while never forgetting his childhood love Jenny."
+        },
+        "ru": {
+          "title": "Форрест Гамп",
+          "overview": "Добрый простодушный человек случайно оказывается свидетелем и участником десятилетий американской истории, от Вьетнама до пинг-понговой дипломатии, и всю жизнь любит подругу детства Дженни."
+        },
+        "sv": {
+          "title": "Forrest Gump",
+          "overview": "En vänlig man med låg IQ råkar vara med om årtionden av amerikansk historia, från Vietnam till pingisdiplomati, och glömmer aldrig sin barndomskärlek Jenny."
+        }
+      },
+      "credits": [
+        {
+          "name": "Robert Zemeckis",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Eric Roth",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Tom Hanks",
+          "role": "cast",
+          "character": "Forrest Gump",
+          "order": 0
+        },
+        {
+          "name": "Robin Wright",
+          "role": "cast",
+          "character": "Jenny Curran",
+          "order": 1
+        },
+        {
+          "name": "Gary Sinise",
+          "role": "cast",
+          "character": "Lieutenant Dan Taylor",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 98,
+      "imdbId": "tt0172495",
+      "originalTitle": "Gladiator",
+      "originalLanguage": "en",
+      "releaseDate": "2000-05-01",
+      "runtimeMinutes": 155,
+      "voteAverage": 8.2,
+      "voteCount": 19000,
+      "popularity": 80.0,
+      "genreIds": [
+        28,
+        18,
+        12
+      ],
+      "keywords": [
+        "ancient rome",
+        "gladiator",
+        "revenge",
+        "emperor",
+        "arena"
+      ],
+      "translations": {
+        "en": {
+          "title": "Gladiator",
+          "overview": "Roman general Maximus is betrayed by the new emperor Commodus, who murders his family. Sold into slavery, he rises as a gladiator to take his revenge in the Colosseum."
+        },
+        "ru": {
+          "title": "Гладиатор",
+          "overview": "Римского полководца Максимуса предаёт новый император Коммод, убивший его семью. Проданный в рабство, Максимус становится гладиатором, чтобы отомстить на арене Колизея."
+        },
+        "sv": {
+          "title": "Gladiator",
+          "overview": "Den romerske generalen Maximus förråds av den nye kejsaren Commodus, som mördar hans familj. Såld som slav blir han gladiator för att ta sin hämnd på Colosseum."
+        }
+      },
+      "credits": [
+        {
+          "name": "Ridley Scott",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "David Franzoni",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Russell Crowe",
+          "role": "cast",
+          "character": "Maximus",
+          "order": 0
+        },
+        {
+          "name": "Joaquin Phoenix",
+          "role": "cast",
+          "character": "Commodus",
+          "order": 1
+        },
+        {
+          "name": "Connie Nielsen",
+          "role": "cast",
+          "character": "Lucilla",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 105,
+      "imdbId": "tt0088763",
+      "originalTitle": "Back to the Future",
+      "originalLanguage": "en",
+      "releaseDate": "1985-07-03",
+      "runtimeMinutes": 116,
+      "voteAverage": 8.3,
+      "voteCount": 20000,
+      "popularity": 60.0,
+      "genreIds": [
+        12,
+        35,
+        878
+      ],
+      "keywords": [
+        "time travel",
+        "time machine",
+        "high school",
+        "1950s",
+        "inventor"
+      ],
+      "translations": {
+        "en": {
+          "title": "Back to the Future",
+          "overview": "Teenager Marty McFly is sent thirty years into the past in a time machine built by his friend Doc Brown, and must make sure his parents still fall in love."
+        },
+        "ru": {
+          "title": "Назад в будущее",
+          "overview": "Подросток Марти Макфлай попадает на тридцать лет в прошлое на машине времени своего друга Дока Брауна и должен сделать так, чтобы его родители всё-таки влюбились друг в друга."
+        },
+        "sv": {
+          "title": "Tillbaka till framtiden",
+          "overview": "Tonåringen Marty McFly skickas trettio år bakåt i tiden i en tidsmaskin som hans vän Doc Brown har byggt, och måste se till att hans föräldrar ändå blir kära i varandra."
+        }
+      },
+      "credits": [
+        {
+          "name": "Robert Zemeckis",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Robert Zemeckis",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Bob Gale",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Michael J. Fox",
+          "role": "cast",
+          "character": "Marty McFly",
+          "order": 0
+        },
+        {
+          "name": "Christopher Lloyd",
+          "role": "cast",
+          "character": "Dr. Emmett Brown",
+          "order": 1
+        },
+        {
+          "name": "Lea Thompson",
+          "role": "cast",
+          "character": "Lorraine Baines",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 122,
+      "imdbId": "tt0167260",
+      "originalTitle": "The Lord of the Rings: The Return of the King",
+      "originalLanguage": "en",
+      "releaseDate": "2003-12-01",
+      "runtimeMinutes": 201,
+      "voteAverage": 8.5,
+      "voteCount": 24000,
+      "popularity": 100.0,
+      "genreIds": [
+        12,
+        14,
+        28
+      ],
+      "keywords": [
+        "based on novel",
+        "epic",
+        "orcs",
+        "ring",
+        "final battle"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Lord of the Rings: The Return of the King",
+          "overview": "Frodo and Sam near Mount Doom to destroy the One Ring, while Aragorn, Gandalf and their allies gather the armies of Men for the final battle against Sauron."
+        },
+        "ru": {
+          "title": "Властелин колец: Возвращение короля",
+          "overview": "Фродо и Сэм приближаются к Роковой горе, чтобы уничтожить Кольцо Всевластья, а Арагорн, Гэндальф и их союзники собирают армии людей для последней битвы с Сауроном."
+        },
+        "sv": {
+          "title": "Sagan om konungens återkomst",
+          "overview": "Frodo och Sam närmar sig Domedagsberget för att förstöra Härskarringen, medan Aragorn, Gandalf och deras allierade samlar människornas arméer till det sista slaget mot Sauron."
+        }
+      },
+      "credits": [
+        {
+          "name": "Peter Jackson",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Fran Walsh",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Philippa Boyens",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Peter Jackson",
+          "role": "writer",
+          "order": 2
+        },
+        {
+          "name": "Elijah Wood",
+          "role": "cast",
+          "character": "Frodo Baggins",
+          "order": 0
+        },
+        {
+          "name": "Viggo Mortensen",
+          "role": "cast",
+          "character": "Aragorn",
+          "order": 1
+        },
+        {
+          "name": "Ian McKellen",
+          "role": "cast",
+          "character": "Gandalf",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 129,
+      "imdbId": "tt0245429",
+      "originalTitle": "千と千尋の神隠し",
+      "originalLanguage": "ja",
+      "releaseDate": "2001-07-20",
+      "runtimeMinutes": 125,
+      "voteAverage": 8.5,
+      "voteCount": 17000,
+      "popularity": 80.0,
+      "genreIds": [
+        16,
+        10751,
+        14
+      ],
+      "keywords": [
+        "spirit",
+        "bathhouse",
+        "witch",
+        "parents",
+        "coming of age"
+      ],
+      "translations": {
+        "en": {
+          "title": "Spirited Away",
+          "overview": "Ten-year-old Chihiro wanders into a world of spirits, where her parents are turned into pigs. To save them she takes a job in a witch's bathhouse."
+        },
+        "ru": {
+          "title": "Унесённые призраками",
+          "overview": "Десятилетняя Тихиро попадает в мир духов, где её родители превращаются в свиней. Чтобы спасти их, она устраивается работать в купальню колдуньи."
+        },
+        "sv": {
+          "title": "Spirited Away",
+          "overview": "Tioåriga Chihiro hamnar i en värld av andar, där hennes föräldrar förvandlas till grisar. För att rädda dem tar hon jobb på en häxas badhus."
+        }
+      },
+      "credits": [
+        {
+          "name": "Hayao Miyazaki",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Hayao Miyazaki",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Rumi Hiiragi",
+          "role": "cast",
+          "character": "Chihiro Ogino (voice)",
+          "order": 0
+        },
+        {
+          "name": "Miyu Irino",
+          "role": "cast",
+          "character": "Haku (voice)",
+          "order": 1
+        },
+        {
+          "name": "Mari Natsuki",
+          "role": "cast",
+          "character": "Yubaba (voice)",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 155,
+      "imdbId": "tt0468569",
+      "originalTitle": "The Dark Knight",
+      "originalLanguage": "en",
+      "releaseDate": "2008-07-16",
+      "runtimeMinutes": 152,
+      "voteAverage": 8.5,
+      "voteCount": 33000,
+      "popularity": 130.0,
+      "genreIds": [
+        18,
+        28,
+        80,
+        53
+      ],
+      "keywords": [
+        "superhero",
+        "joker",
+        "gotham city",
+        "vigilante",
+        "chaos"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Dark Knight",
+          "overview": "Batman, Lieutenant Gordon and district attorney Harvey Dent fight organized crime in Gotham, until the Joker starts a campaign of chaos that tests how far a hero should go."
+        },
+        "ru": {
+          "title": "Тёмный рыцарь",
+          "overview": "Бэтмен, лейтенант Гордон и прокурор Харви Дент борются с организованной преступностью Готэма, пока Джокер не начинает сеять хаос, проверяя, как далеко готов зайти герой."
+        },
+        "sv": {
+          "title": "The Dark Knight",
+          "overview": "Batman, kommissarie Gordon och åklagaren Harvey Dent bekämpar den organiserade brottsligheten i Gotham, tills Jokern sätter igång en kampanj av kaos som prövar hur långt en hjälte bör gå."
+        }
+      },
+      "credits": [
+        {
+          "name": "Christopher Nolan",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Jonathan Nolan",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Christopher Nolan",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Christian Bale",
+          "role": "cast",
+          "character": "Bruce Wayne / Batman",
+          "order": 0
+        },
+        {
+          "name": "Heath Ledger",
+          "role": "cast",
+          "character": "Joker",
+          "order": 1
+        },
+        {
+          "name": "Aaron Eckhart",
+          "role": "cast",
+          "character": "Harvey Dent",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 194,
+      "imdbId": "tt0211915",
+      "originalTitle": "Le Fabuleux Destin d'Amélie Poulain",
+      "originalLanguage": "fr",
+      "releaseDate": "2001-04-25",
+      "runtimeMinutes": 122,
+      "voteAverage": 7.9,
+      "voteCount": 11000,
+      "popularity": 35.0,
+      "genreIds": [
+        35,
+        10749
+      ],
+      "keywords": [
+        "paris",
+        "montmartre",
+        "waitress",
+        "shyness",
+        "kindness"
+      ],
+      "translations": {
+        "en": {
+          "title": "Amélie",
+          "overview": "Shy Paris waitress Amélie decides to secretly improve the lives of the people around her, while avoiding her own chance at love."
+        },
+        "ru": {
+          "title": "Амели",
+          "overview": "Застенчивая официантка из Парижа Амели решает тайно делать жизнь окружающих лучше, но избегает собственного шанса на любовь."
+        },
+        "sv": {
+          "title": "Amelie från Montmartre",
+          "overview": "Den blyga servitrisen Amélie i Paris bestämmer sig för att i hemlighet göra livet bättre för människorna omkring henne, men undviker sin egen chans till kärlek."
+        }
+      },
+      "credits": [
+        {
+          "name": "Jean-Pierre Jeunet",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Guillaume Laurant",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Jean-Pierre Jeunet",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Audrey Tautou",
+          "role": "cast",
+          "character": "Amélie Poulain",
+          "order": 0
+        },
+        {
+          "name": "Mathieu Kassovitz",
+          "role": "cast",
+          "character": "Nino Quincampoix",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "tmdbId": 238,
+      "imdbId": "tt0068646",
+      "originalTitle": "The Godfather",
+      "originalLanguage": "en",
+      "releaseDate": "1972-03-14",
+      "runtimeMinutes": 175,
+      "voteAverage": 8.7,
+      "voteCount": 21000,
+      "popularity": 110.0,
+      "genreIds": [
+        18,
+        80
+      ],
+      "keywords": [
+        "mafia",
+        "family",
+        "new york city",
+        "crime family",
+        "power"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Godfather",
+          "overview": "The aging head of the Corleone crime family hands control of his empire to his reluctant youngest son Michael, who is pulled step by step into a world of violence and loyalty."
+        },
+        "ru": {
+          "title": "Крёстный отец",
+          "overview": "Стареющий глава мафиозного клана Корлеоне передаёт власть младшему сыну Майклу, который поначалу не хочет иметь ничего общего с семейным делом, но шаг за шагом втягивается в мир насилия и верности."
+        },
+        "sv": {
+          "title": "Gudfadern",
+          "overview": "Den åldrande överhuvudet för maffiafamiljen Corleone lämnar över makten till sin motvillige yngste son Michael, som steg för steg dras in i en värld av våld och lojalitet."
+        }
+      },
+      "credits": [
+        {
+          "name": "Francis Ford Coppola",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Mario Puzo",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Francis Ford Coppola",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Marlon Brando",
+          "role": "cast",
+          "character": "Don Vito Corleone",
+          "order": 0
+        },
+        {
+          "name": "Al Pacino",
+          "role": "cast",
+          "character": "Michael Corleone",
+          "order": 1
+        },
+        {
+          "name": "James Caan",
+          "role": "cast",
+          "character": "Sonny Corleone",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 240,
+      "imdbId": "tt0071562",
+      "originalTitle": "The Godfather Part II",
+      "originalLanguage": "en",
+      "releaseDate": "1974-12-20",
+      "runtimeMinutes": 202,
+      "voteAverage": 8.6,
+      "voteCount": 12500,
+      "popularity": 70.0,
+      "genreIds": [
+        18,
+        80
+      ],
+      "keywords": [
+        "mafia",
+        "sequel",
+        "immigrant",
+        "family",
+        "1950s"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Godfather Part II",
+          "overview": "Michael Corleone tightens his grip on the family business while his marriage and loyalties fall apart. In parallel, the story follows young Vito Corleone's rise from a Sicilian orphan to a New York boss."
+        },
+        "ru": {
+          "title": "Крёстный отец 2",
+          "overview": "Майкл Корлеоне укрепляет власть над семейным бизнесом, теряя при этом семью и доверие близких. Параллельно рассказывается, как молодой Вито Корлеоне из сицилийского сироты становится боссом Нью-Йорка."
+        },
+        "sv": {
+          "title": "Gudfadern del II",
+          "overview": "Michael Corleone stärker greppet om familjeföretaget medan hans äktenskap och lojaliteter faller sönder. Parallellt följer vi unge Vito Corleones väg från föräldralös siciliansk pojke till boss i New York."
+        }
+      },
+      "credits": [
+        {
+          "name": "Francis Ford Coppola",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Francis Ford Coppola",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Mario Puzo",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Al Pacino",
+          "role": "cast",
+          "character": "Michael Corleone",
+          "order": 0
+        },
+        {
+          "name": "Robert De Niro",
+          "role": "cast",
+          "character": "Vito Corleone",
+          "order": 1
+        },
+        {
+          "name": "Robert Duvall",
+          "role": "cast",
+          "character": "Tom Hagen",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 274,
+      "imdbId": "tt0102926",
+      "originalTitle": "The Silence of the Lambs",
+      "originalLanguage": "en",
+      "releaseDate": "1991-02-14",
+      "runtimeMinutes": 119,
+      "voteAverage": 8.3,
+      "voteCount": 16000,
+      "popularity": 60.0,
+      "genreIds": [
+        80,
+        18,
+        53
+      ],
+      "keywords": [
+        "serial killer",
+        "fbi",
+        "psychiatrist",
+        "cannibal",
+        "investigation"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Silence of the Lambs",
+          "overview": "FBI trainee Clarice Starling asks the imprisoned psychiatrist and cannibal Hannibal Lecter for help in catching another serial killer."
+        },
+        "ru": {
+          "title": "Молчание ягнят",
+          "overview": "Стажёр ФБР Кларисса Старлинг просит заключённого психиатра-каннибала Ганнибала Лектера помочь поймать другого серийного убийцу."
+        },
+        "sv": {
+          "title": "När lammen tystnar",
+          "overview": "FBI-aspiranten Clarice Starling ber den inspärrade psykiatern och kannibalen Hannibal Lecter om hjälp att fånga en annan seriemördare."
+        }
+      },
+      "credits": [
+        {
+          "name": "Jonathan Demme",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Ted Tally",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Jodie Foster",
+          "role": "cast",
+          "character": "Clarice Starling",
+          "order": 0
+        },
+        {
+          "name": "Anthony Hopkins",
+          "role": "cast",
+          "character": "Dr. Hannibal Lecter",
+          "order": 1
+        },
+        {
+          "name": "Scott Glenn",
+          "role": "cast",
+          "character": "Jack Crawford",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 278,
+      "imdbId": "tt0111161",
+      "originalTitle": "The Shawshank Redemption",
+      "originalLanguage": "en",
+      "releaseDate": "1994-09-23",
+      "runtimeMinutes": 142,
+      "voteAverage": 8.7,
+      "voteCount": 28000,
+      "popularity": 120.0,
+      "genreIds": [
+        18,
+        80
+      ],
+      "keywords": [
+        "prison",
+        "friendship",
+        "hope",
+        "escape",
+        "wrongful conviction"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Shawshank Redemption",
+          "overview": "Banker Andy Dufresne is sentenced to life in Shawshank prison for a murder he says he did not commit. Over two decades he builds a friendship with fellow inmate Red and quietly keeps his hope alive."
+        },
+        "ru": {
+          "title": "Побег из Шоушенка",
+          "overview": "Банкира Энди Дюфрейна приговаривают к пожизненному заключению в тюрьме Шоушенк за убийство, которого он, по его словам, не совершал. За двадцать лет он находит друга в заключённом Реде и не теряет надежды."
+        },
+        "sv": {
+          "title": "Nyckeln till frihet",
+          "overview": "Bankmannen Andy Dufresne döms till livstid på Shawshank-fängelset för ett mord han säger att han inte har begått. Under tjugo år blir han vän med medfången Red och håller tyst hoppet vid liv."
+        }
+      },
+      "credits": [
+        {
+          "name": "Frank Darabont",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Frank Darabont",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Stephen King",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Tim Robbins",
+          "role": "cast",
+          "character": "Andy Dufresne",
+          "order": 0
+        },
+        {
+          "name": "Morgan Freeman",
+          "role": "cast",
+          "character": "Ellis Boyd 'Red' Redding",
+          "order": 1
+        },
+        {
+          "name": "Bob Gunton",
+          "role": "cast",
+          "character": "Warden Norton",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 329,
+      "imdbId": "tt0107290",
+      "originalTitle": "Jurassic Park",
+      "originalLanguage": "en",
+      "releaseDate": "1993-06-11",
+      "runtimeMinutes": 127,
+      "voteAverage": 7.9,
+      "voteCount": 16000,
+      "popularity": 70.0,
+      "genreIds": [
+        12,
+        878
+      ],
+      "keywords": [
+        "dinosaur",
+        "theme park",
+        "genetic engineering",
+        "island",
+        "chaos theory"
+      ],
+      "translations": {
+        "en": {
+          "title": "Jurassic Park",
+          "overview": "A billionaire invites scientists to preview his island theme park of cloned dinosaurs, but a power failure lets the animals loose."
+        },
+        "ru": {
+          "title": "Парк юрского периода",
+          "overview": "Миллиардер приглашает учёных оценить свой парк на острове с клонированными динозаврами, но из-за сбоя электричества животные вырываются на свободу."
+        },
+        "sv": {
+          "title": "Jurassic Park",
+          "overview": "En miljardär bjuder in forskare att förhandsgranska hans nöjespark med klonade dinosaurier på en ö, men ett strömavbrott släpper djuren lösa."
+        }
+      },
+      "credits": [
+        {
+          "name": "Steven Spielberg",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Michael Crichton",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "David Koepp",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Sam Neill",
+          "role": "cast",
+          "character": "Dr. Alan Grant",
+          "order": 0
+        },
+        {
+          "name": "Laura Dern",
+          "role": "cast",
+          "character": "Dr. Ellie Sattler",
+          "order": 1
+        },
+        {
+          "name": "Jeff Goldblum",
+          "role": "cast",
+          "character": "Dr. Ian Malcolm",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 346,
+      "imdbId": "tt0047478",
+      "originalTitle": "七人の侍",
+      "originalLanguage": "ja",
+      "releaseDate": "1954-04-26",
+      "runtimeMinutes": 207,
+      "voteAverage": 8.5,
+      "voteCount": 3500,
+      "popularity": 25.0,
+      "genreIds": [
+        28,
+        18
+      ],
+      "keywords": [
+        "samurai",
+        "village",
+        "bandits",
+        "feudal japan",
+        "honor"
+      ],
+      "translations": {
+        "en": {
+          "title": "Seven Samurai",
+          "overview": "A poor farming village hires seven masterless samurai to defend it against the bandits who come every year to steal the harvest."
+        },
+        "ru": {
+          "title": "Семь самураев",
+          "overview": "Бедная деревня нанимает семерых самураев без господина, чтобы защититься от разбойников, которые каждый год отнимают урожай."
+        },
+        "sv": {
+          "title": "De sju samurajerna",
+          "overview": "En fattig bondby anlitar sju herrelösa samurajer för att försvara den mot banditerna som varje år kommer för att stjäla skörden."
+        }
+      },
+      "credits": [
+        {
+          "name": "Akira Kurosawa",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Akira Kurosawa",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Shinobu Hashimoto",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Hideo Oguni",
+          "role": "writer",
+          "order": 2
+        },
+        {
+          "name": "Toshiro Mifune",
+          "role": "cast",
+          "character": "Kikuchiyo",
+          "order": 0
+        },
+        {
+          "name": "Takashi Shimura",
+          "role": "cast",
+          "character": "Kambei Shimada",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "tmdbId": 348,
+      "imdbId": "tt0078748",
+      "originalTitle": "Alien",
+      "originalLanguage": "en",
+      "releaseDate": "1979-05-25",
+      "runtimeMinutes": 117,
+      "voteAverage": 8.2,
+      "voteCount": 14000,
+      "popularity": 50.0,
+      "genreIds": [
+        27,
+        878
+      ],
+      "keywords": [
+        "spaceship",
+        "alien life-form",
+        "survival",
+        "android",
+        "distress signal"
+      ],
+      "translations": {
+        "en": {
+          "title": "Alien",
+          "overview": "The crew of the commercial space tug Nostromo answers a distress call and brings aboard a deadly alien creature that hunts them one by one."
+        },
+        "ru": {
+          "title": "Чужой",
+          "overview": "Экипаж космического буксира «Ностромо» откликается на сигнал бедствия и приносит на борт смертоносное инопланетное существо, которое начинает охоту на людей."
+        },
+        "sv": {
+          "title": "Alien",
+          "overview": "Besättningen på rymdbogseraren Nostromo svarar på ett nödanrop och tar ombord en dödlig utomjordisk varelse som jagar dem en efter en."
+        }
+      },
+      "credits": [
+        {
+          "name": "Ridley Scott",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Dan O'Bannon",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Sigourney Weaver",
+          "role": "cast",
+          "character": "Ellen Ripley",
+          "order": 0
+        },
+        {
+          "name": "Tom Skerritt",
+          "role": "cast",
+          "character": "Dallas",
+          "order": 1
+        },
+        {
+          "name": "John Hurt",
+          "role": "cast",
+          "character": "Kane",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 389,
+      "imdbId": "tt0050083",
+      "originalTitle": "12 Angry Men",
+      "originalLanguage": "en",
+      "releaseDate": "1957-04-10",
+      "runtimeMinutes": 97,
+      "voteAverage": 8.5,
+      "voteCount": 9000,
+      "popularity": 35.0,
+      "genreIds": [
+        18
+      ],
+      "keywords": [
+        "jury",
+        "courtroom",
+        "murder trial",
+        "single location",
+        "justice"
+      ],
+      "translations": {
+        "en": {
+          "title": "12 Angry Men",
+          "overview": "Twelve jurors must decide the fate of a young man accused of murder. One juror doubts the evidence and slowly makes the others look again at what they think they know."
+        },
+        "ru": {
+          "title": "12 разгневанных мужчин",
+          "overview": "Двенадцать присяжных решают судьбу юноши, обвиняемого в убийстве. Один из них сомневается в доказательствах и постепенно заставляет остальных пересмотреть свою уверенность."
+        },
+        "sv": {
+          "title": "12 edsvurna män",
+          "overview": "Tolv jurymedlemmar ska avgöra ödet för en ung man som är åtalad för mord. En av dem tvivlar på bevisen och får sakta de andra att ompröva det de tror att de vet."
+        }
+      },
+      "credits": [
+        {
+          "name": "Sidney Lumet",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Reginald Rose",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Henry Fonda",
+          "role": "cast",
+          "character": "Juror 8",
+          "order": 0
+        },
+        {
+          "name": "Lee J. Cobb",
+          "role": "cast",
+          "character": "Juror 3",
+          "order": 1
+        },
+        {
+          "name": "Martin Balsam",
+          "role": "cast",
+          "character": "Juror 1",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 424,
+      "imdbId": "tt0108052",
+      "originalTitle": "Schindler's List",
+      "originalLanguage": "en",
+      "releaseDate": "1993-12-15",
+      "runtimeMinutes": 195,
+      "voteAverage": 8.6,
+      "voteCount": 16000,
+      "popularity": 60.0,
+      "genreIds": [
+        18,
+        36,
+        10752
+      ],
+      "keywords": [
+        "holocaust",
+        "world war ii",
+        "nazi",
+        "based on true story",
+        "poland"
+      ],
+      "translations": {
+        "en": {
+          "title": "Schindler's List",
+          "overview": "German businessman Oskar Schindler comes to occupied Poland to profit from the war, then spends his fortune to save more than a thousand Jewish workers from the Holocaust."
+        },
+        "ru": {
+          "title": "Список Шиндлера",
+          "overview": "Немецкий предприниматель Оскар Шиндлер приезжает в оккупированную Польшу, чтобы заработать на войне, но в итоге тратит всё своё состояние, спасая более тысячи евреев от Холокоста."
+        },
+        "sv": {
+          "title": "Schindler's List",
+          "overview": "Den tyske affärsmannen Oskar Schindler kommer till det ockuperade Polen för att tjäna pengar på kriget, men använder till slut hela sin förmögenhet för att rädda över tusen judiska arbetare undan Förintelsen."
+        }
+      },
+      "credits": [
+        {
+          "name": "Steven Spielberg",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Steven Zaillian",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Liam Neeson",
+          "role": "cast",
+          "character": "Oskar Schindler",
+          "order": 0
+        },
+        {
+          "name": "Ben Kingsley",
+          "role": "cast",
+          "character": "Itzhak Stern",
+          "order": 1
+        },
+        {
+          "name": "Ralph Fiennes",
+          "role": "cast",
+          "character": "Amon Göth",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 490,
+      "imdbId": "tt0050976",
+      "originalTitle": "Det sjunde inseglet",
+      "originalLanguage": "sv",
+      "releaseDate": "1957-02-16",
+      "runtimeMinutes": 96,
+      "voteAverage": 8.1,
+      "voteCount": 2200,
+      "popularity": 20.0,
+      "genreIds": [
+        14,
+        18
+      ],
+      "keywords": [
+        "death",
+        "plague",
+        "chess",
+        "crusades",
+        "faith"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Seventh Seal",
+          "overview": "A knight returning from the Crusades to a Sweden ravaged by plague meets Death and challenges him to a game of chess to buy time."
+        },
+        "ru": {
+          "title": "Седьмая печать",
+          "overview": "Рыцарь, вернувшийся из крестового похода в охваченную чумой Швецию, встречает Смерть и предлагает ей сыграть в шахматы, чтобы выиграть время."
+        },
+        "sv": {
+          "title": "Det sjunde inseglet",
+          "overview": "En riddare som återvänder från korstågen till ett pesthärjat Sverige möter Döden och utmanar honom på ett parti schack för att vinna tid."
+        }
+      },
+      "credits": [
+        {
+          "name": "Ingmar Bergman",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Ingmar Bergman",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Max von Sydow",
+          "role": "cast",
+          "character": "Antonius Block",
+          "order": 0
+        },
+        {
+          "name": "Gunnar Björnstrand",
+          "role": "cast",
+          "character": "Jöns",
+          "order": 1
+        },
+        {
+          "name": "Bengt Ekerot",
+          "role": "cast",
+          "character": "Death",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 497,
+      "imdbId": "tt0120689",
+      "originalTitle": "The Green Mile",
+      "originalLanguage": "en",
+      "releaseDate": "1999-12-10",
+      "runtimeMinutes": 189,
+      "voteAverage": 8.5,
+      "voteCount": 17000,
+      "popularity": 75.0,
+      "genreIds": [
+        14,
+        18,
+        80
+      ],
+      "keywords": [
+        "death row",
+        "prison guard",
+        "miracle",
+        "based on novel",
+        "1930s"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Green Mile",
+          "overview": "A death row guard in the 1930s comes to believe that John Coffey, a gentle giant convicted of murdering two girls, has a miraculous gift."
+        },
+        "ru": {
+          "title": "Зелёная миля",
+          "overview": "Надзиратель блока смертников в 1930-х годах начинает верить, что Джон Коффи, добрый великан, осуждённый за убийство двух девочек, обладает чудесным даром."
+        },
+        "sv": {
+          "title": "Den gröna milen",
+          "overview": "En vakt på dödscellsavdelningen på 1930-talet börjar tro att John Coffey, en vänlig jätte som dömts för mord på två flickor, har en mirakulös gåva."
+        }
+      },
+      "credits": [
+        {
+          "name": "Frank Darabont",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Frank Darabont",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Stephen King",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Tom Hanks",
+          "role": "cast",
+          "character": "Paul Edgecomb",
+          "order": 0
+        },
+        {
+          "name": "Michael Clarke Duncan",
+          "role": "cast",
+          "character": "John Coffey",
+          "order": 1
+        },
+        {
+          "name": "David Morse",
+          "role": "cast",
+          "character": "Brutus Howell",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 550,
+      "imdbId": "tt0137523",
+      "originalTitle": "Fight Club",
+      "originalLanguage": "en",
+      "releaseDate": "1999-10-15",
+      "runtimeMinutes": 139,
+      "voteAverage": 8.4,
+      "voteCount": 30000,
+      "popularity": 85.0,
+      "genreIds": [
+        18
+      ],
+      "keywords": [
+        "insomnia",
+        "split personality",
+        "consumerism",
+        "underground fight",
+        "twist ending"
+      ],
+      "translations": {
+        "en": {
+          "title": "Fight Club",
+          "overview": "An insomniac office worker meets the reckless soap salesman Tyler Durden. Together they start an underground fight club that grows into something far more dangerous."
+        },
+        "ru": {
+          "title": "Бойцовский клуб",
+          "overview": "Страдающий бессонницей офисный работник знакомится с безрассудным продавцом мыла Тайлером Дёрденом. Вместе они создают подпольный бойцовский клуб, который перерастает в нечто куда более опасное."
+        },
+        "sv": {
+          "title": "Fight Club",
+          "overview": "En sömnlös kontorsarbetare träffar den hänsynslöse tvålförsäljaren Tyler Durden. Tillsammans startar de en underjordisk fightklubb som växer till något betydligt farligare."
+        }
+      },
+      "credits": [
+        {
+          "name": "David Fincher",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Jim Uhls",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Edward Norton",
+          "role": "cast",
+          "character": "The Narrator",
+          "order": 0
+        },
+        {
+          "name": "Brad Pitt",
+          "role": "cast",
+          "character": "Tyler Durden",
+          "order": 1
+        },
+        {
+          "name": "Helena Bonham Carter",
+          "role": "cast",
+          "character": "Marla Singer",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 593,
+      "imdbId": "tt0069293",
+      "originalTitle": "Солярис",
+      "originalLanguage": "ru",
+      "releaseDate": "1972-03-20",
+      "runtimeMinutes": 167,
+      "voteAverage": 7.8,
+      "voteCount": 1800,
+      "popularity": 18.0,
+      "genreIds": [
+        18,
+        878,
+        9648
+      ],
+      "keywords": [
+        "space station",
+        "ocean",
+        "memory",
+        "grief",
+        "based on novel"
+      ],
+      "translations": {
+        "en": {
+          "title": "Solaris",
+          "overview": "Psychologist Kris Kelvin is sent to a space station orbiting the ocean planet Solaris, where the crew is haunted by visitors made from their own memories."
+        },
+        "ru": {
+          "title": "Солярис",
+          "overview": "Психолог Крис Кельвин прилетает на станцию над планетой-океаном Солярис, где экипаж преследуют «гости», созданные из их собственных воспоминаний."
+        },
+        "sv": {
+          "title": "Solaris",
+          "overview": "Psykologen Kris Kelvin skickas till en rymdstation som kretsar kring havsplaneten Solaris, där besättningen hemsöks av besökare skapade ur deras egna minnen."
+        }
+      },
+      "credits": [
+        {
+          "name": "Andrei Tarkovsky",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Fridrikh Gorenshtein",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Andrei Tarkovsky",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Donatas Banionis",
+          "role": "cast",
+          "character": "Kris Kelvin",
+          "order": 0
+        },
+        {
+          "name": "Natalya Bondarchuk",
+          "role": "cast",
+          "character": "Hari",
+          "order": 1
+        },
+        {
+          "name": "Jüri Järvet",
+          "role": "cast",
+          "character": "Snaut",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 597,
+      "imdbId": "tt0120338",
+      "originalTitle": "Titanic",
+      "originalLanguage": "en",
+      "releaseDate": "1997-11-18",
+      "runtimeMinutes": 194,
+      "voteAverage": 7.9,
+      "voteCount": 25000,
+      "popularity": 90.0,
+      "genreIds": [
+        18,
+        10749
+      ],
+      "keywords": [
+        "shipwreck",
+        "iceberg",
+        "forbidden love",
+        "class differences",
+        "1910s"
+      ],
+      "translations": {
+        "en": {
+          "title": "Titanic",
+          "overview": "Aboard the doomed ocean liner Titanic, poor artist Jack and upper-class Rose fall in love despite her engagement, as the ship heads toward disaster."
+        },
+        "ru": {
+          "title": "Титаник",
+          "overview": "На борту обречённого лайнера «Титаник» бедный художник Джек и девушка из высшего общества Роуз влюбляются друг в друга, несмотря на её помолвку, а корабль идёт навстречу катастрофе."
+        },
+        "sv": {
+          "title": "Titanic",
+          "overview": "Ombord på den dödsdömda oceanångaren Titanic förälskar sig den fattige konstnären Jack och överklassflickan Rose trots hennes förlovning, medan skeppet styr mot katastrofen."
+        }
+      },
+      "credits": [
+        {
+          "name": "James Cameron",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "James Cameron",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Leonardo DiCaprio",
+          "role": "cast",
+          "character": "Jack Dawson",
+          "order": 0
+        },
+        {
+          "name": "Kate Winslet",
+          "role": "cast",
+          "character": "Rose DeWitt Bukater",
+          "order": 1
+        },
+        {
+          "name": "Billy Zane",
+          "role": "cast",
+          "character": "Cal Hockley",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 603,
+      "imdbId": "tt0133093",
+      "originalTitle": "The Matrix",
+      "originalLanguage": "en",
+      "releaseDate": "1999-03-31",
+      "runtimeMinutes": 136,
+      "voteAverage": 8.2,
+      "voteCount": 25000,
+      "popularity": 90.0,
+      "genreIds": [
+        28,
+        878
+      ],
+      "keywords": [
+        "simulated reality",
+        "hacker",
+        "artificial intelligence",
+        "chosen one",
+        "martial arts"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Matrix",
+          "overview": "Hacker Neo learns that the world he knows is a simulation built by machines, and joins a small group of rebels fighting to free humanity."
+        },
+        "ru": {
+          "title": "Матрица",
+          "overview": "Хакер Нео узнаёт, что привычный мир — симуляция, созданная машинами, и присоединяется к небольшой группе повстанцев, которые борются за освобождение человечества."
+        },
+        "sv": {
+          "title": "Matrix",
+          "overview": "Hackern Neo får veta att världen han känner är en simulering skapad av maskiner, och ansluter sig till en liten grupp rebeller som kämpar för att befria mänskligheten."
+        }
+      },
+      "credits": [
+        {
+          "name": "Lana Wachowski",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Lilly Wachowski",
+          "role": "director",
+          "order": 1
+        },
+        {
+          "name": "Lana Wachowski",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Lilly Wachowski",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Keanu Reeves",
+          "role": "cast",
+          "character": "Neo",
+          "order": 0
+        },
+        {
+          "name": "Laurence Fishburne",
+          "role": "cast",
+          "character": "Morpheus",
+          "order": 1
+        },
+        {
+          "name": "Carrie-Anne Moss",
+          "role": "cast",
+          "character": "Trinity",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 637,
+      "imdbId": "tt0118799",
+      "originalTitle": "La vita è bella",
+      "originalLanguage": "it",
+      "releaseDate": "1997-12-20",
+      "runtimeMinutes": 116,
+      "voteAverage": 8.4,
+      "voteCount": 13000,
+      "popularity": 40.0,
+      "genreIds": [
+        35,
+        18
+      ],
+      "keywords": [
+        "concentration camp",
+        "father son relationship",
+        "holocaust",
+        "italy",
+        "imagination"
+      ],
+      "translations": {
+        "en": {
+          "title": "Life Is Beautiful",
+          "overview": "Jewish bookshop owner Guido is sent to a concentration camp with his young son, and uses humor and imagination to convince the boy that it is all an elaborate game."
+        },
+        "ru": {
+          "title": "Жизнь прекрасна",
+          "overview": "Еврея-книготорговца Гвидо вместе с маленьким сыном отправляют в концлагерь. С помощью юмора и фантазии он убеждает мальчика, что всё происходящее — большая игра."
+        },
+        "sv": {
+          "title": "Livet är underbart",
+          "overview": "Den judiske bokhandlaren Guido skickas till ett koncentrationsläger med sin lille son och använder humor och fantasi för att övertyga pojken om att allt är en stor lek."
+        }
+      },
+      "credits": [
+        {
+          "name": "Roberto Benigni",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Vincenzo Cerami",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Roberto Benigni",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Roberto Benigni",
+          "role": "cast",
+          "character": "Guido Orefice",
+          "order": 0
+        },
+        {
+          "name": "Nicoletta Braschi",
+          "role": "cast",
+          "character": "Dora",
+          "order": 1
+        },
+        {
+          "name": "Giorgio Cantarini",
+          "role": "cast",
+          "character": "Giosuè Orefice",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 680,
+      "imdbId": "tt0110912",
+      "originalTitle": "Pulp Fiction",
+      "originalLanguage": "en",
+      "releaseDate": "1994-09-10",
+      "runtimeMinutes": 154,
+      "voteAverage": 8.5,
+      "voteCount": 28000,
+      "popularity": 90.0,
+      "genreIds": [
+        53,
+        80
+      ],
+      "keywords": [
+        "hitman",
+        "nonlinear timeline",
+        "los angeles",
+        "gangster",
+        "dark comedy"
+      ],
+      "translations": {
+        "en": {
+          "title": "Pulp Fiction",
+          "overview": "Two hitmen, a boxer, a gangster's wife and a pair of diner robbers cross paths in Los Angeles in a set of linked stories told out of order."
+        },
+        "ru": {
+          "title": "Криминальное чтиво",
+          "overview": "Двое наёмных убийц, боксёр, жена гангстера и парочка грабителей закусочной пересекаются в Лос-Анджелесе в нескольких связанных историях, рассказанных не по порядку."
+        },
+        "sv": {
+          "title": "Pulp Fiction",
+          "overview": "Två torpeder, en boxare, en gangsters fru och ett par rånare på ett hamburgerhak korsar varandras vägar i Los Angeles i flera sammanlänkade berättelser som inte berättas i ordning."
+        }
+      },
+      "credits": [
+        {
+          "name": "Quentin Tarantino",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Quentin Tarantino",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "John Travolta",
+          "role": "cast",
+          "character": "Vincent Vega",
+          "order": 0
+        },
+        {
+          "name": "Samuel L. Jackson",
+          "role": "cast",
+          "character": "Jules Winnfield",
+          "order": 1
+        },
+        {
+          "name": "Uma Thurman",
+          "role": "cast",
+          "character": "Mia Wallace",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 857,
+      "imdbId": "tt0120815",
+      "originalTitle": "Saving Private Ryan",
+      "originalLanguage": "en",
+      "releaseDate": "1998-07-24",
+      "runtimeMinutes": 169,
+      "voteAverage": 8.2,
+      "voteCount": 16000,
+      "popularity": 65.0,
+      "genreIds": [
+        18,
+        36,
+        10752
+      ],
+      "keywords": [
+        "world war ii",
+        "normandy",
+        "d-day",
+        "rescue mission",
+        "soldier"
+      ],
+      "translations": {
+        "en": {
+          "title": "Saving Private Ryan",
+          "overview": "After the D-Day landings, Captain Miller leads a small squad behind enemy lines to find Private James Ryan, whose three brothers have been killed in action."
+        },
+        "ru": {
+          "title": "Спасти рядового Райана",
+          "overview": "После высадки в Нормандии капитан Миллер ведёт небольшой отряд в тыл врага, чтобы найти рядового Джеймса Райана, трое братьев которого погибли на войне."
+        },
+        "sv": {
+          "title": "Rädda menige Ryan",
+          "overview": "Efter landstigningen i Normandie leder kapten Miller en liten grupp bakom fiendens linjer för att hitta menige James Ryan, vars tre bröder har stupat."
+        }
+      },
+      "credits": [
+        {
+          "name": "Steven Spielberg",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Robert Rodat",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Tom Hanks",
+          "role": "cast",
+          "character": "Captain John H. Miller",
+          "order": 0
+        },
+        {
+          "name": "Matt Damon",
+          "role": "cast",
+          "character": "Private James Francis Ryan",
+          "order": 1
+        },
+        {
+          "name": "Tom Sizemore",
+          "role": "cast",
+          "character": "Sergeant Mike Horvath",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 862,
+      "imdbId": "tt0114709",
+      "originalTitle": "Toy Story",
+      "originalLanguage": "en",
+      "releaseDate": "1995-11-22",
+      "runtimeMinutes": 81,
+      "voteAverage": 8.0,
+      "voteCount": 18000,
+      "popularity": 85.0,
+      "genreIds": [
+        16,
+        12,
+        10751,
+        35
+      ],
+      "keywords": [
+        "toys",
+        "rivalry",
+        "friendship",
+        "space ranger",
+        "computer animation"
+      ],
+      "translations": {
+        "en": {
+          "title": "Toy Story",
+          "overview": "Woody, a pull-string cowboy, is Andy's favorite toy until the flashy space ranger Buzz Lightyear arrives. The rivals have to work together when they end up lost."
+        },
+        "ru": {
+          "title": "История игрушек",
+          "overview": "Ковбой Вуди — любимая игрушка Энди, пока не появляется эффектный космический рейнджер Базз Лайтер. Соперникам приходится объединиться, когда они теряются."
+        },
+        "sv": {
+          "title": "Toy Story",
+          "overview": "Cowboydockan Woody är Andys favoritleksak tills den flashiga rymdhjälten Buzz Lightyear dyker upp. Rivalerna måste samarbeta när de går vilse."
+        }
+      },
+      "credits": [
+        {
+          "name": "John Lasseter",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Tom Hanks",
+          "role": "cast",
+          "character": "Woody (voice)",
+          "order": 0
+        },
+        {
+          "name": "Tim Allen",
+          "role": "cast",
+          "character": "Buzz Lightyear (voice)",
+          "order": 1
+        },
+        {
+          "name": "Don Rickles",
+          "role": "cast",
+          "character": "Mr. Potato Head (voice)",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 1398,
+      "imdbId": "tt0079944",
+      "originalTitle": "Сталкер",
+      "originalLanguage": "ru",
+      "releaseDate": "1979-05-25",
+      "runtimeMinutes": 162,
+      "voteAverage": 8.2,
+      "voteCount": 2500,
+      "popularity": 22.0,
+      "genreIds": [
+        878,
+        18
+      ],
+      "keywords": [
+        "zone",
+        "wish",
+        "philosophy",
+        "journey",
+        "soviet science fiction"
+      ],
+      "translations": {
+        "en": {
+          "title": "Stalker",
+          "overview": "A guide known as the Stalker leads a writer and a professor through the Zone, a forbidden area said to hold a room that grants a person's deepest wish."
+        },
+        "ru": {
+          "title": "Сталкер",
+          "overview": "Проводник по прозвищу Сталкер ведёт Писателя и Профессора через Зону — запретную территорию, где, по слухам, есть комната, исполняющая самое сокровенное желание."
+        },
+        "sv": {
+          "title": "Stalker",
+          "overview": "En guide som kallas Stalkern leder en författare och en professor genom Zonen, ett förbjudet område där det sägs finnas ett rum som uppfyller människans innersta önskan."
+        }
+      },
+      "credits": [
+        {
+          "name": "Andrei Tarkovsky",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Arkady Strugatsky",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Boris Strugatsky",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Alexander Kaidanovsky",
+          "role": "cast",
+          "character": "Stalker",
+          "order": 0
+        },
+        {
+          "name": "Anatoly Solonitsyn",
+          "role": "cast",
+          "character": "Writer",
+          "order": 1
+        },
+        {
+          "name": "Nikolai Grinko",
+          "role": "cast",
+          "character": "Professor",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 8587,
+      "imdbId": "tt0110357",
+      "originalTitle": "The Lion King",
+      "originalLanguage": "en",
+      "releaseDate": "1994-06-24",
+      "runtimeMinutes": 89,
+      "voteAverage": 8.3,
+      "voteCount": 18000,
+      "popularity": 70.0,
+      "genreIds": [
+        10751,
+        16,
+        18
+      ],
+      "keywords": [
+        "lion",
+        "africa",
+        "king",
+        "father son relationship",
+        "musical"
+      ],
+      "translations": {
+        "en": {
+          "title": "The Lion King",
+          "overview": "Young lion prince Simba is tricked by his uncle Scar into believing he caused his father's death. He runs away, and must one day return to claim his place as king."
+        },
+        "ru": {
+          "title": "Король Лев",
+          "overview": "Дядя Шрам убеждает юного львёнка Симбу, что тот виноват в гибели отца. Симба убегает, но однажды должен вернуться и занять своё место короля."
+        },
+        "sv": {
+          "title": "Lejonkungen",
+          "overview": "Den unge lejonprinsen Simba luras av sin farbror Scar att tro att han orsakade sin fars död. Han flyr, men måste en dag återvända och ta sin plats som kung."
+        }
+      },
+      "credits": [
+        {
+          "name": "Roger Allers",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Rob Minkoff",
+          "role": "director",
+          "order": 1
+        },
+        {
+          "name": "Matthew Broderick",
+          "role": "cast",
+          "character": "Simba (voice)",
+          "order": 0
+        },
+        {
+          "name": "James Earl Jones",
+          "role": "cast",
+          "character": "Mufasa (voice)",
+          "order": 1
+        },
+        {
+          "name": "Jeremy Irons",
+          "role": "cast",
+          "character": "Scar (voice)",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 13310,
+      "imdbId": "tt1139797",
+      "originalTitle": "Låt den rätte komma in",
+      "originalLanguage": "sv",
+      "releaseDate": "2008-01-26",
+      "runtimeMinutes": 115,
+      "voteAverage": 7.6,
+      "voteCount": 3000,
+      "popularity": 25.0,
+      "genreIds": [
+        18,
+        27,
+        10749
+      ],
+      "keywords": [
+        "vampire",
+        "bullying",
+        "friendship",
+        "stockholm",
+        "1980s"
+      ],
+      "translations": {
+        "en": {
+          "title": "Let the Right One In",
+          "overview": "In a Stockholm suburb in the early 1980s, bullied twelve-year-old Oskar befriends Eli, the strange girl next door, who turns out to be a vampire."
+        },
+        "ru": {
+          "title": "Впусти меня",
+          "overview": "В пригороде Стокгольма в начале 1980-х двенадцатилетний Оскар, которого травят в школе, дружится со странной соседкой Эли, которая оказывается вампиром."
+        },
+        "sv": {
+          "title": "Låt den rätte komma in",
+          "overview": "I en Stockholmsförort i början av 1980-talet blir den mobbade tolvårige Oskar vän med Eli, den märkliga flickan i grannlägenheten, som visar sig vara en vampyr."
+        }
+      },
+      "credits": [
+        {
+          "name": "Tomas Alfredson",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "John Ajvide Lindqvist",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Kåre Hedebrant",
+          "role": "cast",
+          "character": "Oskar",
+          "order": 0
+        },
+        {
+          "name": "Lina Leandersson",
+          "role": "cast",
+          "character": "Eli",
+          "order": 1
+        },
+        {
+          "name": "Per Ragnar",
+          "role": "cast",
+          "character": "Håkan",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 27205,
+      "imdbId": "tt1375666",
+      "originalTitle": "Inception",
+      "originalLanguage": "en",
+      "releaseDate": "2010-07-15",
+      "runtimeMinutes": 148,
+      "voteAverage": 8.4,
+      "voteCount": 37000,
+      "popularity": 110.0,
+      "genreIds": [
+        28,
+        878,
+        12
+      ],
+      "keywords": [
+        "dream",
+        "heist",
+        "subconscious",
+        "mind bending",
+        "architecture"
+      ],
+      "translations": {
+        "en": {
+          "title": "Inception",
+          "overview": "Dom Cobb steals secrets from people's dreams. For a chance to go home, he must do the reverse: plant an idea deep in the mind of a business heir."
+        },
+        "ru": {
+          "title": "Начало",
+          "overview": "Дом Кобб крадёт секреты из снов людей. Чтобы вернуться домой, ему нужно сделать обратное: внедрить идею глубоко в подсознание наследника бизнес-империи."
+        },
+        "sv": {
+          "title": "Inception",
+          "overview": "Dom Cobb stjäl hemligheter ur människors drömmar. För att få komma hem måste han göra tvärtom: plantera en idé djupt i en affärsarvinges sinne."
+        }
+      },
+      "credits": [
+        {
+          "name": "Christopher Nolan",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Christopher Nolan",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Leonardo DiCaprio",
+          "role": "cast",
+          "character": "Dom Cobb",
+          "order": 0
+        },
+        {
+          "name": "Joseph Gordon-Levitt",
+          "role": "cast",
+          "character": "Arthur",
+          "order": 1
+        },
+        {
+          "name": "Elliot Page",
+          "role": "cast",
+          "character": "Ariadne",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 157336,
+      "imdbId": "tt0816692",
+      "originalTitle": "Interstellar",
+      "originalLanguage": "en",
+      "releaseDate": "2014-11-05",
+      "runtimeMinutes": 169,
+      "voteAverage": 8.5,
+      "voteCount": 35000,
+      "popularity": 140.0,
+      "genreIds": [
+        12,
+        18,
+        878
+      ],
+      "keywords": [
+        "space travel",
+        "black hole",
+        "wormhole",
+        "father daughter relationship",
+        "time dilation"
+      ],
+      "translations": {
+        "en": {
+          "title": "Interstellar",
+          "overview": "With crops failing on a dying Earth, former pilot Cooper leaves his children to travel through a wormhole and search for a new home for humanity."
+        },
+        "ru": {
+          "title": "Интерстеллар",
+          "overview": "Земля умирает от неурожаев, и бывший пилот Купер оставляет детей, чтобы пройти через червоточину и найти для человечества новый дом."
+        },
+        "sv": {
+          "title": "Interstellar",
+          "overview": "När skördarna slår fel på en döende jord lämnar den före detta piloten Cooper sina barn för att resa genom ett maskhål och söka ett nytt hem åt mänskligheten."
+        }
+      },
+      "credits": [
+        {
+          "name": "Christopher Nolan",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Jonathan Nolan",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Christopher Nolan",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Matthew McConaughey",
+          "role": "cast",
+          "character": "Cooper",
+          "order": 0
+        },
+        {
+          "name": "Anne Hathaway",
+          "role": "cast",
+          "character": "Brand",
+          "order": 1
+        },
+        {
+          "name": "Jessica Chastain",
+          "role": "cast",
+          "character": "Murph",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 496243,
+      "imdbId": "tt6751668",
+      "originalTitle": "기생충",
+      "originalLanguage": "ko",
+      "releaseDate": "2019-05-30",
+      "runtimeMinutes": 133,
+      "voteAverage": 8.5,
+      "voteCount": 19000,
+      "popularity": 75.0,
+      "genreIds": [
+        35,
+        53,
+        18
+      ],
+      "keywords": [
+        "class differences",
+        "con artist",
+        "family",
+        "rich family",
+        "basement"
+      ],
+      "translations": {
+        "en": {
+          "title": "Parasite",
+          "overview": "The poor Kim family cons its way, one member at a time, into jobs with the wealthy Park family, until a secret in the Parks' house changes everything."
+        },
+        "ru": {
+          "title": "Паразиты",
+          "overview": "Бедная семья Ким хитростью, один за другим, устраивается работать к богатой семье Пак, пока тайна в их доме не меняет всё."
+        },
+        "sv": {
+          "title": "Parasite",
+          "overview": "Den fattiga familjen Kim lurar sig, en i taget, till jobb hos den rika familjen Park, tills en hemlighet i familjen Parks hus ändrar allt."
+        }
+      },
+      "credits": [
+        {
+          "name": "Bong Joon-ho",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Bong Joon-ho",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Han Jin-won",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Song Kang-ho",
+          "role": "cast",
+          "character": "Kim Ki-taek",
+          "order": 0
+        },
+        {
+          "name": "Lee Sun-kyun",
+          "role": "cast",
+          "character": "Park Dong-ik",
+          "order": 1
+        },
+        {
+          "name": "Cho Yeo-jeong",
+          "role": "cast",
+          "character": "Choi Yeon-gyo",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 693134,
+      "imdbId": "tt15239678",
+      "originalTitle": "Dune: Part Two",
+      "originalLanguage": "en",
+      "releaseDate": "2024-02-27",
+      "runtimeMinutes": 167,
+      "voteAverage": 8.1,
+      "voteCount": 7000,
+      "popularity": 150.0,
+      "genreIds": [
+        878,
+        12
+      ],
+      "keywords": [
+        "desert planet",
+        "prophecy",
+        "rebellion",
+        "sandworm",
+        "based on novel"
+      ],
+      "translations": {
+        "en": {
+          "title": "Dune: Part Two",
+          "overview": "Paul Atreides joins Chani and the Fremen in their war against House Harkonnen, while visions of a terrible future force him to choose between love and the fate of the universe."
+        },
+        "ru": {
+          "title": "Дюна: Часть вторая",
+          "overview": "Пол Атрейдес вместе с Чани и фрименами воюет против дома Харконненов, а видения страшного будущего заставляют его выбирать между любовью и судьбой Вселенной."
+        },
+        "sv": {
+          "title": "Dune: Del två",
+          "overview": "Paul Atreides ansluter sig till Chani och fremen i deras krig mot huset Harkonnen, medan visioner av en fruktansvärd framtid tvingar honom att välja mellan kärleken och universums öde."
+        }
+      },
+      "credits": [
+        {
+          "name": "Denis Villeneuve",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Denis Villeneuve",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Jon Spaihts",
+          "role": "writer",
+          "order": 1
+        },
+        {
+          "name": "Timothée Chalamet",
+          "role": "cast",
+          "character": "Paul Atreides",
+          "order": 0
+        },
+        {
+          "name": "Zendaya",
+          "role": "cast",
+          "character": "Chani",
+          "order": 1
+        },
+        {
+          "name": "Rebecca Ferguson",
+          "role": "cast",
+          "character": "Lady Jessica",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "tmdbId": 872585,
+      "imdbId": "tt15398776",
+      "originalTitle": "Oppenheimer",
+      "originalLanguage": "en",
+      "releaseDate": "2023-07-19",
+      "runtimeMinutes": 181,
+      "voteAverage": 8.1,
+      "voteCount": 10500,
+      "popularity": 120.0,
+      "genreIds": [
+        18,
+        36
+      ],
+      "keywords": [
+        "atomic bomb",
+        "physicist",
+        "manhattan project",
+        "biography",
+        "world war ii"
+      ],
+      "translations": {
+        "en": {
+          "title": "Oppenheimer",
+          "overview": "The story of physicist J. Robert Oppenheimer, who led the project to build the first atomic bomb, and of the political price he paid afterwards."
+        },
+        "ru": {
+          "title": "Оппенгеймер",
+          "overview": "История физика Роберта Оппенгеймера, руководившего созданием первой атомной бомбы, и той политической цены, которую ему пришлось заплатить потом."
+        },
+        "sv": {
+          "title": "Oppenheimer",
+          "overview": "Berättelsen om fysikern J. Robert Oppenheimer, som ledde arbetet med att bygga den första atombomben, och om det politiska pris han fick betala efteråt."
+        }
+      },
+      "credits": [
+        {
+          "name": "Christopher Nolan",
+          "role": "director",
+          "order": 0
+        },
+        {
+          "name": "Christopher Nolan",
+          "role": "writer",
+          "order": 0
+        },
+        {
+          "name": "Cillian Murphy",
+          "role": "cast",
+          "character": "J. Robert Oppenheimer",
+          "order": 0
+        },
+        {
+          "name": "Emily Blunt",
+          "role": "cast",
+          "character": "Kitty Oppenheimer",
+          "order": 1
+        },
+        {
+          "name": "Matt Damon",
+          "role": "cast",
+          "character": "Leslie Groves",
+          "order": 2
+        }
+      ]
+    }
+  ]
+}

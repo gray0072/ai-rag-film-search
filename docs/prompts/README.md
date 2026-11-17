@@ -23,6 +23,14 @@ File name: `sessions/YYYY-MM-DD_SNN_<short-topic>.md`. `SNN` is a session number
 
 ## Prompt 1
 
+English:
+
+```text
+<the prompt in English: a faithful translation, or the prompt itself if it was written in English>
+```
+
+Original (ru):
+
 ```text
 <verbatim prompt, including typos, in the original language>
 ```
@@ -32,7 +40,8 @@ File name: `sessions/YYYY-MM-DD_SNN_<short-topic>.md`. `SNN` is a session number
 ````
 
 Rules:
-- Copy prompts exactly. Do not translate or fix typos.
+- English comes first: a faithful, complete translation (no summarizing). Then the original, copied exactly: no fixes of typos or formatting. The heading names the language: `Original (ru):`, `Original (sv):`, ….
+- A prompt written in English is saved once, under `English:`, without an original block.
 - Messages sent mid-turn count as separate prompts.
 - Never save secrets (API keys etc.). Replace them with `<redacted>`.
 - If several agents work in parallel (worktrees), each session gets its own file.
@@ -44,3 +53,4 @@ Rules:
 | [S01](sessions/2026-11-17_S01_preparation.md) | 2026-11-17 | I00 | Project preparation: spec, plan, AGENTS.md |
 | [S02](sessions/2026-11-17_S02_solution-skeleton.md) | 2026-11-17 | I01 | Solution skeleton, Aspire, DB, CI |
 | [S03](sessions/2026-11-17_S03_web-skeleton.md) | 2026-11-17 | I02 | Web app skeleton: React, i18n, API client |
+| [S04](sessions/2026-11-17_S04_catalog-seed.md) | 2026-11-17 | I03 | Catalog module and movie seed |

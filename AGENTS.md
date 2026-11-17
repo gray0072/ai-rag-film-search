@@ -30,14 +30,15 @@ Instructions for AI coding agents (Claude Code, Codex, Cursor, …) working in t
 6. If the plan or spec turns out wrong, **update the doc** in the same branch and say so. Do not silently deviate. A real decision with alternatives gets an ADR.
 7. At the end of the iteration: fill in the "Result" section of the plan (what was done, deviations, decisions, follow-ups, session ids), set status `done`, update the README if setup changed.
 8. Commit only when the owner asks. Commit message rules are below.
+9. **No pull requests.** When the owner asks to push: push the iteration branch, merge it into `main` with `git merge --ff-only` (rebase the branch on `main` first if needed), push `main`, and check the CI run on `main` (`gh run list --branch main`). Fix a red run right away.
 
 If a session ends before the iteration is finished, write the current state and next steps in the "Result" section under a "Progress" heading so the next session can continue.
 
 ## Prompt logging (required)
 
-Every prompt from the owner is saved **verbatim** to the prompt history:
+Every prompt from the owner is saved to the prompt history, **in English first, then verbatim in the original language**:
 - File: `docs/prompts/sessions/YYYY-MM-DD_SNN_<topic>.md`. `SNN` continues the numbering across the project (look at the existing files to find the next number). One file per session; parallel sessions each get their own file.
-- Add each new prompt of the session as `## Prompt N` with a ```` ```text ```` block. Do not translate, shorten or fix typos. Messages sent mid-turn are separate prompts.
+- Add each new prompt of the session as `## Prompt N` with two ```` ```text ```` blocks: `English:` (a faithful, complete translation) and `Original (ru):` / `Original (sv):` / … (verbatim: do not shorten or fix typos). A prompt written in English gets only the `English:` block. Messages sent mid-turn are separate prompts. Format example: [docs/prompts/README.md](docs/prompts/README.md).
 - Replace secrets with `<redacted>`.
 - Add the session to the index table in [docs/prompts/README.md](docs/prompts/README.md) and fill in the "Outcome" line at the end.
 
@@ -111,18 +112,25 @@ npm run gen:api              # regenerate src/api/schema.d.ts from openapi/v1.js
 npm run lint && npm run format:check && npm run typecheck && npm test && npm run build   # same as CI
 ```
 
+Seed file (needs a TMDB key in the tool's user secrets, see [data/seed/README.md](data/seed/README.md)):
+
+```bash
+dotnet run --project tools/seed-builder       # writes data/seed/movies.seed.json; cached responses in tools/seed-builder/.cache
+```
+
 Expected later: `dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>` (I08).
 
 Notes:
 - Tests run on **Microsoft.Testing.Platform** (`global.json` → `test.runner`), xUnit v3. Pass runner options after `--`, e.g. `dotnet test -- --filter-method "*Health*"`.
 - Assertions: **Shouldly** (MIT). FluentAssertions v8 is not used because of its commercial license.
-- Integration tests: one shared `pgvector/pgvector:pg17` container per test assembly (`PostgresFixture`), API in-process through `FilmSearchApiFactory` (`WebApplicationFactory<Program>`), migrations applied on startup.
+- Integration tests: one shared `pgvector/pgvector:pg17` container per test assembly (`PostgresFixture`), API in-process through `FilmSearchApiFactory` (`WebApplicationFactory<Program>`), migrations applied on startup. Catalog tests use `CatalogApiFixture` (seed loaded once). The database is shared: assert on properties of results, not on global counts; a test that adds many rows gets its own database (`PostgresFixture.CreateDatabaseAsync`).
+- Minimal APIs bind enum query parameters case-sensitively. Query enums (`sort`, `offerType`) are strings parsed case-insensitively in the request class; JSON enums are camelCase strings.
 - Migrations live in `src/FilmSearch.Infrastructure/Persistence/Migrations`. `DesignTimeDbContextFactory` lets `dotnet ef` work without a running DB or the API. The API applies migrations on startup when `Database:MigrateOnStartup` is true (Development, tests).
 - The AppHost Postgres container is named `filmsearch-postgres`, uses `ContainerLifetime.Persistent` and the named volume `filmsearch-postgres-data`: it keeps running after the AppHost stops. Its password is stored in the AppHost user secrets. To reset the DB: `docker rm -f filmsearch-postgres` and `docker volume rm filmsearch-postgres-data`.
 
 ## Git
 
-- Branches: `main` (always green), `iter/Ixx-<slug>` per iteration.
+- Branches: `main` (always green), `iter/Ixx-<slug>` per iteration. No pull requests: the branch is fast-forward merged into `main` and pushed (see Session workflow, step 9). CI runs on pushes to `main` and to `iter/**` branches.
 - Commit message: **one subject line only**, imperative, English, may start with the iteration id: `I06: add HNSW index for movie embeddings`. No body, no trailers, no `Co-Authored-By`, no mention of AI tools.
 - Commit or push only when the owner asks.
 

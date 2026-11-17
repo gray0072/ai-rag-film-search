@@ -37,6 +37,9 @@ appsettings.*.local.json
 *.pfx
 secrets.json
 
+# Seed builder: cached TMDB responses
+tools/seed-builder/.cache/
+
 # Evaluation raw outputs (reports in markdown are committed)
 evals/reports/**/*.raw.json
 

@@ -1,4 +1,5 @@
 using FilmSearch.IntegrationTests.Infrastructure;
+using Npgsql;
 using Testcontainers.PostgreSql;
 
 [assembly: AssemblyFixture(typeof(PostgresFixture))]
@@ -18,6 +19,17 @@ public sealed class PostgresFixture : IAsyncLifetime
         .Build();
 
     public string ConnectionString => _container.GetConnectionString();
+
+    /// <summary>Creates an empty database in the same container, for tests that must not share data.</summary>
+    public async Task<string> CreateDatabaseAsync(string name)
+    {
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+        await using var command = new NpgsqlCommand($"CREATE DATABASE \"{name}\"", connection);
+        await command.ExecuteNonQueryAsync();
+
+        return new NpgsqlConnectionStringBuilder(ConnectionString) { Database = name }.ConnectionString;
+    }
 
     public async ValueTask InitializeAsync() => await _container.StartAsync();
 

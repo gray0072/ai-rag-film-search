@@ -22,6 +22,11 @@
     </PackageReference>
   </ItemGroup>
 
+  <!-- The committed seed file (data/seed) ships with the API; Catalog:Seed:FilePath points to it by default. -->
+  <ItemGroup>
+    <None Include="..\..\data\seed\movies.seed.json" Link="Seed\movies.seed.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\FilmSearch.AI\FilmSearch.AI.csproj" />
     <ProjectReference Include="..\FilmSearch.Core\FilmSearch.Core.csproj" />
