@@ -42,3 +42,4 @@ Rules:
 | Session | Date | Iteration | Topic |
 |---|---|---|---|
 | [S01](sessions/2026-11-17_S01_preparation.md) | 2026-11-17 | I00 | Project preparation: spec, plan, AGENTS.md |
+| [S02](sessions/2026-11-17_S02_solution-skeleton.md) | 2026-11-17 | I01 | Solution skeleton, Aspire, DB, CI |

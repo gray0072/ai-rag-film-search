@@ -16,7 +16,7 @@ The assistant's quality and safety are measured: scenario and adversarial suites
 Evaluating agents (not only retrieval), LLM-as-judge and its biases, red-teaming, prompt injection defenses, comparing prompt versions and models.
 
 ## Tasks
-- [ ] `assistant.scenarios.jsonl` (25+) and `assistant.adversarial.jsonl` (15+), en and ru.
+- [ ] `assistant.scenarios.jsonl` (25+) and `assistant.adversarial.jsonl` (15+), en, ru and sv.
 - [ ] Scenario runner: plays user turns through the real agent service (no HTTP), records tool calls, cards, text, usage.
 - [ ] Deterministic checks (spec 09 §3).
 - [ ] LLM judge with a versioned rubric prompt and structured output; option to use an OpenRouter profile for the judge.

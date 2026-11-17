@@ -6,7 +6,7 @@ Search is the retrieval part of RAG. The UI and the assistant use the same `IMov
 
 ```mermaid
 flowchart LR
-    Q[User query<br/>en / ru] --> QU{understand?}
+    Q[User query<br/>en / ru / sv] --> QU{understand?}
     QU -- yes --> LLM[Query understanding<br/>LLM + JSON Schema]
     LLM --> F[Filters + semantic text]
     QU -- no --> F
@@ -21,8 +21,8 @@ flowchart LR
 Filters (genre, year, rating, price…) are applied **inside** both the keyword and the vector query (pre-filtering in SQL), not after the top-k is taken. Otherwise strict filters can return empty results.
 
 ## 2. Keyword search
-- Two generated `tsvector` columns: `english` and `russian` configs. Weights: title A, original title A, keywords and people B, tagline C, overview D.
-- Query with `websearch_to_tsquery` on both configs, rank with `ts_rank_cd`.
+- Three generated `tsvector` columns: `english`, `russian` and `swedish` configs (each over the texts of its locale, falling back to `en`). Weights: title A, original title A, keywords and people B, tagline C, overview D.
+- Query with `websearch_to_tsquery` on all three configs, rank with `ts_rank_cd`, take the best score per movie.
 - Title typos: `pg_trgm` similarity on titles as an extra signal (from I07 if needed).
 
 ## 3. Semantic search
@@ -37,9 +37,9 @@ Filters (genre, year, rating, price…) are applied **inside** both the keyword 
   Overview: Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious...
   ```
   The builder version is part of `ContentHash`, so changing the template triggers re-embedding.
-- One vector per movie and locale (`en` first; a `ru` vector is an experiment in I06/I08, compared with "multilingual model + en only").
+- One vector per movie and locale (`en` first; `ru` / `sv` vectors are an experiment in I06/I08, compared with "multilingual model + en only").
 - Query side: some models need prefixes (`query: ` / `passage: ` for e5; instructions for others). This is part of the embedding profile config.
-- Index: HNSW, `vector_cosine_ops`. For 100–10 000 rows an exact scan is fast too; the index is there to learn how it works and to measure recall vs. exact search.
+- Index: HNSW, `vector_cosine_ops`. For 1000–10 000 rows an exact scan is fast too; the index is there to learn how it works and to measure recall vs. exact search.
 
 ## 4. Hybrid search
 - Reciprocal Rank Fusion: `score = Σ 1 / (k + rank_i)`, `k = 60`, per list. Weights per list are configurable (start 1.0 / 1.0) and tuned with evaluations.
@@ -72,4 +72,4 @@ An LLM call with structured output turns free text into:
 Options to compare in an evaluation: (a) LLM as listwise reranker on top 20, (b) a cross-encoder reranker model behind an HTTP endpoint (e.g. a local `bge-reranker` service), (c) no reranker. Recorded as an ADR if adopted.
 
 ## 7. Quality targets (to calibrate in I08)
-Initial targets on the golden set, hybrid mode: Recall@10 ≥ 0.8, MRR ≥ 0.6, for both `en` and `ru` queries. The first evaluation run sets the real baseline; targets are adjusted then.
+Initial targets on the golden set, hybrid mode: Recall@10 ≥ 0.8, MRR ≥ 0.6, for each of `en`, `ru` and `sv` queries. The first evaluation run sets the real baseline; targets are adjusted then.

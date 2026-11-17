@@ -23,7 +23,7 @@ Streaming UX for AI products: partial rendering, progress for tool calls, cancel
 - [ ] Confirmation card with items and total from the server → approve → redirect to checkout URL.
 - [ ] Conversation list, new conversation, reload restores history.
 - [ ] Thumbs up / down.
-- [ ] Russian / English UI strings; the assistant language follows the user's message.
+- [ ] English / Russian / Swedish UI strings; the assistant language follows the user's message.
 - [ ] Component tests with the mock stream.
 
 ## Acceptance criteria

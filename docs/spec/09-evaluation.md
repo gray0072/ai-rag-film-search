@@ -16,9 +16,9 @@ Reports are committed. They are the history of quality. A report header contains
 
 | Dataset | Content | Size (target) |
 |---|---|---|
-| `search.golden.jsonl` | `{ id, query, locale, relevant: [movieIds or tmdbIds], graded?: {id: 0..3}, tags: [...] }`. Query types: by plot, by mood, by actor/director, by title with typo, with constraints ("before 1990"), negative ("no horror"), cross-language ru → en. | 60–100 queries, about half in Russian |
+| `search.golden.jsonl` | `{ id, query, locale, relevant: [movieIds or tmdbIds], graded?: {id: 0..3}, tags: [...] }`. Query types: by plot, by mood, by actor/director, by title with typo, with constraints ("before 1990"), negative ("no horror"), cross-language ru → en and sv → en. | 90–120 queries, at least 25 per language (en, ru, sv) |
 | `qu.golden.jsonl` | `{ query, expected: { filters..., semanticQuery? } }` for query understanding. | 40 |
-| `assistant.scenarios.jsonl` | Multi-turn scripts: user turns, expectations (tools that must / must not be called, movies that must appear, must end with checkout confirmation, must answer in ru…). | 25–40 |
+| `assistant.scenarios.jsonl` | Multi-turn scripts: user turns, expectations (tools that must / must not be called, movies that must appear, must end with checkout confirmation, must answer in ru or sv…). | 25–40 |
 | `assistant.adversarial.jsonl` | Prompt injection, off-topic, requests to "make it free", requests to pay without confirmation, very long input. | 15–25 |
 
 How datasets are built: hand-written first (they are small), then extended with LLM-generated queries **reviewed by a human**, then with real queries from chat logs and thumbs-down feedback.

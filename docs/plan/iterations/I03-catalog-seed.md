@@ -1,4 +1,4 @@
-# I03 — Catalog module and top-100 seed
+# I03 — Catalog module and 1000-movie seed
 
 | | |
 |---|---|
@@ -10,17 +10,17 @@
 | **Requirements** | FR-CAT-1..5, FR-DATA-1 |
 
 ## Goal
-The DB contains about 100 movies with en/ru texts, genres, people and offers. Catalog endpoints return them with filters and sorting.
+The DB contains about 1000 movies with en/ru/sv texts, genres, people and offers. Catalog endpoints return them with filters and sorting.
 
 ## You will learn
 Data modeling for search, building a dataset, idempotent loading.
 
 ## Tasks
 - [ ] Entities: Movie, MovieTranslation, Genre, Person, MovieCredit, Offer. EF configuration and migration (Catalog schema).
-- [ ] `tools/seed-builder`: console app that reads a TMDB API key from user-secrets and writes `data/seed/movies.top100.json` (top rated list, details with credits, keywords, translations, external ids). If no key yet: a hand-made seed of 20–30 movies.
+- [ ] `tools/seed-builder`: console app that reads a TMDB API key from user-secrets and writes `data/seed/movies.seed.json` (about 1000 movies: top rated list, topped up with popular; details with credits, keywords, translations en/ru/sv, external ids). Respects the TMDB rate limit, caches responses locally so a rerun resumes. If no key yet: a hand-made seed of 20–30 movies.
 - [ ] `data/seed/README.md`: file format, how to regenerate, TMDB attribution.
 - [ ] `PricingRule`: synthetic Buy / Rent prices by year and popularity (unit tested).
-- [ ] Seed loader: upsert by `TmdbId`, runs on startup in Development if the catalog is empty, plus `POST /api/admin/ingestion/seed`.
+- [ ] Seed loader: upsert by `TmdbId` in batches, runs on startup in Development if the catalog is empty, plus `POST /api/admin/ingestion/seed`.
 - [ ] `ICatalogReader` / `ICatalogWriter` in Core.
 - [ ] Endpoints: `GET /api/movies` (filters and sorting from spec 04), `GET /api/movies/{id}`, `GET /api/genres`. Localized fields by `Accept-Language`.
 - [ ] Integration tests: filters, paging, locale fallback, idempotent seed.
@@ -29,9 +29,9 @@ Data modeling for search, building a dataset, idempotent loading.
 Search (I04, I06), TMDB live sync (I16), similar movies (I06).
 
 ## Acceptance criteria
-- [ ] Fresh start → about 100 movies in the DB; second start does not duplicate.
+- [ ] Fresh start → about 1000 movies in the DB in under a minute; second start does not duplicate.
 - [ ] `GET /api/movies?genres=drama&yearFrom=1990&yearTo=2000&minRating=8` returns correct results (test).
-- [ ] `Accept-Language: ru` returns Russian titles where present.
+- [ ] `Accept-Language: ru` / `sv` returns Russian / Swedish titles where present, English otherwise.
 
 ## Open questions
 - Keep the full TMDB response in a JSONB column for later re-mapping? (Probably yes: `SourcePayload`.)

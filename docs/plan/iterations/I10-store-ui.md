@@ -10,7 +10,7 @@
 | **Requirements** | FR-CAT-*, FR-SRCH-4/5, FR-COM-*, NFR-10/11 |
 
 ## Goal
-Milestone M1: a user can browse, filter, search, open a movie, add to cart, pay with the fake gateway and see the movie in "My library", in English or Russian.
+Milestone M1: a user can browse, filter, search, open a movie, add to cart, pay with the fake gateway and see the movie in "My library", in English, Russian or Swedish.
 
 ## Tasks
 - [ ] Catalog page: grid with posters, filters panel (URL query params as state), sorting, paging.
@@ -20,7 +20,7 @@ Milestone M1: a user can browse, filter, search, open a movie, add to cart, pay 
 - [ ] Success page polling order status; failure / cancel pages.
 - [ ] Library page.
 - [ ] TMDB attribution in the footer.
-- [ ] All strings in `en` and `ru`.
+- [ ] All strings in `en`, `ru` and `sv`.
 - [ ] Component tests for filters and cart; one Playwright e2e for the purchase flow (optional here, required by I20).
 
 ## Acceptance criteria

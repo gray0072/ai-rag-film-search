@@ -29,5 +29,6 @@ Streaming LLM responses end to end, conversation state and context window manage
 
 ## Acceptance criteria
 - [ ] "Посоветуй что-нибудь про космос" → streamed Russian answer with movies only from the catalog and `movies` cards.
+- [ ] "Tipsa om en film om rymden" → the same in Swedish.
 - [ ] Conversation can be continued after reload (GET returns history).
 - [ ] Trace shows the turn: LLM call → tool → LLM call.

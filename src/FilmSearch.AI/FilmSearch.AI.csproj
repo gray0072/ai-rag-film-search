@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- AI providers, embeddings, ranking, agent loop and prompts. Filled in from I05. -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\FilmSearch.Core\FilmSearch.Core.csproj" />
+  </ItemGroup>
+
+</Project>

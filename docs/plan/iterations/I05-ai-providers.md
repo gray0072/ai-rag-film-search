@@ -21,8 +21,8 @@ LLM APIs (chat completions, streaming, tool calls, structured output, embeddings
 - [ ] Pipeline: OpenTelemetry, logging, usage tracking middleware (tokens, estimated cost from `Pricing`).
 - [ ] A Development-only HTTP logging handler that shows raw requests / responses once (to see what goes over the wire).
 - [ ] Health check: provider reachable, model listed (`GET /v1/models`).
-- [ ] `tools/ai-playground` console (or Development endpoints): chat, streaming, tool call, JSON-schema output, embeddings + cosine similarity of a few en/ru phrases.
-- [ ] **Model benchmark** (documented in the Result section): 2–3 chat models in LM Studio × tasks (tool call correctness on 10 prompts, valid JSON on 10 prompts, Russian quality, tokens/s); 2–3 embedding models × similarity sanity checks (ru ↔ en pairs). Pick the defaults.
+- [ ] `tools/ai-playground` console (or Development endpoints): chat, streaming, tool call, JSON-schema output, embeddings + cosine similarity of a few en/ru/sv phrases.
+- [ ] **Model benchmark** (documented in the Result section): 2–3 chat models in LM Studio × tasks (tool call correctness on 10 prompts, valid JSON on 10 prompts, Russian and Swedish quality, tokens/s); 2–3 embedding models × similarity sanity checks (ru ↔ en and sv ↔ en pairs). Pick the defaults.
 - [ ] OpenRouter profile tested with one cheap model (key in user-secrets).
 - [ ] Unit tests with a fake `IChatClient`.
 

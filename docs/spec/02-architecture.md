@@ -89,7 +89,7 @@ Exact package versions are fixed in iteration I01 and recorded in `Directory.Pac
 │   ├── datasets/                    # golden sets (JSONL)
 │   └── reports/                     # committed evaluation reports (markdown)
 ├── data/
-│   └── seed/movies.top100.json
+│   └── seed/movies.seed.json
 ├── deploy/                          # Dockerfiles / compose / IaC (from I20)
 └── docs/                            # spec, plan, ADRs, prompts
 ```
