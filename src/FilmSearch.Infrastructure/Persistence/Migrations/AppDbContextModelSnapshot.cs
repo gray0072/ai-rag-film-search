@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using NpgsqlTypes;
 
 #nullable disable
 
@@ -331,6 +332,112 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                     b.ToTable("people", "catalog");
                 });
 
+            modelBuilder.Entity("FilmSearch.Infrastructure.Search.Keyword.MovieSearchDocument", b =>
+                {
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("movie_id");
+
+                    b.Property<string>("Keywords")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("")
+                        .HasColumnName("keywords");
+
+                    b.Property<string>("OriginalTitle")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("original_title");
+
+                    b.Property<string>("OverviewEn")
+                        .HasColumnType("text")
+                        .HasColumnName("overview_en");
+
+                    b.Property<string>("OverviewRu")
+                        .HasColumnType("text")
+                        .HasColumnName("overview_ru");
+
+                    b.Property<string>("OverviewSv")
+                        .HasColumnType("text")
+                        .HasColumnName("overview_sv");
+
+                    b.Property<string>("People")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("")
+                        .HasColumnName("people");
+
+                    b.Property<NpgsqlTsVector>("SearchEn")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasColumnName("search_en")
+                        .HasComputedColumnSql("setweight(to_tsvector('english'::regconfig, translate(title_en || ' ' || original_title, 'Ёё', 'Ее')), 'A') || setweight(to_tsvector('english'::regconfig, translate(keywords || ' ' || people, 'Ёё', 'Ее')), 'B') || setweight(to_tsvector('english'::regconfig, translate(coalesce(tagline_en, ''), 'Ёё', 'Ее')), 'C') || setweight(to_tsvector('english'::regconfig, translate(coalesce(overview_en, ''), 'Ёё', 'Ее')), 'D')", true);
+
+                    b.Property<NpgsqlTsVector>("SearchRu")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasColumnName("search_ru")
+                        .HasComputedColumnSql("setweight(to_tsvector('russian'::regconfig, translate(title_ru || ' ' || original_title, 'Ёё', 'Ее')), 'A') || setweight(to_tsvector('russian'::regconfig, translate(keywords || ' ' || people, 'Ёё', 'Ее')), 'B') || setweight(to_tsvector('russian'::regconfig, translate(coalesce(tagline_ru, ''), 'Ёё', 'Ее')), 'C') || setweight(to_tsvector('russian'::regconfig, translate(coalesce(overview_ru, ''), 'Ёё', 'Ее')), 'D')", true);
+
+                    b.Property<NpgsqlTsVector>("SearchSv")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasColumnName("search_sv")
+                        .HasComputedColumnSql("setweight(to_tsvector('swedish'::regconfig, translate(title_sv || ' ' || original_title, 'Ёё', 'Ее')), 'A') || setweight(to_tsvector('swedish'::regconfig, translate(keywords || ' ' || people, 'Ёё', 'Ее')), 'B') || setweight(to_tsvector('swedish'::regconfig, translate(coalesce(tagline_sv, ''), 'Ёё', 'Ее')), 'C') || setweight(to_tsvector('swedish'::regconfig, translate(coalesce(overview_sv, ''), 'Ёё', 'Ее')), 'D')", true);
+
+                    b.Property<string>("TaglineEn")
+                        .HasColumnType("text")
+                        .HasColumnName("tagline_en");
+
+                    b.Property<string>("TaglineRu")
+                        .HasColumnType("text")
+                        .HasColumnName("tagline_ru");
+
+                    b.Property<string>("TaglineSv")
+                        .HasColumnType("text")
+                        .HasColumnName("tagline_sv");
+
+                    b.Property<string>("TitleEn")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title_en");
+
+                    b.Property<string>("TitleRu")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title_ru");
+
+                    b.Property<string>("TitleSv")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title_sv");
+
+                    b.HasKey("MovieId")
+                        .HasName("pk_movie_documents");
+
+                    b.HasIndex("SearchEn")
+                        .HasDatabaseName("ix_movie_documents_search_en");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchEn"), "gin");
+
+                    b.HasIndex("SearchRu")
+                        .HasDatabaseName("ix_movie_documents_search_ru");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchRu"), "gin");
+
+                    b.HasIndex("SearchSv")
+                        .HasDatabaseName("ix_movie_documents_search_sv");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchSv"), "gin");
+
+                    b.ToTable("movie_documents", "search");
+                });
+
             modelBuilder.Entity("MovieGenre", b =>
                 {
                     b.Property<Guid>("MovieId")
@@ -387,6 +494,16 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_offers_movies_movie_id");
+                });
+
+            modelBuilder.Entity("FilmSearch.Infrastructure.Search.Keyword.MovieSearchDocument", b =>
+                {
+                    b.HasOne("FilmSearch.Core.Catalog.Movie", null)
+                        .WithOne()
+                        .HasForeignKey("FilmSearch.Infrastructure.Search.Keyword.MovieSearchDocument", "MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_movie_documents_movies_movie_id");
                 });
 
             modelBuilder.Entity("MovieGenre", b =>

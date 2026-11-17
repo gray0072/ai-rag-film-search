@@ -53,7 +53,9 @@ public sealed class CatalogApiTests(CatalogApiFixture fixture) : IClassFixture<C
         using var client = fixture.CreateClient();
 
         var swedish = await GetMoviesAsync(client, "/api/movies?language=sv&pageSize=50");
-        swedish.Items.Select(m => m.OriginalTitle).ShouldBe(["Det sjunde inseglet", "Låt den rätte komma in"], ignoreOrder: true);
+        var expectedSwedish = fixture.Seed.Movies.Where(m => m.OriginalLanguage == "sv").Select(m => m.OriginalTitle).ToList();
+        expectedSwedish.ShouldContain("Det sjunde inseglet");
+        swedish.Items.Select(m => m.OriginalTitle).ShouldBe(expectedSwedish, ignoreOrder: true);
 
         var shortMovies = await GetMoviesAsync(client, "/api/movies?runtimeMax=100&pageSize=50");
         shortMovies.Items.ShouldNotBeEmpty();
@@ -98,7 +100,9 @@ public sealed class CatalogApiTests(CatalogApiFixture fixture) : IClassFixture<C
     {
         using var client = fixture.CreateClient("ru");
 
-        var page = await GetMoviesAsync(client, "/api/movies?sort=title&pageSize=50");
+        // A narrow filter, so all matches fit on one page (and almost all of them have Russian titles).
+        var page = await GetMoviesAsync(client, "/api/movies?sort=title&minRating=8.5&pageSize=50");
+        page.Total.ShouldBeLessThanOrEqualTo(50);
 
         var titles = page.Items.Select(m => m.Title).ToList();
         titles.ShouldContain("Побег из Шоушенка");

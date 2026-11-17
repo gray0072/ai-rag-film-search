@@ -4,7 +4,9 @@
 
 ## Current file
 
-`"source": "hand-made"`: 34 well-known movies (classics, recent hits, Swedish, Russian, Japanese, Korean, French and Italian titles) with English, Russian and Swedish titles and short overviews written for this project. Ratings, vote counts and popularity are approximate, people have no TMDB ids, and there are no posters. It is a starter set until the file is rebuilt from TMDB (about 1000 movies).
+`"source": "tmdb"`, built on 2026-11-17: 1000 movies (800 top rated + 200 popular), 19 genres. Russian titles for 976 movies and overviews for 982; Swedish titles for 483 and overviews for 857 (TMDB has fewer Swedish translations; missing fields fall back to English). Original languages: 635 English, 99 Japanese, 50 Italian, 47 French, 12 Swedish, 11 Russian and others. About 4.8 MB.
+
+Before that (I03) the file was a hand-made starter set of 34 movies.
 
 ## Rebuild from TMDB
 
@@ -15,7 +17,7 @@
    dotnet user-secrets set Tmdb:ApiKey <key> --project tools/seed-builder
    ```
 
-   Or set the `TMDB__APIKEY` environment variable.
+   Or set the `TMDB__APIKEY` environment variable. The read access token is preferred: it goes in the `Authorization` header, while a v3 key is added to the URL. On the owner's machine `Tmdb:ApiKey` holds the read access token and `Tmdb:ApiKeyV3` the v3 key (kept for reference, not read by the tool); list them with `dotnet user-secrets list --project tools/seed-builder`. User secrets live outside the repository (`%APPDATA%\Microsoft\UserSecrets\filmsearch-seed-builder-3b7e1a52\secrets.json`), so they cannot be committed by accident.
 3. Run the builder from the repository root:
 
    ```bash

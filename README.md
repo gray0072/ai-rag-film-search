@@ -13,7 +13,7 @@ Stack: .NET 10, ASP.NET Core, EF Core, PostgreSQL + pgvector, .NET Aspire, Micro
 
 ## Status
 
-The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file (I03); tests and CI for all of it. The seed is hand-made (34 movies) until it is rebuilt from TMDB, see [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
+The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
 
 ## Documentation
 
@@ -53,6 +53,7 @@ The API listens on `https://localhost:7180`:
 - `GET /health`: readiness (includes the database), `GET /alive`: liveness
 - `GET /api/info`: application name and version
 - `GET /api/movies`, `GET /api/movies/{id}`, `GET /api/genres`: catalog; texts follow `Accept-Language` (`en`, `ru`, `sv`)
+- `POST /api/search` with `{ "query": "nolan dream", "debug": true }`: keyword search (filters as in `GET /api/movies`)
 - `POST /api/admin/ingestion/seed`: reload the seed file (Development only, idempotent)
 - `GET /openapi/v1.json`: OpenAPI document (Development)
 

@@ -10,6 +10,8 @@ public static class SeedJson
     public static JsonSerializerOptions Options { get; } = new(JsonSerializerDefaults.Web)
     {
         WriteIndented = true,
+        // LF on every OS: the file is committed and .gitattributes normalizes to LF.
+        NewLine = "\n",
         // Keep Cyrillic and Swedish letters readable in the committed file (and in diffs).
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,

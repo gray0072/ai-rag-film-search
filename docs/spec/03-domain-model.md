@@ -26,7 +26,7 @@ erDiagram
 ### Catalog
 | Entity | Fields |
 |---|---|
-| **Movie** | `Id` (Guid v7), `TmdbId` (int, unique, nullable for manual), `ImdbId` (string?), `Title`, `OriginalTitle`, `OriginalLanguage`, `ReleaseDate`, `Year` (set from `ReleaseDate` on write, stored for filters), `RuntimeMinutes`, `Overview`, `Tagline`, `PosterPath`, `BackdropPath`, `VoteAverage` (numeric(3,1)), `VoteCount`, `Popularity`, `Keywords` (text[]), `AgeRating?`, `SearchVector*` (tsvector, generated, from I04), `Source` (Seed/Tmdb/Manual), `SourceHash` (sha256 of the imported data: an import with the same hash changes nothing), `CreatedAt`, `UpdatedAt` |
+| **Movie** | `Id` (Guid v7), `TmdbId` (int, unique, nullable for manual), `ImdbId` (string?), `Title`, `OriginalTitle`, `OriginalLanguage`, `ReleaseDate`, `Year` (set from `ReleaseDate` on write, stored for filters), `RuntimeMinutes`, `Overview`, `Tagline`, `PosterPath`, `BackdropPath`, `VoteAverage` (numeric(3,1)), `VoteCount`, `Popularity`, `Keywords` (text[]), `AgeRating?`, `Source` (Seed/Tmdb/Manual), `SourceHash` (sha256 of the imported data: an import with the same hash changes nothing), `CreatedAt`, `UpdatedAt` |
 | **MovieTranslation** | `MovieId`, `Locale` (`en`/`ru`/`sv`), `Title?`, `Overview?`, `Tagline?`. `en` values are also kept on `Movie` for simple queries. A missing field falls back to English per field. |
 | **Genre** | `Id` (int, TMDB genre id), `Slug` (unique, from the English name: `science-fiction`), `NameEn`, `NameRu`, `NameSv` |
 | **Person** | `Id`, `TmdbId?` (unique; null for people from a hand-made seed, matched by name), `Name` |
@@ -40,6 +40,7 @@ The catalog tables live in the `catalog` schema: `movies`, `movie_translations`,
 ### Search
 | Entity | Fields |
 |---|---|
+| **MovieSearchDocument** (`search.movie_documents`, from I04) | `MovieId` (PK, FK to the movie, cascade), texts flattened per locale with English fallback: `TitleEn/Ru/Sv`, `OriginalTitle`, `Keywords`, `People` (directors, writers, cast), `TaglineEn/Ru/Sv`, `OverviewEn/Ru/Sv`; generated `SearchEn/Ru/Sv` (`tsvector`, GIN index). Written only by the SQL function `search.refresh_movie_documents(uuid[])`, which the catalog writer calls for created / changed movies through `ICatalogChangeHandler` (spec 05 §2). |
 | **MovieEmbedding** | `Id`, `MovieId`, `Model` (string), `Dimensions` (int), `Kind` (`Profile` for now; `Review`, `Plot` chunks possible later), `Locale`, `Text` (the exact embedded text), `ContentHash` (sha256 of text), `Vector` (vector(N)), `CreatedAt`. Unique: (`MovieId`, `Model`, `Kind`, `Locale`). |
 
 One vector column per dimension is a pgvector limitation for indexes. Approach: one table per active dimension, or a fixed `vector(1024)` column and models with that size. Decided in I06 and recorded as an ADR.

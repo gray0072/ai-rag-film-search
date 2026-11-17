@@ -21,8 +21,10 @@ flowchart LR
 Filters (genre, year, rating, price…) are applied **inside** both the keyword and the vector query (pre-filtering in SQL), not after the top-k is taken. Otherwise strict filters can return empty results.
 
 ## 2. Keyword search
-- Three generated `tsvector` columns: `english`, `russian` and `swedish` configs (each over the texts of its locale, falling back to `en`). Weights: title A, original title A, keywords and people B, tagline C, overview D.
-- Query with `websearch_to_tsquery` on all three configs, rank with `ts_rank_cd`, take the best score per movie.
+- **Search document** per movie in `search.movie_documents`: the catalog texts flattened into one row (title, tagline and overview per locale with English fallback, original title, keywords, names of directors, writers and cast). Generated columns can only read their own row, so the texts are copied from the catalog tables by the SQL function `search.refresh_movie_documents(movie_ids)`; the catalog writer calls it inside its transaction for created and changed movies (`ICatalogChangeHandler`), and the migration used it to fill the table.
+- Three generated `tsvector` columns with GIN indexes: `english`, `russian` and `swedish` configs (each over the texts of its locale). Weights: title A, original title A, keywords and people B, tagline C, overview D. `ё` is folded to `е` in documents and queries (Russian texts use both spellings: TMDB has "Крёстный отец", users type "крестный отец").
+- Query with `websearch_to_tsquery` on all three configs (a movie matches when any config matches), rank with `ts_rank_cd` (normalization 32: `rank / (rank + 1)`, 0–1), take the best score per movie. Ties: popularity, then id. Filters are in the same SQL query.
+- If no movie matches all the words, the query is relaxed once to any word (`a or b or c`); `debug.keywordMatch` is `all` or `any`.
 - Title typos: `pg_trgm` similarity on titles as an extra signal (from I07 if needed).
 
 ## 3. Semantic search

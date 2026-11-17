@@ -13,8 +13,13 @@ namespace FilmSearch.Infrastructure.Catalog;
 /// Upserts imported movies by TMDB id. Each batch is one transaction holding a PostgreSQL advisory lock,
 /// so two writers (two API replicas seeding on startup, or the seed and a TMDB sync) never insert the same movie twice.
 /// A movie whose <see cref="Movie.SourceHash"/> matches the import is left as is; only its prices are rechecked.
+/// Created and changed movies are passed to every <see cref="ICatalogChangeHandler"/> inside the same transaction.
 /// </summary>
-internal sealed partial class CatalogWriter(AppDbContext db, TimeProvider time, ILogger<CatalogWriter> logger) : ICatalogWriter
+internal sealed partial class CatalogWriter(
+    AppDbContext db,
+    TimeProvider time,
+    IEnumerable<ICatalogChangeHandler> changeHandlers,
+    ILogger<CatalogWriter> logger) : ICatalogWriter
 {
     /// <summary>Key of the transaction-level advisory lock that serializes catalog upserts.</summary>
     private const long UpsertLockKey = 0x46_53_43_41_54; // "FSCAT"
@@ -76,15 +81,27 @@ internal sealed partial class CatalogWriter(AppDbContext db, TimeProvider time, 
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
             await LockAsync(ct);
 
-            var result = await UpsertBatchAsync(imports, source, ct);
+            var (result, changedIds) = await UpsertBatchAsync(imports, source, ct);
 
             await db.SaveChangesAsync(ct);
+            if (changedIds.Count > 0)
+            {
+                foreach (var handler in changeHandlers)
+                {
+                    await handler.OnMoviesChangedAsync(changedIds, ct);
+                }
+            }
+
             await transaction.CommitAsync(ct);
             return result;
         }, cancellationToken);
     }
 
-    private async Task<UpsertResult> UpsertBatchAsync(List<MovieImport> imports, MovieSource source, CancellationToken ct)
+    /// <returns>The counts and the ids of created movies and movies whose data changed (not only prices).</returns>
+    private async Task<(UpsertResult Result, List<Guid> ChangedIds)> UpsertBatchAsync(
+        List<MovieImport> imports,
+        MovieSource source,
+        CancellationToken ct)
     {
         var now = time.GetUtcNow();
         var today = DateOnly.FromDateTime(now.UtcDateTime);
@@ -103,6 +120,7 @@ internal sealed partial class CatalogWriter(AppDbContext db, TimeProvider time, 
         var people = await LoadPeopleAsync(imports, ct);
 
         int created = 0, updated = 0, unchanged = 0;
+        var changedIds = new List<Guid>();
         foreach (var import in imports)
         {
             var hash = ComputeHash(import);
@@ -129,6 +147,10 @@ internal sealed partial class CatalogWriter(AppDbContext db, TimeProvider time, 
             }
 
             var pricesChanged = SyncOffers(movie, today, now);
+            if (isNew || dataChanged)
+            {
+                changedIds.Add(movie.Id);
+            }
 
             if (isNew)
             {
@@ -147,7 +169,7 @@ internal sealed partial class CatalogWriter(AppDbContext db, TimeProvider time, 
         }
 
         LogBatch(logger, imports.Count, created, updated, unchanged);
-        return new UpsertResult(created, updated, unchanged);
+        return (new UpsertResult(created, updated, unchanged), changedIds);
     }
 
     private void Apply(Movie movie, MovieImport import, string hash, Dictionary<int, Genre> genres, PeopleIndex people)

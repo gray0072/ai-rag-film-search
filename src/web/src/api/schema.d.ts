@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Searches movies by free text with catalog filters. Movie texts in the Accept-Language locale. */
+        post: operations["SearchMovies"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/info": {
         parameters: {
             query?: never;
@@ -109,6 +126,17 @@ export interface components {
             slug: string;
             name: string;
         };
+        HttpValidationProblemDetails: {
+            type?: null | string;
+            title?: null | string;
+            /** Format: int32 */
+            status?: null | number | string;
+            detail?: null | string;
+            instance?: null | string;
+            errors?: {
+                [key: string]: string[];
+            };
+        };
         MovieDetails: {
             /** Format: uuid */
             id: string;
@@ -183,6 +211,101 @@ export interface components {
             id: string;
             name: string;
         };
+        /**
+         * @description Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null.
+         *     Ranks start at 1 and are positions in that retriever's list.
+         */
+        SearchDebug: {
+            /** Format: int32 */
+            keywordRank?: null | number | string;
+            /**
+             * Format: double
+             * @description `ts_rank_cd` over the best-matching text search config, normalized to 0–1.
+             */
+            keywordScore?: null | number | string;
+            /**
+             * @description `all`: every query term matched (`websearch_to_tsquery`). `any`: no movie matched all terms,
+             *             so the query was relaxed to match any term.
+             */
+            keywordMatch?: null | string;
+            /** Format: int32 */
+            vectorRank?: null | number | string;
+            /** Format: double */
+            similarity?: null | number | string;
+            /** Format: double */
+            fusedScore?: null | number | string;
+        };
+        /** @description Catalog filters in a JSON body (FR-SRCH-5). Same meaning and limits as the `GET /api/movies` query. */
+        SearchFilters: {
+            /** @description Genre slugs; a movie matches any of them. */
+            genres?: null | string[];
+            /** Format: int32 */
+            yearFrom?: null | number | string;
+            /** Format: int32 */
+            yearTo?: null | number | string;
+            /** Format: double */
+            minRating?: null | number | string;
+            /** Format: int32 */
+            runtimeMin?: null | number | string;
+            /** Format: int32 */
+            runtimeMax?: null | number | string;
+            /** @description Original language, ISO 639-1 (e.g. `en`, `sv`). */
+            language?: null | string;
+            /**
+             * Format: int64
+             * @description Maximum price in minor units (cents).
+             */
+            priceMax?: null | number | string;
+            offerType?: null | components["schemas"]["OfferType"];
+        };
+        SearchItem: {
+            /** @description The movie in the requested locale. */
+            movie: components["schemas"]["MovieSummary"];
+            /**
+             * Format: double
+             * @description Score of the mode that produced the list: keyword rank score, similarity or fused score. Higher is better.
+             */
+            score: number | string;
+            debug: null | components["schemas"]["SearchDebug"];
+        };
+        /** @enum {unknown} */
+        SearchMode: "keyword" | "semantic" | "hybrid" | null;
+        /** @description Body of `POST /api/search` (spec 04 "Search"). Validated at the boundary; invalid input → 400 Problem Details. */
+        SearchRequest: {
+            /** @description Free text in English, Russian or Swedish. */
+            query: string;
+            mode?: null | components["schemas"]["SearchMode"];
+            filters?: null | components["schemas"]["SearchFilters"];
+            /** @description Run query understanding (FR-SRCH-4). Not available until I07: `true` returns 400. */
+            understand?: boolean;
+            /** Format: int32 */
+            page?: null | number | string;
+            /** Format: int32 */
+            pageSize?: null | number | string;
+            /** @description Include per-item retrieval scores (`debug`). */
+            debug?: boolean;
+        };
+        SearchResponse: {
+            /** @description Found movies, best first. */
+            items: components["schemas"]["SearchItem"][];
+            /** @description The filters the search used, normalized (later also the ones found by query understanding). */
+            appliedFilters: components["schemas"]["SearchFilters"];
+            /**
+             * Format: int32
+             * @description Page number, starting at 1.
+             */
+            page: number | string;
+            /**
+             * Format: int32
+             * @description Items per page.
+             */
+            pageSize: number | string;
+            /**
+             * Format: int32
+             * @description Number of matching movies.
+             */
+            total: number | string;
+        };
         SeedResult: {
             /** Format: int32 */
             genres: number | string;
@@ -204,6 +327,39 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    SearchMovies: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SearchRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
     GetAppInfo: {
         parameters: {
             query?: never;

@@ -23,7 +23,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I02 | [Web app skeleton (React, i18n, API client)](iterations/I02-web-skeleton.md) | I01 | 2 | 1 | done |
 | I03 | [Catalog module and 1000-movie seed](iterations/I03-catalog-seed.md) | I01 | 2 | 1–2 | done |
 | I05 | [AI provider layer (LM Studio / OpenRouter)](iterations/I05-ai-providers.md) | I01 | 2 | 1–2 | todo |
-| I04 | [Keyword search and filters](iterations/I04-keyword-search.md) | I03 | 3 | 1 | todo |
+| I04 | [Keyword search and filters](iterations/I04-keyword-search.md) | I03 | 3 | 1 | done |
 | I06 | [Embeddings and semantic search](iterations/I06-embeddings-semantic-search.md) | I03, I05 | 3 | 2 | todo |
 | I09 | [Cart, orders, fake payment](iterations/I09-cart-orders-fake-payment.md) | I03 | 3 | 2 | todo |
 | I07 | [Hybrid search and query understanding](iterations/I07-hybrid-query-understanding.md) | I04, I06 | 4 | 2 | todo |

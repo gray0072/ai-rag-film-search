@@ -5,6 +5,47 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/search": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Searches movies by free text with catalog filters. Movie texts in the Accept-Language locale.",
+        "operationId": "SearchMovies",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/info": {
       "get": {
         "tags": [
@@ -339,6 +380,53 @@
           },
           "name": {
             "type": "string"
+          }
+        }
+      },
+      "HttpValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         }
       },
@@ -687,6 +775,327 @@
           }
         }
       },
+      "SearchDebug": {
+        "type": "object",
+        "properties": {
+          "keywordRank": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "keywordScore": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "`ts_rank_cd` over the best-matching text search config, normalized to 0–1.",
+            "format": "double"
+          },
+          "keywordMatch": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "`all`: every query term matched (`websearch_to_tsquery`). `any`: no movie matched all terms,\r\n        so the query was relaxed to match any term."
+          },
+          "vectorRank": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "similarity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "fusedScore": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        },
+        "description": "Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null.\r\nRanks start at 1 and are positions in that retriever's list."
+      },
+      "SearchFilters": {
+        "type": "object",
+        "properties": {
+          "genres": {
+            "maxItems": 30,
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Genre slugs; a movie matches any of them."
+          },
+          "yearFrom": {
+            "maximum": 2100,
+            "minimum": 1870,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "yearTo": {
+            "maximum": 2100,
+            "minimum": 1870,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "minRating": {
+            "maximum": 10,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "runtimeMin": {
+            "maximum": 1000,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "runtimeMax": {
+            "maximum": 1000,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "language": {
+            "maxLength": 3,
+            "minLength": 2,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Original language, ISO 639-1 (e.g. `en`, `sv`)."
+          },
+          "priceMax": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Maximum price in minor units (cents).",
+            "format": "int64"
+          },
+          "offerType": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OfferType"
+              }
+            ]
+          }
+        },
+        "description": "Catalog filters in a JSON body (FR-SRCH-5). Same meaning and limits as the `GET /api/movies` query."
+      },
+      "SearchItem": {
+        "required": [
+          "movie",
+          "score",
+          "debug"
+        ],
+        "type": "object",
+        "properties": {
+          "movie": {
+            "description": "The movie in the requested locale.",
+            "$ref": "#/components/schemas/MovieSummary"
+          },
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "Score of the mode that produced the list: keyword rank score, similarity or fused score. Higher is better.",
+            "format": "double"
+          },
+          "debug": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Retrieval details, when requested.",
+                "$ref": "#/components/schemas/SearchDebug"
+              }
+            ]
+          }
+        }
+      },
+      "SearchMode": {
+        "enum": [
+          "keyword",
+          "semantic",
+          "hybrid",
+          null
+        ]
+      },
+      "SearchRequest": {
+        "required": [
+          "query"
+        ],
+        "type": "object",
+        "properties": {
+          "query": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string",
+            "description": "Free text in English, Russian or Swedish."
+          },
+          "mode": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "`keyword` (default). `semantic` and `hybrid` return 400 until I06 / I07.",
+                "$ref": "#/components/schemas/SearchMode"
+              }
+            ]
+          },
+          "filters": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "The same filters as `GET /api/movies`, applied inside the search query.",
+                "$ref": "#/components/schemas/SearchFilters"
+              }
+            ]
+          },
+          "understand": {
+            "type": "boolean",
+            "description": "Run query understanding (FR-SRCH-4). Not available until I07: `true` returns 400."
+          },
+          "page": {
+            "maximum": 10000,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "maximum": 50,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "debug": {
+            "type": "boolean",
+            "description": "Include per-item retrieval scores (`debug`)."
+          }
+        },
+        "description": "Body of `POST /api/search` (spec 04 \"Search\"). Validated at the boundary; invalid input → 400 Problem Details."
+      },
+      "SearchResponse": {
+        "required": [
+          "items",
+          "appliedFilters",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchItem"
+            },
+            "description": "Found movies, best first."
+          },
+          "appliedFilters": {
+            "description": "The filters the search used, normalized (later also the ones found by query understanding).",
+            "$ref": "#/components/schemas/SearchFilters"
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Page number, starting at 1.",
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Items per page.",
+            "format": "int32"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Number of matching movies.",
+            "format": "int32"
+          }
+        }
+      },
       "SeedResult": {
         "required": [
           "genres",
@@ -742,6 +1151,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Search"
+    },
     {
       "name": "AppInfo"
     },

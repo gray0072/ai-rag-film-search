@@ -4,6 +4,7 @@ using FilmSearch.Api.Localization;
 using FilmSearch.Api.Modules.Admin;
 using FilmSearch.Api.Modules.AppInfo;
 using FilmSearch.Api.Modules.Catalog;
+using FilmSearch.Api.Modules.Search;
 using FilmSearch.Api.OpenApi;
 using FilmSearch.Api.Owners;
 using FilmSearch.Infrastructure.Persistence;
@@ -27,6 +28,7 @@ builder.Services.AddRequestLocales();
 // Modules
 builder.Services.AddAppInfoModule();
 builder.Services.AddCatalogModule(builder.Configuration);
+builder.Services.AddSearchModule();
 
 var app = builder.Build();
 
@@ -51,6 +53,7 @@ app.MapDefaultEndpoints();
 // Modules
 app.MapAppInfoEndpoints();
 app.MapCatalogEndpoints();
+app.MapSearchEndpoints();
 app.MapAdminEndpoints(app.Configuration);
 
 if (app.Configuration.GetValue<bool>(DatabaseSetup.MigrateOnStartupKey))

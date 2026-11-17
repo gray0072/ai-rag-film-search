@@ -26,7 +26,7 @@ Locale: from `Accept-Language` (`en`, `ru`, `sv`; `sv-SE` → `sv`; anything els
 ## Search
 | Method | Path | Description |
 |---|---|---|
-| POST | `/api/search` | Body: `{ query, mode: "keyword"\|"semantic"\|"hybrid", filters: {...same as catalog}, understand: bool, page, pageSize, debug: bool }`. Response: `{ items: [{ movie, score, debug? }], appliedFilters, understoodQuery?, total }`. `understand=true` runs query understanding (FR-SRCH-4). |
+| POST | `/api/search` | Body: `{ query (1–500 chars), mode: "keyword"\|"semantic"\|"hybrid" (default keyword), filters: { genres: [slug], yearFrom, yearTo, minRating, runtimeMin, runtimeMax, language, priceMax, offerType }, understand: bool, page, pageSize (≤ 50, default 20), debug: bool }`. Response: `{ items: [{ movie: MovieSummary, score, debug? }], appliedFilters, understoodQuery?, page, pageSize, total }`; `debug` = `{ keywordRank, keywordScore, keywordMatch: "all"\|"any", vectorRank, similarity, fusedScore }`. `understand=true` runs query understanding (FR-SRCH-4). Movie texts follow `Accept-Language`; the query may be in any supported language. Until I06 / I07, `semantic`, `hybrid` and `understand=true` return 400. |
 
 ## Commerce
 | Method | Path | Description |

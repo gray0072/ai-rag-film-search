@@ -137,7 +137,8 @@ Notes:
 ## Local environment notes
 
 - OS of the owner: Windows 11; shells: PowerShell and Git Bash.
-- LM Studio local server: `http://localhost:1234/v1` (OpenAI-compatible). Model ids are in `appsettings.json` profiles after I05.
+- LM Studio local server: `http://localhost:1234/v1` (OpenAI-compatible). Model ids are in `appsettings.json` profiles after I05. The `lms` CLI is installed and can run it from the console: `lms server start`, `lms load <model> -y`, `lms ps`, `lms unload --all`, `lms server stop`, `lms ls`. Owner's preferred models: chat `google/gemma-4-e4b`, embeddings `text-embedding-embeddinggemma-300m` (768 dimensions). Unload models and stop the server when a session no longer needs them.
+- TMDB credentials are in the user secrets of `tools/seed-builder` (`Tmdb:ApiKey` = v4 read access token, `Tmdb:ApiKeyV3` = v3 key). Never write them to files in the repository.
 - Docker Desktop is required for PostgreSQL (Aspire) and Testcontainers.
 - `gh` CLI is available for GitHub operations.
 - Vitest on Windows: run it from a path with an upper-case drive letter (`D:\Projects\...`). With `d:\...` (the VS Code terminal default) Vitest loads its runner twice and every test file fails with "Vitest failed to find the current suite". CI (Linux) is not affected.
