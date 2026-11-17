@@ -44,9 +44,7 @@ Full-text search in PostgreSQL (the "sparse" half of hybrid search), ranking, wh
 - `POST /api/search`: "nolan dream" → Inception; "крестный отец" (ru) → Крёстный отец, 2, 3; "gudfadern" (sv) → Gudfadern del II, Gudfadern, Gudfadern del III; "Тёмный рыцарь" → the Dark Knight movies; "kärlek" with `Accept-Language: ru` → 42 movies with Russian titles; "space" with `yearFrom 2010, minRating 8` → 11 movies (Interstellar among them); `mode: semantic` → 400.
 - Latency (test log, in-process API, 48 requests over 1000 movies including loading the summaries): **p50 29 ms, p95 40 ms**.
 - `dotnet build` (0 warnings), `dotnet format --verify-no-changes`, `dotnet test`; web `gen:api`, lint, format check, typecheck, tests, build.
-- CI: the first run on `main` failed the "OpenAPI document is up to date" check: multi-line doc comments on `SearchDebug` became `
-` in `v1.json` on Windows and `
-` on Linux. Fixed by single-line comments; the rule is in AGENTS.md.
+- CI: the first run on `main` failed the "OpenAPI document is up to date" check: multi-line doc comments on `SearchDebug` became `\r\n` in `v1.json` on Windows and `\n` on Linux. Fixed by single-line comments; the rule is in AGENTS.md.
 
 ### Decisions and deviations
 - **Separate document table instead of `SearchVector*` columns on `movies`** (spec 03 and 05 updated). A generated column can only read its own row, and the texts are spread over `movies`, `movie_translations`, `movie_credits` and `people`. The table lives in the `search` schema (Search owns its indexes, spec 02 §5); deleting a movie cascades.
