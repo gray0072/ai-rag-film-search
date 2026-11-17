@@ -1,0 +1,105 @@
+{"id":"en-plot-01","query":"a thief who steals secrets by entering people's dreams","locale":"en","relevant":[27205],"tags":["plot"]}
+{"id":"en-plot-02","query":"astronauts travel through a wormhole to find a new home for humanity","locale":"en","relevant":[157336],"tags":["plot"]}
+{"id":"en-plot-03","query":"a banker wrongly convicted of killing his wife escapes from prison after many years","locale":"en","relevant":[278],"tags":["plot"]}
+{"id":"en-plot-04","query":"a man with short-term memory loss hunts his wife's killer using tattoos and polaroid photos","locale":"en","relevant":[77],"tags":["plot"]}
+{"id":"en-plot-05","query":"a girl trapped in a spirit world works in a bathhouse to save her parents who were turned into pigs","locale":"en","relevant":[129],"tags":["plot"]}
+{"id":"en-plot-06","query":"an old man ties thousands of balloons to his house and flies to South America","locale":"en","relevant":[14160],"tags":["plot"]}
+{"id":"en-plot-07","query":"a lonely robot cleaning up a garbage-covered Earth falls in love","locale":"en","relevant":[10681],"tags":["plot"]}
+{"id":"en-plot-08","query":"a man finds out that his whole life is a reality TV show","locale":"en","relevant":[37165],"tags":["plot"]}
+{"id":"en-plot-09","query":"a poor family cons its way into working for a rich household","locale":"en","relevant":[496243],"tags":["plot"]}
+{"id":"en-plot-10","query":"a knight returning from the crusades plays chess with Death during the plague","locale":"en","relevant":[490],"tags":["plot"]}
+{"id":"en-plot-11","query":"two con artists try to sell a sheet of fake rare stamps to a collector","locale":"en","relevant":[18079],"tags":["plot"]}
+{"id":"en-plot-12","query":"a rich quadriplegic hires a young man from the suburbs as his caregiver","locale":"en","relevant":[77338],"tags":["plot"]}
+{"id":"en-plot-13","query":"a 12-year-old boy sues his parents for giving him life","locale":"en","relevant":[517814],"tags":["plot"]}
+{"id":"en-plot-14","query":"a Soviet space station orbits a mysterious ocean planet that brings back the crew's memories","locale":"en","relevant":[593],"tags":["plot"]}
+{"id":"en-mood-01","query":"a heartwarming animated movie about family and memories that will make me cry","locale":"en","relevant":[354912,14160,150540,10193,20722,110420],"graded":{"354912":3,"14160":3,"150540":2,"10193":2,"20722":3,"110420":1},"tags":["mood"]}
+{"id":"en-mood-02","query":"an uplifting true story about an unlikely friendship","locale":"en","relevant":[77338,490132,28178],"tags":["mood"],"graded":{"77338":3,"490132":3,"28178":2}}
+{"id":"en-mood-03","query":"tense claustrophobic horror on a spaceship","locale":"en","relevant":[348,679],"graded":{"348":3,"679":2},"tags":["mood"]}
+{"id":"en-mood-04","query":"a bittersweet musical romance about chasing dreams in Los Angeles","locale":"en","relevant":[313369],"tags":["mood"]}
+{"id":"en-person-01","query":"Christopher Nolan movies","locale":"en","relevant":[77,155,272,1124,27205,49026,157336,577922,872585,1368337],"tags":["person"]}
+{"id":"en-person-02","query":"films starring Tom Hanks","locale":"en","relevant":[13,497,640,857,862,863,10193,522402,937278,1084244],"tags":["person"]}
+{"id":"en-person-03","query":"Hayao Miyazaki","locale":"en","relevant":[81,128,129,4935,8392,10515,11621,12429,16859,149870],"tags":["person"]}
+{"id":"en-person-04","query":"Keanu Reeves","locale":"en","relevant":[603,324552,603692,541671],"tags":["person"]}
+{"id":"en-person-05","query":"films by Ingmar Bergman","locale":"en","relevant":[490,614,797,5961,10238,11602,11656,12761,29455,133919],"tags":["person"]}
+{"id":"en-typo-01","query":"intersteller","locale":"en","relevant":[157336],"tags":["title-typo"]}
+{"id":"en-typo-02","query":"the shawshenk redemption","locale":"en","relevant":[278],"tags":["title-typo"]}
+{"id":"en-typo-03","query":"godfahter","locale":"en","relevant":[238,240],"graded":{"238":3,"240":2},"tags":["title-typo"]}
+{"id":"en-typo-04","query":"pulp fction","locale":"en","relevant":[680],"tags":["title-typo"]}
+{"id":"en-typo-05","query":"harry poter and the philosophers stone","locale":"en","relevant":[671,672,673,674,675,12444,12445],"graded":{"671":3,"672":1,"673":1,"674":1,"675":1,"12444":1,"12445":1},"tags":["title-typo"]}
+{"id":"en-constraint-01","query":"Christopher Nolan films made before 2005","locale":"en","relevant":[77],"tags":["constraint","person"]}
+{"id":"en-constraint-02","query":"Leonardo DiCaprio movies from the 2010s","locale":"en","relevant":[27205,11324,68718,106646,281957,466272],"tags":["constraint","person"]}
+{"id":"en-constraint-03","query":"space horror from the 1970s","locale":"en","relevant":[348],"tags":["constraint"]}
+{"id":"en-constraint-04","query":"Tarantino westerns","locale":"en","relevant":[68718,273248],"tags":["constraint","person"]}
+{"id":"en-negative-01","query":"a realistic space survival movie, no aliens and no horror","locale":"en","relevant":[286217,157336],"graded":{"286217":3,"157336":2},"excludedGenres":["horror"],"tags":["negative"]}
+{"id":"en-negative-02","query":"a funny crime movie, not a thriller","locale":"en","relevant":[115,107,100,546554,9277,24382,25253],"excludedGenres":["thriller"],"tags":["negative"]}
+{"id":"en-negative-03","query":"a war movie that is not about World War II","locale":"en","relevant":[28,600,530915,975,792,49046,11778,197,616,1495,935,770,143,11658,55823],"tags":["negative"],"graded":{"28":2,"600":2,"530915":2,"975":2,"792":2,"49046":2,"11778":2,"197":1,"616":1,"1495":1,"935":1,"770":1,"143":2,"11658":2,"55823":2}}
+{"id":"ru-plot-01","query":"вор крадёт секреты, проникая в сны людей","locale":"ru","relevant":[27205],"tags":["plot"]}
+{"id":"ru-plot-02","query":"сын главы мафиозной семьи против своей воли становится новым доном","locale":"ru","relevant":[238,240],"graded":{"238":3,"240":2},"tags":["plot"]}
+{"id":"ru-plot-03","query":"мальчик-сирота узнаёт, что он волшебник, и едет учиться в школу магии","locale":"ru","relevant":[671,672,673,674,675,12444,12445],"graded":{"671":3,"672":1,"673":1,"674":1,"675":1,"12444":1,"12445":1},"tags":["plot"]}
+{"id":"ru-plot-04","query":"астронавт остался один на Марсе и выращивает картошку, чтобы выжить","locale":"ru","relevant":[286217],"tags":["plot"]}
+{"id":"ru-plot-05","query":"заключённый в камере смертников обладает даром исцеления","locale":"ru","relevant":[497],"tags":["plot"]}
+{"id":"ru-plot-06","query":"робот-уборщик на заброшенной Земле влюбляется","locale":"ru","relevant":[10681],"tags":["plot"]}
+{"id":"ru-plot-07","query":"космонавты летят через червоточину, чтобы найти новый дом для человечества","locale":"ru","relevant":[157336],"tags":["plot"]}
+{"id":"ru-plot-08","query":"девочка попадает в мир духов, а её родители превращаются в свиней","locale":"ru","relevant":[129],"tags":["plot"]}
+{"id":"ru-plot-09","query":"после высадки в Нормандии отряд ищет рядового, все братья которого погибли","locale":"ru","relevant":[857],"tags":["plot"]}
+{"id":"ru-plot-10","query":"отец в концлагере убеждает сына, что всё вокруг — игра","locale":"ru","relevant":[637],"tags":["plot"]}
+{"id":"ru-plot-11","query":"двенадцатилетний мальчик подаёт в суд на родителей за то, что они его родили","locale":"ru","relevant":[517814],"tags":["plot"]}
+{"id":"ru-plot-12","query":"консьерж знаменитого отеля и юный коридорный оказываются замешаны в краже картины","locale":"ru","relevant":[120467],"tags":["plot"]}
+{"id":"ru-cross-01","query":"в послевоенном Риме женщина терпит мужа-тирана и мечтает о лучшей жизни для дочери","locale":"ru","relevant":[1026227],"tags":["plot","cross-language"]}
+{"id":"ru-cross-02","query":"подростки из Монтеррея танцуют под замедленную кумбию, а лидеру банды приходится бежать в США","locale":"ru","relevant":[582927],"tags":["plot","cross-language"]}
+{"id":"ru-cross-03","query":"мексиканская легенда: призрак женщины, утопившей своих детей, похищает детей в лесу","locale":"ru","relevant":[116322],"tags":["plot","cross-language"]}
+{"id":"ru-cross-04","query":"фильмы Кристофера Нолана","locale":"ru","relevant":[77,155,272,1124,27205,49026,157336,577922,872585,1368337],"tags":["person","cross-language"]}
+{"id":"ru-mood-01","query":"добрый мультфильм про семью и память, после которого хочется плакать","locale":"ru","relevant":[354912,14160,150540,10193,20722,110420],"graded":{"354912":3,"14160":3,"150540":2,"10193":2,"20722":3,"110420":1},"tags":["mood"]}
+{"id":"ru-mood-02","query":"лёгкая романтическая комедия про застенчивую девушку в Париже","locale":"ru","relevant":[194],"tags":["mood"]}
+{"id":"ru-mood-03","query":"мрачный страшный фильм про одержимость демоном","locale":"ru","relevant":[9552,138843,1038392],"graded":{"9552":3,"138843":1,"1038392":1},"tags":["mood"]}
+{"id":"ru-mood-04","query":"уютное аниме про двух сестёр и большого лесного духа","locale":"ru","relevant":[8392],"tags":["mood"]}
+{"id":"ru-person-01","query":"фильмы с Леонардо Ди Каприо","locale":"ru","relevant":[597,640,1422,11324,27205,68718,106646,281957,466272,466420],"tags":["person","cross-language"]}
+{"id":"ru-person-02","query":"Тарковский","locale":"ru","relevant":[593,895,1394,1396,31442],"tags":["person","cross-language"]}
+{"id":"ru-person-03","query":"комедии Гайдая","locale":"ru","relevant":[20803,20873],"tags":["person","cross-language"]}
+{"id":"ru-person-04","query":"Квентин Тарантино","locale":"ru","relevant":[24,393,500,680,16869,68718,273248,414419,466272],"tags":["person","cross-language"]}
+{"id":"ru-typo-01","query":"интерстелар","locale":"ru","relevant":[157336],"tags":["title-typo"]}
+{"id":"ru-typo-02","query":"крестный отец","locale":"ru","relevant":[238,240],"graded":{"238":3,"240":2},"tags":["title-typo"]}
+{"id":"ru-typo-03","query":"побег из шоушенко","locale":"ru","relevant":[278],"tags":["title-typo"]}
+{"id":"ru-typo-04","query":"властелин калец братство кольца","locale":"ru","relevant":[120,121,122],"graded":{"120":3,"121":1,"122":1},"tags":["title-typo"]}
+{"id":"ru-typo-05","query":"гари потер","locale":"ru","relevant":[671,672,673,674,675,12444,12445],"tags":["title-typo"]}
+{"id":"ru-constraint-01","query":"фильмы Кубрика до 1970 года","locale":"ru","relevant":[975,935,62],"tags":["constraint","person"]}
+{"id":"ru-constraint-02","query":"аниме Миядзаки, вышедшие после 2000 года","locale":"ru","relevant":[129,4935,12429,149870],"tags":["constraint","person"]}
+{"id":"ru-constraint-03","query":"советский фильм о Второй мировой войне","locale":"ru","relevant":[25237,38360,31442],"tags":["constraint"]}
+{"id":"ru-negative-01","query":"реалистичный фильм про выживание в космосе, без инопланетян и ужасов","locale":"ru","relevant":[286217,157336],"graded":{"286217":3,"157336":2},"excludedGenres":["horror"],"tags":["negative"]}
+{"id":"ru-negative-02","query":"мультфильм для детей про драконов, только не страшный","locale":"ru","relevant":[10191,166428,638507,1087192],"graded":{"10191":3,"166428":2,"638507":1,"1087192":2},"excludedGenres":["horror"],"tags":["negative"]}
+{"id":"ru-negative-03","query":"смешной фильм про ограбление, но не триллер","locale":"ru","relevant":[107,100,24382,9277],"excludedGenres":["thriller"],"tags":["negative"]}
+{"id":"sv-plot-01","query":"en tjuv som stjäl hemligheter genom att ta sig in i människors drömmar","locale":"sv","relevant":[27205],"tags":["plot"]}
+{"id":"sv-plot-02","query":"en man upptäcker att hela hans liv är en dokusåpa","locale":"sv","relevant":[37165],"tags":["plot"]}
+{"id":"sv-plot-03","query":"en riddare spelar schack med Döden medan pesten härjar","locale":"sv","relevant":[490],"tags":["plot"]}
+{"id":"sv-plot-04","query":"en föräldralös pojke får veta att han är trollkarl och börjar på en skola för magi","locale":"sv","relevant":[671,672,673,674,675,12444,12445],"graded":{"671":3,"672":1,"673":1,"674":1,"675":1,"12444":1,"12445":1},"tags":["plot"]}
+{"id":"sv-plot-05","query":"astronauter reser genom ett maskhål för att hitta ett nytt hem åt mänskligheten","locale":"sv","relevant":[157336],"tags":["plot"]}
+{"id":"sv-plot-06","query":"en astronaut lämnas ensam kvar på Mars och odlar potatis för att överleva","locale":"sv","relevant":[286217],"tags":["plot"]}
+{"id":"sv-plot-07","query":"en fattig familj lurar sig in som anställda hos en rik familj","locale":"sv","relevant":[496243],"tags":["plot"]}
+{"id":"sv-plot-08","query":"en lejonunge flyr efter att hans far har dödats av hans farbror","locale":"sv","relevant":[8587],"tags":["plot"]}
+{"id":"sv-plot-09","query":"en gammal professor reser till Lund för att bli hedersdoktor och ser tillbaka på sitt liv","locale":"sv","relevant":[614],"tags":["plot"]}
+{"id":"sv-plot-10","query":"en skådespelerska slutar tala och vårdas av en sjuksköterska i ett sommarhus vid havet","locale":"sv","relevant":[797],"tags":["plot"]}
+{"id":"sv-cross-01","query":"två bedragare försöker sälja falska sällsynta frimärken till en samlare","locale":"sv","relevant":[18079],"tags":["plot","cross-language"]}
+{"id":"sv-cross-02","query":"en tolvårig pojke stämmer sina föräldrar för att de satt honom till världen","locale":"sv","relevant":[517814],"tags":["plot","cross-language"]}
+{"id":"sv-cross-03","query":"en begåvad elev startar en stor fuskverksamhet på prov","locale":"sv","relevant":[455714],"tags":["plot","cross-language"]}
+{"id":"sv-cross-04","query":"en kontorsarbetare använder pappersflygplan för att få kontakt med en tjej","locale":"sv","relevant":[140420],"tags":["plot","cross-language"]}
+{"id":"sv-cross-05","query":"en fågelmamma lär sin unge att hitta mat själv på stranden","locale":"sv","relevant":[399106],"tags":["plot","cross-language"]}
+{"id":"sv-cross-06","query":"en taxichaufför i Seoul kör en tysk journalist till Gwangju 1980","locale":"sv","relevant":[437068],"tags":["plot","cross-language"]}
+{"id":"sv-cross-07","query":"varje onsdag tar vännerna med sig en idiot på middag","locale":"sv","relevant":[9421],"tags":["plot","cross-language"]}
+{"id":"sv-mood-01","query":"en varm animerad film om familj och minnen som får en att gråta","locale":"sv","relevant":[354912,14160,150540,10193,20722,110420],"graded":{"354912":3,"14160":3,"150540":2,"10193":2,"20722":3,"110420":1},"tags":["mood"]}
+{"id":"sv-mood-02","query":"en riktigt läskig skräckfilm om en demon som tar över en flicka","locale":"sv","relevant":[9552,138843,1038392],"graded":{"9552":3,"138843":1,"1038392":1},"tags":["mood"]}
+{"id":"sv-mood-03","query":"en romantisk feelgoodfilm om en blyg ung kvinna i Paris","locale":"sv","relevant":[194],"tags":["mood"]}
+{"id":"sv-person-01","query":"filmer av Ingmar Bergman","locale":"sv","relevant":[490,614,797,5961,10238,11602,11656,12761,29455,133919],"tags":["person"]}
+{"id":"sv-person-02","query":"filmer med Liv Ullmann","locale":"sv","relevant":[797,10238,12761,133919],"tags":["person"]}
+{"id":"sv-person-03","query":"Mads Mikkelsen","locale":"sv","relevant":[103663,36557,284052],"graded":{"103663":3,"36557":2,"284052":1},"tags":["person"]}
+{"id":"sv-person-04","query":"filmer regisserade av Hayao Miyazaki","locale":"sv","relevant":[81,128,129,4935,8392,10515,11621,12429,16859,149870],"tags":["person"]}
+{"id":"sv-typo-01","query":"nykeln till frihet","locale":"sv","relevant":[278],"tags":["title-typo"]}
+{"id":"sv-typo-02","query":"det sjunde insegelt","locale":"sv","relevant":[490],"tags":["title-typo"]}
+{"id":"sv-typo-03","query":"gudfadren","locale":"sv","relevant":[238,240],"graded":{"238":3,"240":2},"tags":["title-typo"]}
+{"id":"sv-typo-04","query":"tilbaka till framtiden","locale":"sv","relevant":[105,165],"graded":{"105":3,"165":2},"tags":["title-typo"]}
+{"id":"sv-typo-05","query":"harry poter och de vises sten","locale":"sv","relevant":[671,672,673,674,675,12444,12445],"graded":{"671":3,"672":1,"673":1,"674":1,"675":1,"12444":1,"12445":1},"tags":["title-typo"]}
+{"id":"sv-constraint-01","query":"Bergmanfilmer från 1970-talet","locale":"sv","relevant":[10238,133919,12761],"tags":["constraint","person"]}
+{"id":"sv-constraint-02","query":"Hitchcockfilmer gjorda före 1955","locale":"sv","relevant":[223,521,567,1580],"tags":["constraint","person"]}
+{"id":"sv-constraint-03","query":"dansk film med Mads Mikkelsen","locale":"sv","relevant":[103663],"tags":["constraint","person"]}
+{"id":"sv-negative-01","query":"en rolig animerad film om djur, inget läskigt","locale":"sv","relevant":[269149,9502,425,1084242,10315,153518],"excludedGenres":["horror"],"tags":["negative"]}
+{"id":"sv-negative-02","query":"ett krigsdrama som inte handlar om andra världskriget","locale":"sv","relevant":[28,600,530915,975,792,49046,11778,197,616,1495,935,770,143,11658,55823],"tags":["negative"],"graded":{"28":2,"600":2,"530915":2,"975":2,"792":2,"49046":2,"11778":2,"197":1,"616":1,"1495":1,"935":1,"770":1,"143":2,"11658":2,"55823":2}}
+{"id":"sv-negative-03","query":"en realistisk film om att överleva i rymden, utan utomjordingar och skräck","locale":"sv","relevant":[286217,157336],"graded":{"286217":3,"157336":2},"excludedGenres":["horror"],"tags":["negative"]}

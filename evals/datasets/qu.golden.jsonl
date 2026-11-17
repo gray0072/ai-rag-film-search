@@ -1,0 +1,40 @@
+{"id":"en-qu-01","query":"sci-fi movies from the 90s","locale":"en","expected":{"genresInclude":["science-fiction"],"yearFrom":1990,"yearTo":1999},"tags":["genre","years"]}
+{"id":"en-qu-02","query":"a highly rated comedy","locale":"en","expected":{"genresInclude":["comedy"],"minRating":7.5},"tags":["genre","rating"]}
+{"id":"en-qu-03","query":"movies about space, no horror","locale":"en","expected":{"genresExclude":["horror"]},"tags":["exclude"]}
+{"id":"en-qu-04","query":"something like Interstellar","locale":"en","expected":{"similarToTitles":["Interstellar"]},"tags":["similar"]}
+{"id":"en-qu-05","query":"Japanese anime about spirits","locale":"en","expected":{"genresInclude":["animation"],"language":"ja"},"tags":["genre","language"]}
+{"id":"en-qu-06","query":"thrillers released after 2010 with a rating above 7","locale":"en","expected":{"genresInclude":["thriller"],"yearFrom":2011,"minRating":7},"tags":["genre","years","rating"]}
+{"id":"en-qu-07","query":"war movies before 1980 under $4","locale":"en","expected":{"genresInclude":["war"],"yearTo":1979,"maxPriceMinor":400},"tags":["genre","years","price"]}
+{"id":"en-qu-08","query":"a heist inside dreams","locale":"en","expected":{},"tags":["plain"]}
+{"id":"en-qu-09","query":"Swedish dramas from the 1950s","locale":"en","expected":{"genresInclude":["drama"],"yearFrom":1950,"yearTo":1959,"language":"sv"},"tags":["genre","years","language"]}
+{"id":"en-qu-10","query":"movies like The Matrix and Blade Runner but not action","locale":"en","expected":{"genresExclude":["action"],"similarToTitles":["The Matrix","Blade Runner"]},"tags":["similar","exclude"]}
+{"id":"en-qu-11","query":"animated family movies, nothing scary","locale":"en","expected":{"genresInclude":["animation","family"],"genresExclude":["horror"]},"tags":["genre","exclude"]}
+{"id":"en-qu-12","query":"Christopher Nolan films","locale":"en","expected":{},"tags":["plain","person"]}
+{"id":"en-qu-13","query":"cheap westerns under 3 dollars","locale":"en","expected":{"genresInclude":["western"],"maxPriceMinor":300},"tags":["genre","price"]}
+{"id":"en-qu-14","query":"Korean thrillers with a rating of at least 8","locale":"en","expected":{"genresInclude":["thriller"],"minRating":8,"language":"ko"},"tags":["genre","rating","language"]}
+{"id":"ru-qu-01","query":"фильмы 2000-х про путешествия во времени с рейтингом выше 7, без ужасов","locale":"ru","expected":{"genresExclude":["horror"],"yearFrom":2000,"yearTo":2009,"minRating":7},"tags":["years","rating","exclude"]}
+{"id":"ru-qu-02","query":"комедии 80-х","locale":"ru","expected":{"genresInclude":["comedy"],"yearFrom":1980,"yearTo":1989},"tags":["genre","years"]}
+{"id":"ru-qu-03","query":"что-нибудь похожее на Матрицу","locale":"ru","expected":{"similarToTitles":["Матрицу"]},"tags":["similar"]}
+{"id":"ru-qu-04","query":"советские военные фильмы","locale":"ru","expected":{"genresInclude":["war"],"language":"ru"},"tags":["genre","language"]}
+{"id":"ru-qu-05","query":"мультфильмы для всей семьи дешевле 2 долларов","locale":"ru","expected":{"genresInclude":["animation","family"],"maxPriceMinor":200},"tags":["genre","price"]}
+{"id":"ru-qu-06","query":"фантастика после 2015 года с высоким рейтингом","locale":"ru","expected":{"genresInclude":["science-fiction"],"yearFrom":2016,"minRating":7.5},"tags":["genre","years","rating"]}
+{"id":"ru-qu-07","query":"фильм про мафиозную семью","locale":"ru","expected":{},"tags":["plain"]}
+{"id":"ru-qu-08","query":"японское аниме, только не ужасы","locale":"ru","expected":{"genresInclude":["animation"],"genresExclude":["horror"],"language":"ja"},"tags":["genre","exclude","language"]}
+{"id":"ru-qu-09","query":"вестерны до 1970 года","locale":"ru","expected":{"genresInclude":["western"],"yearTo":1969},"tags":["genre","years"]}
+{"id":"ru-qu-10","query":"фильмы как Начало, но без боевиков","locale":"ru","expected":{"genresExclude":["action"],"similarToTitles":["Начало"]},"tags":["similar","exclude"]}
+{"id":"ru-qu-11","query":"ужасы с рейтингом не ниже 6.5","locale":"ru","expected":{"genresInclude":["horror"],"minRating":6.5},"tags":["genre","rating"]}
+{"id":"ru-qu-12","query":"французские романтические комедии","locale":"ru","expected":{"genresInclude":["romance","comedy"],"language":"fr"},"tags":["genre","language"]}
+{"id":"ru-qu-13","query":"фильмы с Леонардо Ди Каприо","locale":"ru","expected":{},"tags":["plain","person"]}
+{"id":"ru-qu-14","query":"драмы 2000-х годов дешевле 5 долларов","locale":"ru","expected":{"genresInclude":["drama"],"yearFrom":2000,"yearTo":2009,"maxPriceMinor":500},"tags":["genre","years","price"]}
+{"id":"sv-qu-01","query":"danska dramer under 5 dollar","locale":"sv","expected":{"genresInclude":["drama"],"maxPriceMinor":500,"language":"da"},"tags":["genre","price","language"]}
+{"id":"sv-qu-02","query":"skräckfilmer från 70-talet","locale":"sv","expected":{"genresInclude":["horror"],"yearFrom":1970,"yearTo":1979},"tags":["genre","years"]}
+{"id":"sv-qu-03","query":"något som liknar Alien","locale":"sv","expected":{"similarToTitles":["Alien"]},"tags":["similar"]}
+{"id":"sv-qu-04","query":"animerade filmer för barn, inget läskigt","locale":"sv","expected":{"genresInclude":["animation","family"],"genresExclude":["horror"]},"tags":["genre","exclude"]}
+{"id":"sv-qu-05","query":"en film om en tjuv som stjäl drömmar","locale":"sv","expected":{},"tags":["plain"]}
+{"id":"sv-qu-06","query":"krigsfilmer med betyg över 8","locale":"sv","expected":{"genresInclude":["war"],"minRating":8},"tags":["genre","rating"]}
+{"id":"sv-qu-07","query":"science fiction efter 2000 men inte action","locale":"sv","expected":{"genresInclude":["science-fiction"],"genresExclude":["action"],"yearFrom":2001},"tags":["genre","years","exclude"]}
+{"id":"sv-qu-08","query":"italienska dramer från 1960-talet","locale":"sv","expected":{"genresInclude":["drama"],"yearFrom":1960,"yearTo":1969,"language":"it"},"tags":["genre","years","language"]}
+{"id":"sv-qu-09","query":"filmer som Toy Story och Shrek","locale":"sv","expected":{"similarToTitles":["Toy Story","Shrek"]},"tags":["similar"]}
+{"id":"sv-qu-10","query":"romantiska filmer före 1960","locale":"sv","expected":{"genresInclude":["romance"],"yearTo":1959},"tags":["genre","years"]}
+{"id":"sv-qu-11","query":"filmer av Ingmar Bergman","locale":"sv","expected":{},"tags":["plain","person"]}
+{"id":"sv-qu-12","query":"thrillers under 4 dollar med högt betyg","locale":"sv","expected":{"genresInclude":["thriller"],"minRating":7.5,"maxPriceMinor":400},"tags":["genre","price","rating"]}

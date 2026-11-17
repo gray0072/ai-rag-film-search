@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Evaluation runner (I08, spec 09): runs a suite over a golden dataset with the same DI registrations as the API
+    and writes a markdown + JSON report to evals/reports. See evals/README.md.
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <!-- Shares the user secrets of the API, so an OpenRouter key set for the API works here too. -->
+    <UserSecretsId>filmsearch-api-6f1d2c9e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- A fresh PostgreSQL + pgvector container per run (same image as the AppHost), so every run starts from the same seed. -->
+    <PackageReference Include="Testcontainers.PostgreSql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FilmSearch.AI\FilmSearch.AI.csproj" />
+    <ProjectReference Include="..\..\src\FilmSearch.Core\FilmSearch.Core.csproj" />
+    <ProjectReference Include="..\..\src\FilmSearch.Infrastructure\FilmSearch.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FilmSearch.UnitTests" />
+  </ItemGroup>
+
+</Project>

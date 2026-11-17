@@ -1,0 +1,3461 @@
+{
+  "header": {
+    "suite": "search",
+    "label": "hybrid-rrf-k60",
+    "startedAt": "2026-11-17T23:00:25.164794+00:00",
+    "commandLine": "--suite search --label hybrid-rrf-k60 --modes hybrid --set Search:Hybrid:RrfK=60",
+    "commit": "836f94e+dirty",
+    "dataset": "evals/datasets/search.golden.jsonl",
+    "datasetVersion": "759f9abeac13",
+    "cases": 105,
+    "repeat": 1,
+    "database": "fresh container pgvector/pgvector:pg17",
+    "seedGeneratedAt": "2026-11-17 19:13:07Z",
+    "embeddingProfile": "local",
+    "embeddingModel": "text-embedding-embeddinggemma-300m (768 dims, query prefix \"task: search result | query: \", document prefix \"title: none | text: \")",
+    "embeddingText": "movie-profile-v1",
+    "embeddingLocales": [
+      "en"
+    ],
+    "prompts": [],
+    "searchParameters": {
+      "Search:Semantic:MaxResults": "100",
+      "Search:Hybrid:RrfK": "60",
+      "Search:Hybrid:KeywordWeight": "1",
+      "Search:Hybrid:RelaxedKeywordWeight": "0.1",
+      "Search:Hybrid:SemanticWeight": "1",
+      "Search:Hybrid:CandidatesPerList": "50",
+      "Search:Hybrid:SimilarTitles": "AverageVector"
+    },
+    "overrides": {
+      "Search:Hybrid:RrfK": "60"
+    }
+  },
+  "summary": [
+    {
+      "mode": "hybrid",
+      "cases": 105,
+      "recall5": 0.8314285714285714,
+      "recall10": 0.8692743764172336,
+      "mrr": 0.732010582010582,
+      "ndcg10": 0.7501932452189386,
+      "excludedGenreRate": 0.17142857142857143,
+      "latencyP50Ms": 78.3221,
+      "latencyP95Ms": 114.89726,
+      "degraded": 0,
+      "quFallbacks": 0
+    }
+  ],
+  "byLocale": {
+    "en": [
+      {
+        "mode": "hybrid",
+        "cases": 35,
+        "recall5": 0.8380952380952381,
+        "recall10": 0.8998639455782311,
+        "mrr": 0.7174603174603174,
+        "ndcg10": 0.7455227249520262,
+        "excludedGenreRate": 0.3,
+        "latencyP50Ms": 82.4152,
+        "latencyP95Ms": 121.36467999999999,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ],
+    "ru": [
+      {
+        "mode": "hybrid",
+        "cases": 35,
+        "recall5": 0.852857142857143,
+        "recall10": 0.8713605442176873,
+        "mrr": 0.7833333333333332,
+        "ndcg10": 0.7943108727911028,
+        "excludedGenreRate": 0.20000000000000004,
+        "latencyP50Ms": 72.7794,
+        "latencyP95Ms": 111.68104999999998,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ],
+    "sv": [
+      {
+        "mode": "hybrid",
+        "cases": 35,
+        "recall5": 0.8033333333333333,
+        "recall10": 0.8365986394557824,
+        "mrr": 0.6952380952380951,
+        "ndcg10": 0.7107461379136863,
+        "excludedGenreRate": 0,
+        "latencyP50Ms": 82.384,
+        "latencyP95Ms": 107.62574,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ]
+  },
+  "byTag": {
+    "plot": [
+      {
+        "mode": "hybrid",
+        "cases": 46,
+        "recall5": 0.9739130434782608,
+        "recall10": 0.9658385093167702,
+        "mrr": 0.7282608695652174,
+        "ndcg10": 0.7871949926356968,
+        "latencyP50Ms": 94.36395,
+        "latencyP95Ms": 128.882325,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ],
+    "mood": [
+      {
+        "mode": "hybrid",
+        "cases": 11,
+        "recall5": 0.6696969696969697,
+        "recall10": 0.8030303030303029,
+        "mrr": 0.8787878787878788,
+        "ndcg10": 0.7713469466515285,
+        "latencyP50Ms": 82.384,
+        "latencyP95Ms": 111.3748,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ],
+    "person": [
+      {
+        "mode": "hybrid",
+        "cases": 22,
+        "recall5": 0.8348484848484848,
+        "recall10": 0.9212121212121211,
+        "mrr": 0.8308080808080809,
+        "ndcg10": 0.8300174021140688,
+        "latencyP50Ms": 64.3295,
+        "latencyP95Ms": 70.650265,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ],
+    "title-typo": [
+      {
+        "mode": "hybrid",
+        "cases": 15,
+        "recall5": 0.7333333333333333,
+        "recall10": 0.7333333333333333,
+        "mrr": 0.7,
+        "ndcg10": 0.7057840228611758,
+        "latencyP50Ms": 66.3134,
+        "latencyP95Ms": 74.47222999999998,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ],
+    "constraint": [
+      {
+        "mode": "hybrid",
+        "cases": 10,
+        "recall5": 0.6633333333333333,
+        "recall10": 0.95,
+        "mrr": 0.6111111111111112,
+        "ndcg10": 0.6683063187290743,
+        "latencyP50Ms": 67.3246,
+        "latencyP95Ms": 77.017225,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ],
+    "negative": [
+      {
+        "mode": "hybrid",
+        "cases": 9,
+        "recall5": 0.4555555555555555,
+        "recall10": 0.5272486772486773,
+        "mrr": 0.4722222222222222,
+        "ndcg10": 0.4604466526263986,
+        "excludedGenreRate": 0.17142857142857143,
+        "latencyP50Ms": 69.5992,
+        "latencyP95Ms": 83.29472,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ],
+    "cross-language": [
+      {
+        "mode": "hybrid",
+        "cases": 15,
+        "recall5": 0.9600000000000001,
+        "recall10": 0.9244444444444445,
+        "mrr": 0.6888888888888889,
+        "ndcg10": 0.740623612557685,
+        "latencyP50Ms": 82.6168,
+        "latencyP95Ms": 98.95935999999999,
+        "degraded": 0,
+        "quFallbacks": 0
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "en-plot-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.5,
+      "runs": [
+        {
+          "results": [
+            12516,
+            672,
+            27205,
+            377,
+            572154,
+            4977,
+            425274,
+            14836,
+            9479,
+            838240
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.5,
+          "violations": 0,
+          "latencyMs": 86.952,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            157336,
+            62,
+            348,
+            679,
+            755898,
+            687163,
+            840464,
+            10681,
+            286217,
+            593
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 103.8764,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            15244,
+            278,
+            7984,
+            497,
+            5924,
+            158445,
+            640,
+            210577,
+            1280,
+            903
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 104.9891,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            77,
+            11423,
+            210577,
+            13855,
+            567,
+            15859,
+            11324,
+            466420,
+            521,
+            546554
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 124.3758,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-05",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            129,
+            11621,
+            1417,
+            572154,
+            315465,
+            128,
+            92321,
+            110420,
+            14069,
+            916224
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 120.0742,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-06",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            14160,
+            937278,
+            15265,
+            149870,
+            140420,
+            20722,
+            10515,
+            429210,
+            11621,
+            16804
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 103.0231,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-07",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.25,
+      "ndcg10": 0.43067655807339306,
+      "runs": [
+        {
+          "results": [
+            838240,
+            10386,
+            1184918,
+            10681,
+            152601,
+            522402,
+            31056,
+            482321,
+            501929,
+            140420
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.25,
+          "ndcg10": 0.43067655807339306,
+          "violations": 0,
+          "latencyMs": 98.9119,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-08",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            37165,
+            632322,
+            18438,
+            211954,
+            429210,
+            823754,
+            5915,
+            937278,
+            133919,
+            406785
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 107.3844,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-09",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            505192,
+            496243,
+            180147,
+            56231,
+            58007,
+            1402,
+            1585,
+            8422,
+            435129,
+            1103621
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 100.7976,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-10",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            762,
+            490,
+            9495,
+            1495,
+            1284465,
+            30060,
+            3777,
+            23832,
+            89,
+            397567
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 111.9435,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-11",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            18079,
+            9277,
+            640,
+            52345,
+            24382,
+            11010,
+            5156,
+            152742,
+            568012,
+            11830
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 103.9606,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-12",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            77338,
+            296096,
+            380,
+            522924,
+            9475,
+            1402,
+            14624,
+            527641,
+            458220,
+            237791
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 130.3845,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-13",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            169813,
+            517814,
+            389,
+            21634,
+            491480,
+            447362,
+            10098,
+            110420,
+            158445,
+            103663
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 84.6504,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-plot-14",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            62,
+            593,
+            11049,
+            1394,
+            687163,
+            348,
+            20803,
+            1396,
+            31442,
+            286217
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 113.9791,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-mood-01",
+      "mode": "hybrid",
+      "recall5": 0.2,
+      "recall10": 0.5,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.27554317600933975,
+      "runs": [
+        {
+          "results": [
+            1064486,
+            8392,
+            20722,
+            12429,
+            37797,
+            150540,
+            476292,
+            110420,
+            12477,
+            995133
+          ],
+          "recall5": 0.2,
+          "recall10": 0.5,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.27554317600933975,
+          "violations": 0,
+          "latencyMs": 106.4913,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-mood-02",
+      "mode": "hybrid",
+      "recall5": 0.3333333333333333,
+      "recall10": 0.6666666666666666,
+      "mrr": 1,
+      "ndcg10": 0.6152122896663466,
+      "runs": [
+        {
+          "results": [
+            77338,
+            24238,
+            404,
+            574074,
+            200727,
+            22683,
+            527641,
+            28178,
+            63193,
+            84892
+          ],
+          "recall5": 0.3333333333333333,
+          "recall10": 0.6666666666666666,
+          "mrr": 1,
+          "ndcg10": 0.6152122896663466,
+          "violations": 0,
+          "latencyMs": 74.1503,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-mood-03",
+      "mode": "hybrid",
+      "recall5": 0.5,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.8935773014954859,
+      "runs": [
+        {
+          "results": [
+            348,
+            1083381,
+            945961,
+            62,
+            1091,
+            593,
+            1423191,
+            679,
+            1375646,
+            204
+          ],
+          "recall5": 0.5,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.8935773014954859,
+          "violations": 0,
+          "latencyMs": 70.4807,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-mood-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            313369,
+            762975,
+            144,
+            779047,
+            80,
+            419478,
+            572154,
+            630566,
+            962232,
+            843527
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 93.2565,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-person-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            49026,
+            577922,
+            872585,
+            27205,
+            155,
+            272,
+            1368337,
+            157336,
+            1124,
+            77
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 66.4691,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-person-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 0.9,
+      "mrr": 1,
+      "ndcg10": 0.9363792118010483,
+      "runs": [
+        {
+          "results": [
+            497,
+            857,
+            13,
+            522402,
+            937278,
+            640,
+            1084244,
+            863,
+            10193,
+            1646
+          ],
+          "recall5": 1,
+          "recall10": 0.9,
+          "mrr": 1,
+          "ndcg10": 0.9363792118010483,
+          "violations": 0,
+          "latencyMs": 62.8293,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-person-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            129,
+            8392,
+            149870,
+            4935,
+            128,
+            81,
+            10515,
+            12429,
+            16859,
+            11621
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 70.4089,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-person-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            324552,
+            603692,
+            603,
+            541671,
+            335984,
+            39254,
+            533535,
+            281957,
+            115,
+            11036
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 55.3892,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-person-05",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            797,
+            11656,
+            133919,
+            29455,
+            5961,
+            614,
+            12761,
+            11602,
+            10238,
+            490
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 60.9509,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-typo-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            11049,
+            157336,
+            324857,
+            945961,
+            16869,
+            823754,
+            678580,
+            582,
+            406785,
+            9421
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 59.0457,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-typo-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            278,
+            808,
+            424,
+            1284465,
+            698508,
+            566525,
+            1007757,
+            664767,
+            1081676,
+            39254
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 67.638,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-typo-03",
+      "mode": "hybrid",
+      "recall5": 0,
+      "recall10": 0,
+      "mrr": 0,
+      "ndcg10": 0,
+      "runs": [
+        {
+          "results": [
+            616037,
+            663558,
+            10728,
+            397567,
+            598,
+            13398,
+            518068,
+            48035,
+            118340,
+            29455
+          ],
+          "recall5": 0,
+          "recall10": 0,
+          "mrr": 0,
+          "ndcg10": 0,
+          "violations": 0,
+          "latencyMs": 56.7282,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-typo-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            680,
+            140420,
+            785534,
+            391,
+            393559,
+            315162,
+            285700,
+            4977,
+            203217,
+            555604
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 55.2215,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-typo-05",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            671,
+            675,
+            673,
+            674,
+            672,
+            12445,
+            12444,
+            411,
+            995133,
+            762
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 84.4956,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-constraint-01",
+      "mode": "hybrid",
+      "recall5": 0,
+      "recall10": 1,
+      "mrr": 0.1111111111111111,
+      "ndcg10": 0.3010299956639812,
+      "runs": [
+        {
+          "results": [
+            272,
+            155,
+            27205,
+            49026,
+            1124,
+            577922,
+            1368337,
+            872585,
+            77,
+            157336
+          ],
+          "recall5": 0,
+          "recall10": 1,
+          "mrr": 0.1111111111111111,
+          "ndcg10": 0.3010299956639812,
+          "violations": 0,
+          "latencyMs": 64.3903,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-constraint-02",
+      "mode": "hybrid",
+      "recall5": 0.8,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.9372375429818208,
+      "runs": [
+        {
+          "results": [
+            106646,
+            281957,
+            466420,
+            11324,
+            27205,
+            1422,
+            466272,
+            68718,
+            1171145,
+            597
+          ],
+          "recall5": 0.8,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.9372375429818208,
+          "violations": 0,
+          "latencyMs": 68.3892,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-constraint-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.5,
+      "runs": [
+        {
+          "results": [
+            1091,
+            62,
+            348,
+            593,
+            9552,
+            945961,
+            679,
+            948,
+            1083381,
+            805
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.5,
+          "violations": 0,
+          "latencyMs": 82.4152,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-constraint-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6934264036172708,
+      "runs": [
+        {
+          "results": [
+            466272,
+            68718,
+            273248,
+            6977,
+            301,
+            335,
+            391,
+            429,
+            393,
+            24
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6934264036172708,
+          "violations": 0,
+          "latencyMs": 70.4197,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-negative-01",
+      "mode": "hybrid",
+      "recall5": 0.5,
+      "recall10": 0.5,
+      "mrr": 0.25,
+      "ndcg10": 0.3390090350877799,
+      "violationRate": 0.3,
+      "runs": [
+        {
+          "results": [
+            348,
+            945961,
+            62,
+            286217,
+            906126,
+            679,
+            593,
+            687163,
+            1423191,
+            329865
+          ],
+          "recall5": 0.5,
+          "recall10": 0.5,
+          "mrr": 0.25,
+          "ndcg10": 0.3390090350877799,
+          "violations": 3,
+          "latencyMs": 77.5263,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-negative-02",
+      "mode": "hybrid",
+      "recall5": 0.4,
+      "recall10": 0.42857142857142855,
+      "mrr": 0.5,
+      "ndcg10": 0.40877874879535264,
+      "violationRate": 0.3,
+      "runs": [
+        {
+          "results": [
+            1171145,
+            24382,
+            100,
+            262,
+            51533,
+            25253,
+            581528,
+            275,
+            531,
+            992
+          ],
+          "recall5": 0.4,
+          "recall10": 0.42857142857142855,
+          "mrr": 0.5,
+          "ndcg10": 0.40877874879535264,
+          "violations": 3,
+          "latencyMs": 67.6543,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "en-negative-03",
+      "mode": "hybrid",
+      "recall5": 0.6,
+      "recall10": 0.5,
+      "mrr": 0.5,
+      "ndcg10": 0.47684658870035285,
+      "runs": [
+        {
+          "results": [
+            16869,
+            55823,
+            49046,
+            8290,
+            143,
+            324786,
+            530915,
+            11658,
+            228150,
+            857
+          ],
+          "recall5": 0.6,
+          "recall10": 0.5,
+          "mrr": 0.5,
+          "ndcg10": 0.47684658870035285,
+          "violations": 0,
+          "latencyMs": 62.1318,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            27205,
+            755898,
+            377,
+            9479,
+            672,
+            25376,
+            12516,
+            1078605,
+            16,
+            234
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 164.5033,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.9324441894571632,
+      "runs": [
+        {
+          "results": [
+            238,
+            1607,
+            111,
+            240,
+            8422,
+            1181678,
+            242,
+            769,
+            581528,
+            9702
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.9324441894571632,
+          "violations": 0,
+          "latencyMs": 104.9867,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-03",
+      "mode": "hybrid",
+      "recall5": 0.8,
+      "recall10": 0.7142857142857143,
+      "mrr": 1,
+      "ndcg10": 0.9252763885122295,
+      "runs": [
+        {
+          "results": [
+            671,
+            672,
+            675,
+            674,
+            812225,
+            673,
+            406997,
+            315465,
+            4935,
+            7508
+          ],
+          "recall5": 0.8,
+          "recall10": 0.7142857142857143,
+          "mrr": 1,
+          "ndcg10": 0.9252763885122295,
+          "violations": 0,
+          "latencyMs": 82.7606,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.25,
+      "ndcg10": 0.43067655807339306,
+      "runs": [
+        {
+          "results": [
+            687163,
+            348,
+            1384216,
+            286217,
+            18438,
+            679,
+            593,
+            945961,
+            775,
+            62
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.25,
+          "ndcg10": 0.43067655807339306,
+          "violations": 0,
+          "latencyMs": 80.036,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-05",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            497,
+            158445,
+            278,
+            637920,
+            5924,
+            903,
+            5925,
+            15244,
+            29259,
+            274
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 79.7988,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-06",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            10681,
+            838240,
+            1184918,
+            10386,
+            522402,
+            501929,
+            296096,
+            31056,
+            28978,
+            482321
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 67.05,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-07",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            157336,
+            286217,
+            840464,
+            348,
+            62,
+            11049,
+            593,
+            381284,
+            945961,
+            687163
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 94.7445,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-08",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            129,
+            14836,
+            572154,
+            14069,
+            11621,
+            150540,
+            1417,
+            92321,
+            315465,
+            585
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 96.2193,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-09",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            857,
+            335578,
+            398924,
+            46738,
+            530915,
+            975,
+            11658,
+            49046,
+            698948,
+            324786
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 89.0222,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-10",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            5000,
+            637,
+            103663,
+            14574,
+            5925,
+            424,
+            777,
+            185,
+            600354,
+            146233
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 73.1766,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-11",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            517814,
+            169813,
+            389,
+            315465,
+            10098,
+            369299,
+            491480,
+            110420,
+            595,
+            7508
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 91.5103,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-plot-12",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            120467,
+            992,
+            24382,
+            5156,
+            1580,
+            18079,
+            20334,
+            2457,
+            411088,
+            9277
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 87.8736,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-cross-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            47796,
+            1026227,
+            24167,
+            11659,
+            307,
+            439,
+            19426,
+            42229,
+            405,
+            29845
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 110.2043,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-cross-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            581,
+            582927,
+            239,
+            5528,
+            677638,
+            9702,
+            678512,
+            1084736,
+            354857,
+            552532
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 82.6168,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-cross-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            116322,
+            800,
+            129,
+            32579,
+            1417,
+            30959,
+            37793,
+            354912,
+            1621552,
+            375794
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 93.0685,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-cross-04",
+      "mode": "hybrid",
+      "recall5": 0.6,
+      "recall10": 0.6,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.5040610795300535,
+      "runs": [
+        {
+          "results": [
+            615457,
+            6977,
+            77,
+            155,
+            272,
+            1368337,
+            772,
+            49026,
+            872585,
+            1413976
+          ],
+          "recall5": 0.6,
+          "recall10": 0.6,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.5040610795300535,
+          "violations": 0,
+          "latencyMs": 60.9746,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-mood-01",
+      "mode": "hybrid",
+      "recall5": 0.4,
+      "recall10": 0.5,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.28915516119502566,
+      "runs": [
+        {
+          "results": [
+            1064486,
+            489412,
+            20722,
+            150540,
+            110416,
+            12429,
+            110420,
+            8392,
+            37797,
+            638507
+          ],
+          "recall5": 0.4,
+          "recall10": 0.5,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.28915516119502566,
+          "violations": 0,
+          "latencyMs": 115.1268,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-mood-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            194,
+            313369,
+            20334,
+            851644,
+            200727,
+            901,
+            531428,
+            15265,
+            614945,
+            80
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 68.5467,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-mood-03",
+      "mode": "hybrid",
+      "recall5": 0.6666666666666666,
+      "recall10": 0.6666666666666666,
+      "mrr": 1,
+      "ndcg10": 0.9138778446351128,
+      "runs": [
+        {
+          "results": [
+            9552,
+            1212763,
+            49797,
+            138843,
+            1034541,
+            1339713,
+            1400837,
+            805,
+            827,
+            1291595
+          ],
+          "recall5": 0.6666666666666666,
+          "recall10": 0.6666666666666666,
+          "mrr": 1,
+          "ndcg10": 0.9138778446351128,
+          "violations": 0,
+          "latencyMs": 67.1607,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-mood-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            8392,
+            92321,
+            128,
+            110420,
+            129,
+            37797,
+            12477,
+            568160,
+            149871,
+            667520
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 74.2667,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-person-01",
+      "mode": "hybrid",
+      "recall5": 0.8,
+      "recall10": 0.6,
+      "mrr": 0.5,
+      "ndcg10": 0.5716349530699038,
+      "runs": [
+        {
+          "results": [
+            101,
+            466272,
+            640,
+            106646,
+            1422,
+            237791,
+            27205,
+            466420,
+            1040,
+            1621552
+          ],
+          "recall5": 0.8,
+          "recall10": 0.6,
+          "mrr": 0.5,
+          "ndcg10": 0.5716349530699038,
+          "violations": 0,
+          "latencyMs": 63.4388,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-person-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            1394,
+            593,
+            1396,
+            31442,
+            895,
+            726759,
+            31414,
+            285700,
+            38360,
+            23160
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 64.1454,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-person-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.8772153153380493,
+      "runs": [
+        {
+          "results": [
+            20803,
+            529531,
+            23282,
+            20873,
+            28978,
+            38288,
+            22596,
+            554590,
+            583,
+            914
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.8772153153380493,
+          "violations": 0,
+          "latencyMs": 64.0194,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-person-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 0.6666666666666666,
+      "mrr": 1,
+      "ndcg10": 0.7713707099946513,
+      "runs": [
+        {
+          "results": [
+            466272,
+            414419,
+            24,
+            680,
+            273248,
+            240,
+            393,
+            13223,
+            6075,
+            769
+          ],
+          "recall5": 1,
+          "recall10": 0.6666666666666666,
+          "mrr": 1,
+          "ndcg10": 0.7713707099946513,
+          "violations": 0,
+          "latencyMs": 72.7794,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-typo-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            157336,
+            11049,
+            593,
+            614,
+            324857,
+            1396,
+            1891,
+            7508,
+            823754,
+            935
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 63.3868,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-typo-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.95583058934618,
+      "runs": [
+        {
+          "results": [
+            238,
+            242,
+            240,
+            600354,
+            7345,
+            7984,
+            1607,
+            9702,
+            13398,
+            920394
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.95583058934618,
+          "violations": 0,
+          "latencyMs": 67.4012,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-typo-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            278,
+            5925,
+            15244,
+            777,
+            5924,
+            3112,
+            29259,
+            808,
+            11324,
+            760774
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 68.4014,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-typo-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            120,
+            122,
+            121,
+            122917,
+            57158,
+            49051,
+            12445,
+            675,
+            672,
+            7131
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 66.6488,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-typo-05",
+      "mode": "hybrid",
+      "recall5": 0,
+      "recall10": 0,
+      "mrr": 0,
+      "ndcg10": 0,
+      "runs": [
+        {
+          "results": [
+            59440,
+            169813,
+            92321,
+            70160,
+            596,
+            985939,
+            13223,
+            25364,
+            5528,
+            14537
+          ],
+          "recall5": 0,
+          "recall10": 0,
+          "mrr": 0,
+          "ndcg10": 0,
+          "violations": 0,
+          "latencyMs": 64.0232,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-constraint-01",
+      "mode": "hybrid",
+      "recall5": 0.6666666666666666,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6871475159848289,
+      "runs": [
+        {
+          "results": [
+            3175,
+            62,
+            975,
+            11712,
+            903,
+            216,
+            935,
+            289,
+            103,
+            26451
+          ],
+          "recall5": 0.6666666666666666,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6871475159848289,
+          "violations": 0,
+          "latencyMs": 62.1292,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-constraint-02",
+      "mode": "hybrid",
+      "recall5": 0.25,
+      "recall10": 0.5,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.32531670832675136,
+      "runs": [
+        {
+          "results": [
+            33320,
+            15999,
+            129,
+            36865,
+            92321,
+            50253,
+            4935,
+            476292,
+            13398,
+            14069
+          ],
+          "recall5": 0.25,
+          "recall10": 0.5,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.32531670832675136,
+          "violations": 0,
+          "latencyMs": 67.6589,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-constraint-03",
+      "mode": "hybrid",
+      "recall5": 0.6666666666666666,
+      "recall10": 1,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.5833416105149332,
+      "runs": [
+        {
+          "results": [
+            55823,
+            887,
+            25237,
+            8290,
+            38360,
+            31442,
+            198,
+            821,
+            5925,
+            857
+          ],
+          "recall5": 0.6666666666666666,
+          "recall10": 1,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.5833416105149332,
+          "violations": 0,
+          "latencyMs": 67.5867,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-negative-01",
+      "mode": "hybrid",
+      "recall5": 0.5,
+      "recall10": 0.5,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.3935773014954859,
+      "violationRate": 0.4,
+      "runs": [
+        {
+          "results": [
+            348,
+            945961,
+            286217,
+            755898,
+            593,
+            679,
+            687163,
+            1375646,
+            62,
+            1423191
+          ],
+          "recall5": 0.5,
+          "recall10": 0.5,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.3935773014954859,
+          "violations": 4,
+          "latencyMs": 77.6794,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-negative-02",
+      "mode": "hybrid",
+      "recall5": 0.75,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.9423553864965112,
+      "violationRate": 0,
+      "runs": [
+        {
+          "results": [
+            10191,
+            638507,
+            166428,
+            550205,
+            527774,
+            1087192,
+            24480,
+            808,
+            726684,
+            615453
+          ],
+          "recall5": 0.75,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.9423553864965112,
+          "violations": 0,
+          "latencyMs": 69.5992,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "ru-negative-03",
+      "mode": "hybrid",
+      "recall5": 0.75,
+      "recall10": 0.75,
+      "mrr": 1,
+      "ndcg10": 0.8048099750039491,
+      "violationRate": 0.2,
+      "runs": [
+        {
+          "results": [
+            100,
+            107,
+            1171145,
+            24382,
+            531,
+            375794,
+            51533,
+            12153,
+            968,
+            8871
+          ],
+          "recall5": 0.75,
+          "recall10": 0.75,
+          "mrr": 1,
+          "ndcg10": 0.8048099750039491,
+          "violations": 2,
+          "latencyMs": 67.0797,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.5,
+      "runs": [
+        {
+          "results": [
+            25376,
+            14282,
+            27205,
+            16,
+            377,
+            1122573,
+            10238,
+            585,
+            9495,
+            7131
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.5,
+          "violations": 0,
+          "latencyMs": 202.2561,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-02",
+      "mode": "hybrid",
+      "recall5": 0,
+      "recall10": 0,
+      "mrr": 0,
+      "ndcg10": 0,
+      "runs": [
+        {
+          "results": [
+            797,
+            3782,
+            11602,
+            489412,
+            490,
+            582,
+            133919,
+            406785,
+            27064,
+            614
+          ],
+          "recall5": 0,
+          "recall10": 0,
+          "mrr": 0,
+          "ndcg10": 0,
+          "violations": 0,
+          "latencyMs": 92.2172,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            490,
+            166426,
+            762,
+            30060,
+            11656,
+            9421,
+            650031,
+            49051,
+            13042,
+            585511
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 94.5878,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 0.7142857142857143,
+      "mrr": 1,
+      "ndcg10": 0.9284560545501377,
+      "runs": [
+        {
+          "results": [
+            671,
+            673,
+            672,
+            674,
+            675,
+            315465,
+            10191,
+            995133,
+            4935,
+            406997
+          ],
+          "recall5": 1,
+          "recall10": 0.7142857142857143,
+          "mrr": 1,
+          "ndcg10": 0.9284560545501377,
+          "violations": 0,
+          "latencyMs": 104.6028,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-05",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            286217,
+            157336,
+            62,
+            687163,
+            593,
+            348,
+            840464,
+            11049,
+            381284,
+            10681
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 89.1594,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-06",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            286217,
+            24238,
+            593,
+            18438,
+            687163,
+            348,
+            679,
+            62,
+            1384216,
+            157336
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 86.5499,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-07",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            505192,
+            496243,
+            180147,
+            58007,
+            517814,
+            285700,
+            435129,
+            1402,
+            8422,
+            12405
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 107.6326,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-08",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            1607,
+            8587,
+            5961,
+            18438,
+            103663,
+            920394,
+            238,
+            58129,
+            101,
+            1214484
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 80.9295,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-09",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            614,
+            10238,
+            14160,
+            29455,
+            490,
+            797,
+            103663,
+            11602,
+            489,
+            3780
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 105.323,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-plot-10",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.5,
+      "runs": [
+        {
+          "results": [
+            11602,
+            10238,
+            797,
+            419478,
+            614,
+            29455,
+            490,
+            16672,
+            335578,
+            12761
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.5,
+          "violations": 0,
+          "latencyMs": 98.7834,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-cross-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            12153,
+            18079,
+            24382,
+            1632181,
+            640,
+            38286,
+            25253,
+            938,
+            152742,
+            5156
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 89.9588,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-cross-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.25,
+      "ndcg10": 0.43067655807339306,
+      "runs": [
+        {
+          "results": [
+            10098,
+            14574,
+            315465,
+            517814,
+            458302,
+            18148,
+            21634,
+            13398,
+            2517,
+            7508
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.25,
+          "ndcg10": 0.43067655807339306,
+          "violations": 0,
+          "latencyMs": 87.0372,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-cross-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.25,
+      "ndcg10": 0.43067655807339306,
+      "runs": [
+        {
+          "results": [
+            103663,
+            147,
+            83564,
+            455714,
+            285700,
+            400928,
+            901563,
+            671,
+            489,
+            15804
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.25,
+          "ndcg10": 0.43067655807339306,
+          "violations": 0,
+          "latencyMs": 77.447,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-cross-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 0.5,
+      "ndcg10": 0.6309297535714575,
+      "runs": [
+        {
+          "results": [
+            13855,
+            140420,
+            290098,
+            18240,
+            785534,
+            20334,
+            350,
+            594634,
+            406785,
+            284
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 0.5,
+          "ndcg10": 0.6309297535714575,
+          "violations": 0,
+          "latencyMs": 83.2936,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-cross-05",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            399106,
+            831827,
+            110416,
+            1184918,
+            47796,
+            22504,
+            10098,
+            310569,
+            153518,
+            614
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 94.1401,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-cross-06",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            437068,
+            13855,
+            103,
+            11423,
+            396535,
+            144,
+            655,
+            49797,
+            581528,
+            18438
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 89.5883,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-cross-07",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            9421,
+            20453,
+            20914,
+            18785,
+            285700,
+            58129,
+            235,
+            49964,
+            23282,
+            136
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 79.066,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-mood-01",
+      "mode": "hybrid",
+      "recall5": 0.6,
+      "recall10": 0.5,
+      "mrr": 1,
+      "ndcg10": 0.5151353105845049,
+      "runs": [
+        {
+          "results": [
+            20722,
+            110420,
+            150540,
+            1064486,
+            489412,
+            12477,
+            458302,
+            12429,
+            8392,
+            92321
+          ],
+          "recall5": 0.6,
+          "recall10": 0.5,
+          "mrr": 1,
+          "ndcg10": 0.5151353105845049,
+          "violations": 0,
+          "latencyMs": 107.6228,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-mood-02",
+      "mode": "hybrid",
+      "recall5": 0.6666666666666666,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.9823153295809968,
+      "runs": [
+        {
+          "results": [
+            9552,
+            138843,
+            1400837,
+            1291595,
+            1212763,
+            1038392,
+            377,
+            49797,
+            805,
+            4488
+          ],
+          "recall5": 0.6666666666666666,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.9823153295809968,
+          "violations": 0,
+          "latencyMs": 86.1572,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-mood-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            194,
+            15265,
+            779047,
+            80,
+            531428,
+            851644,
+            200727,
+            331482,
+            71157,
+            901
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 82.384,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-person-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            5961,
+            797,
+            29455,
+            11656,
+            133919,
+            614,
+            12761,
+            490,
+            11602,
+            10238
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 62.3893,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-person-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            133919,
+            797,
+            12761,
+            10238,
+            582,
+            414419,
+            24,
+            613,
+            1413976,
+            1032863
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 65.3851,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-person-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            103663,
+            36557,
+            284052,
+            335578,
+            650031,
+            1062722,
+            16,
+            286217,
+            1087192,
+            1284465
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 63.7605,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-person-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            149870,
+            129,
+            4935,
+            8392,
+            16859,
+            81,
+            12429,
+            128,
+            10515,
+            11621
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 70.6624,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-typo-01",
+      "mode": "hybrid",
+      "recall5": 0,
+      "recall10": 0,
+      "mrr": 0,
+      "ndcg10": 0,
+      "runs": [
+        {
+          "results": [
+            1214484,
+            715931,
+            11656,
+            490,
+            614,
+            1646,
+            29455,
+            337167,
+            553,
+            903
+          ],
+          "recall5": 0,
+          "recall10": 0,
+          "mrr": 0,
+          "ndcg10": 0,
+          "violations": 0,
+          "latencyMs": 70.1765,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-typo-02",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            490,
+            103663,
+            650031,
+            48035,
+            11602,
+            335578,
+            1110034,
+            901563,
+            29455,
+            25376
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 68.2504,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-typo-03",
+      "mode": "hybrid",
+      "recall5": 0,
+      "recall10": 0,
+      "mrr": 0,
+      "ndcg10": 0,
+      "runs": [
+        {
+          "results": [
+            1087192,
+            10191,
+            447365,
+            48035,
+            901563,
+            109445,
+            674,
+            985939,
+            30959,
+            118340
+          ],
+          "recall5": 0,
+          "recall10": 0,
+          "mrr": 0,
+          "ndcg10": 0,
+          "violations": 0,
+          "latencyMs": 62.1471,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-typo-04",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            105,
+            165,
+            335984,
+            1026227,
+            218,
+            303867,
+            123025,
+            142061,
+            183011,
+            14069
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 59.1881,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-typo-05",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            671,
+            12444,
+            675,
+            12445,
+            673,
+            672,
+            674,
+            100,
+            531,
+            1580
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 66.3134,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-constraint-01",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.8854598815714874,
+      "runs": [
+        {
+          "results": [
+            133919,
+            490,
+            12761,
+            5961,
+            10238,
+            11656,
+            797,
+            29455,
+            11602,
+            614
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.8854598815714874,
+          "violations": 0,
+          "latencyMs": 64.2687,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-constraint-02",
+      "mode": "hybrid",
+      "recall5": 0.25,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 0.7701035286296694,
+      "runs": [
+        {
+          "results": [
+            521,
+            213,
+            426,
+            539,
+            3112,
+            567,
+            827,
+            223,
+            1580,
+            37257
+          ],
+          "recall5": 0.25,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 0.7701035286296694,
+          "violations": 0,
+          "latencyMs": 66.162,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-constraint-03",
+      "mode": "hybrid",
+      "recall5": 1,
+      "recall10": 1,
+      "mrr": 1,
+      "ndcg10": 1,
+      "runs": [
+        {
+          "results": [
+            103663,
+            36557,
+            335578,
+            650031,
+            16,
+            48035,
+            275,
+            11602,
+            490,
+            1284465
+          ],
+          "recall5": 1,
+          "recall10": 1,
+          "mrr": 1,
+          "ndcg10": 1,
+          "violations": 0,
+          "latencyMs": 67.0625,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-negative-01",
+      "mode": "hybrid",
+      "recall5": 0.4,
+      "recall10": 0.6666666666666666,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.46032367427709947,
+      "violationRate": 0,
+      "runs": [
+        {
+          "results": [
+            995133,
+            30060,
+            269149,
+            24480,
+            10315,
+            574074,
+            1084242,
+            831827,
+            153518,
+            531
+          ],
+          "recall5": 0.4,
+          "recall10": 0.6666666666666666,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.46032367427709947,
+          "violations": 0,
+          "latencyMs": 86.6098,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-negative-02",
+      "mode": "hybrid",
+      "recall5": 0.2,
+      "recall10": 0.4,
+      "mrr": 0.3333333333333333,
+      "ndcg10": 0.3183191637810562,
+      "runs": [
+        {
+          "results": [
+            650031,
+            821,
+            55823,
+            14574,
+            887,
+            975,
+            38360,
+            16869,
+            530915,
+            49046
+          ],
+          "recall5": 0.2,
+          "recall10": 0.4,
+          "mrr": 0.3333333333333333,
+          "ndcg10": 0.3183191637810562,
+          "violations": 0,
+          "latencyMs": 61.4328,
+          "degraded": false
+        }
+      ]
+    },
+    {
+      "id": "sv-negative-03",
+      "mode": "hybrid",
+      "recall5": 0,
+      "recall10": 0,
+      "mrr": 0,
+      "ndcg10": 0,
+      "violationRate": 0,
+      "runs": [
+        {
+          "results": [
+            823219,
+            906126,
+            698948,
+            335578,
+            490,
+            281957,
+            650031,
+            1263337,
+            985939,
+            774531
+          ],
+          "recall5": 0,
+          "recall10": 0,
+          "mrr": 0,
+          "ndcg10": 0,
+          "violations": 0,
+          "latencyMs": 78.3221,
+          "degraded": false
+        }
+      ]
+    }
+  ]
+}

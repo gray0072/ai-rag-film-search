@@ -1,0 +1,4296 @@
+{
+  "header": {
+    "suite": "qu",
+    "label": "baseline",
+    "startedAt": "2026-11-17T23:04:42.1434033+00:00",
+    "commandLine": "--suite qu --label baseline",
+    "commit": "836f94e+dirty",
+    "dataset": "evals/datasets/qu.golden.jsonl",
+    "datasetVersion": "d4328efc6441",
+    "cases": 40,
+    "repeat": 3,
+    "database": "fresh container pgvector/pgvector:pg17",
+    "seedGeneratedAt": "2026-11-17 19:13:07Z",
+    "embeddingLocales": [],
+    "chatProfile": "local",
+    "chatModel": "google/gemma-4-e4b (reasoning None)",
+    "prompts": [
+      "query-understanding.v2"
+    ],
+    "searchParameters": {},
+    "overrides": {}
+  },
+  "summary": {
+    "cases": 40,
+    "runs": 120,
+    "validRate": 1,
+    "retryRate": 0,
+    "exactMatchRate": 0.825,
+    "fieldAccuracy": {
+      "genresInclude": 0.925,
+      "genresExclude": 1,
+      "yearFrom": 0.95,
+      "yearTo": 0.975,
+      "minRating": 1,
+      "maxPriceMinor": 1,
+      "language": 0.975,
+      "similarToTitles": 1
+    },
+    "genresIncludePrecision": 0.9764705882352941,
+    "genresIncludeRecall": 0.9222222222222223,
+    "genresExcludePrecision": 1,
+    "genresExcludeRecall": 1,
+    "latencyP50Ms": 3839.4865,
+    "latencyP95Ms": 4316.31535
+  },
+  "byLocale": {
+    "en": {
+      "cases": 14,
+      "runs": 42,
+      "validRate": 1,
+      "retryRate": 0,
+      "exactMatchRate": 0.8809523809523809,
+      "fieldAccuracy": {
+        "genresInclude": 0.8809523809523809,
+        "genresExclude": 1,
+        "yearFrom": 1,
+        "yearTo": 1,
+        "minRating": 1,
+        "maxPriceMinor": 1,
+        "language": 1,
+        "similarToTitles": 1
+      },
+      "genresIncludePrecision": 0.9310344827586207,
+      "genresIncludeRecall": 0.9,
+      "genresExcludePrecision": 1,
+      "genresExcludeRecall": 1,
+      "latencyP50Ms": 3844.5327500000003,
+      "latencyP95Ms": 4260.57111
+    },
+    "ru": {
+      "cases": 14,
+      "runs": 42,
+      "validRate": 1,
+      "retryRate": 0,
+      "exactMatchRate": 0.7619047619047619,
+      "fieldAccuracy": {
+        "genresInclude": 0.9047619047619048,
+        "genresExclude": 1,
+        "yearFrom": 1,
+        "yearTo": 0.9285714285714286,
+        "minRating": 1,
+        "maxPriceMinor": 1,
+        "language": 0.9285714285714286,
+        "similarToTitles": 1
+      },
+      "genresIncludePrecision": 1,
+      "genresIncludeRecall": 0.8787878787878788,
+      "genresExcludePrecision": 1,
+      "genresExcludeRecall": 1,
+      "latencyP50Ms": 3836.6471,
+      "latencyP95Ms": 4283.4746000000005
+    },
+    "sv": {
+      "cases": 12,
+      "runs": 36,
+      "validRate": 1,
+      "retryRate": 0,
+      "exactMatchRate": 0.8333333333333334,
+      "fieldAccuracy": {
+        "genresInclude": 1,
+        "genresExclude": 1,
+        "yearFrom": 0.8333333333333334,
+        "yearTo": 1,
+        "minRating": 1,
+        "maxPriceMinor": 1,
+        "language": 1,
+        "similarToTitles": 1
+      },
+      "genresIncludePrecision": 1,
+      "genresIncludeRecall": 1,
+      "genresExcludePrecision": 1,
+      "genresExcludeRecall": 1,
+      "latencyP50Ms": 3815.96985,
+      "latencyP95Ms": 4334.19415
+    }
+  },
+  "cases": [
+    {
+      "id": "en-qu-01",
+      "query": "sci-fi movies from the 90s",
+      "expected": {
+        "genresInclude": [
+          "science-fiction"
+        ],
+        "genresExclude": [],
+        "yearFrom": 1990,
+        "yearTo": 1999,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1990,
+              "yearTo": 1999
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 6822.8155,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1990,
+              "yearTo": 1999
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3845.7909,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1990,
+              "yearTo": 1999
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3864.6701,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-02",
+      "query": "a highly rated comedy",
+      "expected": {
+        "genresInclude": [
+          "comedy"
+        ],
+        "genresExclude": [],
+        "minRating": 7.5,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "comedy"
+              ],
+              "genresExclude": [],
+              "minRating": 7.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3742.1771,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "comedy"
+              ],
+              "genresExclude": [],
+              "minRating": 7.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3605.5227,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "comedy"
+              ],
+              "genresExclude": [],
+              "minRating": 7.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3641.551,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-03",
+      "query": "movies about space, no horror",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [
+          "horror"
+        ],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "outer space, astronauts, space travel",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3981.9748,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "outer space, astronauts, space travel",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4146.3766,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "outer space, astronauts, space travel",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4141.5648,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        }
+      ]
+    },
+    {
+      "id": "en-qu-04",
+      "query": "something like Interstellar",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": [
+          "Interstellar"
+        ]
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Interstellar"
+            ],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3781.8294,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Interstellar"
+            ],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3601.813,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Interstellar"
+            ],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3669.4662,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-05",
+      "query": "Japanese anime about spirits",
+      "expected": {
+        "genresInclude": [
+          "animation"
+        ],
+        "genresExclude": [],
+        "language": "ja",
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "spirits",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [],
+              "language": "ja"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3609.4541,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "spirits",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [],
+              "language": "ja"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3419.1098,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "spirits",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [],
+              "language": "ja"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3466.5715,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        }
+      ]
+    },
+    {
+      "id": "en-qu-06",
+      "query": "thrillers released after 2010 with a rating above 7",
+      "expected": {
+        "genresInclude": [
+          "thriller"
+        ],
+        "genresExclude": [],
+        "yearFrom": 2011,
+        "minRating": 7,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2011,
+              "minRating": 7
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3940.4445,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2011,
+              "minRating": 7
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3753.5658,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2011,
+              "minRating": 7
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3781.0664,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-07",
+      "query": "war movies before 1980 under $4",
+      "expected": {
+        "genresInclude": [
+          "war"
+        ],
+        "genresExclude": [],
+        "yearTo": 1979,
+        "maxPriceMinor": 400,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": [],
+              "yearTo": 1979,
+              "maxPriceMinor": 400
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4045.1238,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": [],
+              "yearTo": 1979,
+              "maxPriceMinor": 400
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3843.2746,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": [],
+              "yearTo": 1979,
+              "maxPriceMinor": 400
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3841.2978,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-08",
+      "query": "a heist inside dreams",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "heist, dreams",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3561.5489,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "heist, dreams",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3452.171,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "heist, dreams",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3499.1901,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-09",
+      "query": "Swedish dramas from the 1950s",
+      "expected": {
+        "genresInclude": [
+          "drama"
+        ],
+        "genresExclude": [],
+        "yearFrom": 1950,
+        "yearTo": 1959,
+        "language": "sv",
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1950,
+              "yearTo": 1959,
+              "language": "sv"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4075.509,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1950,
+              "yearTo": 1959,
+              "language": "sv"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3897.9205,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1950,
+              "yearTo": 1959,
+              "language": "sv"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3867.9054,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-10",
+      "query": "movies like The Matrix and Blade Runner but not action",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [
+          "action"
+        ],
+        "similarToTitles": [
+          "The Matrix",
+          "Blade Runner"
+        ]
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "outer space, artificial intelligence",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "action"
+              ]
+            },
+            "similarToTitles": [
+              "The Matrix",
+              "Blade Runner"
+            ],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4264.0568,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "outer space, artificial intelligence",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "action"
+              ]
+            },
+            "similarToTitles": [
+              "The Matrix",
+              "Blade Runner"
+            ],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4044.0313,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "outer space, artificial intelligence",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "action"
+              ]
+            },
+            "similarToTitles": [
+              "The Matrix",
+              "Blade Runner"
+            ],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4090.7248,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-11",
+      "query": "animated family movies, nothing scary",
+      "expected": {
+        "genresInclude": [
+          "animation",
+          "family"
+        ],
+        "genresExclude": [
+          "horror"
+        ],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "animation",
+                "family"
+              ],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4108.7979,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "animation",
+                "family"
+              ],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3926.6149,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "animation",
+                "family"
+              ],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 6449.5103,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-12",
+      "query": "Christopher Nolan films",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "Christopher Nolan",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3511.8099,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "Christopher Nolan",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3384.4548,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "Christopher Nolan",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3359.3306,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-13",
+      "query": "cheap westerns under 3 dollars",
+      "expected": {
+        "genresInclude": [
+          "western"
+        ],
+        "genresExclude": [],
+        "maxPriceMinor": 300,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "western"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 300
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3854.2967,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "western"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 300
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3660.5333,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "western"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 300
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3665.7797,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "en-qu-14",
+      "query": "Korean thrillers with a rating of at least 8",
+      "expected": {
+        "genresInclude": [
+          "thriller"
+        ],
+        "genresExclude": [],
+        "minRating": 8,
+        "language": "ko",
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "minRating": 8,
+              "language": "ko"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4194.343,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "minRating": 8,
+              "language": "ko"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3979.2195,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "minRating": 8,
+              "language": "ko"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "en",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3964.6051,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-01",
+      "query": "фильмы 2000-х про путешествия во времени с рейтингом выше 7, без ужасов",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [
+          "horror"
+        ],
+        "yearFrom": 2000,
+        "yearTo": 2009,
+        "minRating": 7,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "time travel",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "horror"
+              ],
+              "yearFrom": 2000,
+              "yearTo": 2009,
+              "minRating": 7
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4335.0598,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "time travel",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "horror"
+              ],
+              "yearFrom": 2000,
+              "yearTo": 2009,
+              "minRating": 7
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3974.7214,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "time travel",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "horror"
+              ],
+              "yearFrom": 2000,
+              "yearTo": 2009,
+              "minRating": 7
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4085.4649,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-02",
+      "query": "комедии 80-х",
+      "expected": {
+        "genresInclude": [
+          "comedy"
+        ],
+        "genresExclude": [],
+        "yearFrom": 1980,
+        "yearTo": 1989,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "comedy"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1980,
+              "yearTo": 1989
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4035.926,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "comedy"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1980,
+              "yearTo": 1989
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3833.9997,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "comedy"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1980,
+              "yearTo": 1989
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3812.0086,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-03",
+      "query": "что-нибудь похожее на Матрицу",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": [
+          "Матрицу"
+        ]
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Матрица"
+            ],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3862.0185,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Матрица"
+            ],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3630.4009,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Матрица"
+            ],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3676.7632,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-04",
+      "query": "советские военные фильмы",
+      "expected": {
+        "genresInclude": [
+          "war"
+        ],
+        "genresExclude": [],
+        "language": "ru",
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "военный",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3839.6785,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": false,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "военный",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3646.2621,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": false,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "военный",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3704.3052,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": false,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-05",
+      "query": "мультфильмы для всей семьи дешевле 2 долларов",
+      "expected": {
+        "genresInclude": [
+          "animation",
+          "family"
+        ],
+        "genresExclude": [],
+        "maxPriceMinor": 200,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "family"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 200
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3908.4371,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "family",
+                "animation"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 200
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3806.9608,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "family",
+                "animation"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 200
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3820.849,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-06",
+      "query": "фантастика после 2015 года с высоким рейтингом",
+      "expected": {
+        "genresInclude": [
+          "science-fiction"
+        ],
+        "genresExclude": [],
+        "yearFrom": 2016,
+        "minRating": 7.5,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2016,
+              "minRating": 7.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3981.748,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2016,
+              "minRating": 7.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3822.5415,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2016,
+              "minRating": 7.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3848.619,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-07",
+      "query": "фильм про мафиозную семью",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "мафиозная семья",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3797.2812,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "мафиозная семья",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3503.9613,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "мафиозная семья",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3534.6635,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-08",
+      "query": "японское аниме, только не ужасы",
+      "expected": {
+        "genresInclude": [
+          "animation"
+        ],
+        "genresExclude": [
+          "horror"
+        ],
+        "language": "ja",
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "horror"
+              ],
+              "language": "ja"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3816.8878,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "horror"
+              ],
+              "language": "ja"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 6028.0602,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "horror"
+              ],
+              "language": "ja"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3727.3849,
+          "fields": {
+            "genresInclude": false,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-09",
+      "query": "вестерны до 1970 года",
+      "expected": {
+        "genresInclude": [
+          "western"
+        ],
+        "genresExclude": [],
+        "yearTo": 1969,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "western"
+              ],
+              "genresExclude": [],
+              "yearTo": 1970
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4029.1036,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": false,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "western"
+              ],
+              "genresExclude": [],
+              "yearTo": 1970
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3811.1902,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": false,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "western"
+              ],
+              "genresExclude": [],
+              "yearTo": 1970
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3746.5524,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": false,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-10",
+      "query": "фильмы как Начало, но без боевиков",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [
+          "action"
+        ],
+        "similarToTitles": [
+          "Начало"
+        ]
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "action"
+              ]
+            },
+            "similarToTitles": [
+              "Начало"
+            ],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3995.7558,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "action"
+              ]
+            },
+            "similarToTitles": [
+              "Начало"
+            ],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3839.2945,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": [
+                "action"
+              ]
+            },
+            "similarToTitles": [
+              "Начало"
+            ],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3753.9906,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-11",
+      "query": "ужасы с рейтингом не ниже 6.5",
+      "expected": {
+        "genresInclude": [
+          "horror"
+        ],
+        "genresExclude": [],
+        "minRating": 6.5,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "horror"
+              ],
+              "genresExclude": [],
+              "minRating": 6.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4021.2203,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "horror"
+              ],
+              "genresExclude": [],
+              "minRating": 6.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3739.4846,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "horror"
+              ],
+              "genresExclude": [],
+              "minRating": 6.5
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3707.7261,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-12",
+      "query": "французские романтические комедии",
+      "expected": {
+        "genresInclude": [
+          "romance",
+          "comedy"
+        ],
+        "genresExclude": [],
+        "language": "fr",
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "romance",
+                "comedy"
+              ],
+              "genresExclude": [],
+              "language": "fr"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4286.4363,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "romance",
+                "comedy"
+              ],
+              "genresExclude": [],
+              "language": "fr"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3930.7667,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "romance",
+                "comedy"
+              ],
+              "genresExclude": [],
+              "language": "fr"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3930.2717,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-13",
+      "query": "фильмы с Леонардо Ди Каприо",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "Леонардо Ди Каприо",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3922.2636,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "Леонардо Ди Каприо",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3685.688,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "Леонардо Ди Каприо",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3670.7953,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "ru-qu-14",
+      "query": "драмы 2000-х годов дешевле 5 долларов",
+      "expected": {
+        "genresInclude": [
+          "drama"
+        ],
+        "genresExclude": [],
+        "yearFrom": 2000,
+        "yearTo": 2009,
+        "maxPriceMinor": 500,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2000,
+              "yearTo": 2009,
+              "maxPriceMinor": 500
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4227.2023,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2000,
+              "yearTo": 2009,
+              "maxPriceMinor": 500
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4016.0319,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 2000,
+              "yearTo": 2009,
+              "maxPriceMinor": 500
+            },
+            "similarToTitles": [],
+            "detectedLocale": "ru",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4026.6063,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-01",
+      "query": "danska dramer under 5 dollar",
+      "expected": {
+        "genresInclude": [
+          "drama"
+        ],
+        "genresExclude": [],
+        "maxPriceMinor": 500,
+        "language": "da",
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 500,
+              "language": "da"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4263.1371,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 500,
+              "language": "da"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3957.9702,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "maxPriceMinor": 500,
+              "language": "da"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3984.9547,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-02",
+      "query": "skräckfilmer från 70-talet",
+      "expected": {
+        "genresInclude": [
+          "horror"
+        ],
+        "genresExclude": [],
+        "yearFrom": 1970,
+        "yearTo": 1979,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "horror"
+              ],
+              "genresExclude": [],
+              "yearTo": 1979
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4025.2813,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": false,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "horror"
+              ],
+              "genresExclude": [],
+              "yearTo": 1979
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3785.7653,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": false,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "horror"
+              ],
+              "genresExclude": [],
+              "yearTo": 1979
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3757.4821,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": false,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-03",
+      "query": "något som liknar Alien",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": [
+          "Alien"
+        ]
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Alien"
+            ],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3916.8353,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Alien"
+            ],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3609.9264,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Alien"
+            ],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3654.3161,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-04",
+      "query": "animerade filmer för barn, inget läskigt",
+      "expected": {
+        "genresInclude": [
+          "animation",
+          "family"
+        ],
+        "genresExclude": [
+          "horror"
+        ],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "animation",
+                "family"
+              ],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4299.5218,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "animation",
+                "family"
+              ],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4101.2081,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "animation",
+                "family"
+              ],
+              "genresExclude": [
+                "horror"
+              ]
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 6431.9565,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-05",
+      "query": "en film om en tjuv som stjäl drömmar",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "thief who steals dreams",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3685.2952,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "thief who steals dreams",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3457.5811,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "thief who steals dreams",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3454.3109,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-06",
+      "query": "krigsfilmer med betyg över 8",
+      "expected": {
+        "genresInclude": [
+          "war"
+        ],
+        "genresExclude": [],
+        "minRating": 8,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": [],
+              "minRating": 8
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3730.757,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": [],
+              "minRating": 8
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3597.4376,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "war"
+              ],
+              "genresExclude": [],
+              "minRating": 8
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3589.0913,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-07",
+      "query": "science fiction efter 2000 men inte action",
+      "expected": {
+        "genresInclude": [
+          "science-fiction"
+        ],
+        "genresExclude": [
+          "action"
+        ],
+        "yearFrom": 2001,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "science-fiction",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [
+                "action"
+              ],
+              "yearFrom": 2011
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4390.7902,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": false,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "science-fiction",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [
+                "action"
+              ],
+              "yearFrom": 2011
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4208.3119,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": false,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        },
+        {
+          "understood": {
+            "semanticQuery": "science-fiction",
+            "filters": {
+              "genresInclude": [
+                "science-fiction"
+              ],
+              "genresExclude": [
+                "action"
+              ],
+              "yearFrom": 2011
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4099.5931,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": false,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": false
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-08",
+      "query": "italienska dramer från 1960-talet",
+      "expected": {
+        "genresInclude": [
+          "drama"
+        ],
+        "genresExclude": [],
+        "yearFrom": 1960,
+        "yearTo": 1969,
+        "language": "it",
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1960,
+              "yearTo": 1969,
+              "language": "it"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4315.3288,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1960,
+              "yearTo": 1969,
+              "language": "it"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4077.1463,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "drama"
+              ],
+              "genresExclude": [],
+              "yearFrom": 1960,
+              "yearTo": 1969,
+              "language": "it"
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4098.883,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-09",
+      "query": "filmer som Toy Story och Shrek",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": [
+          "Toy Story",
+          "Shrek"
+        ]
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Toy Story",
+              "Shrek"
+            ],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4036.0253,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Toy Story",
+              "Shrek"
+            ],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3828.5292,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [
+              "Toy Story",
+              "Shrek"
+            ],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3803.4105,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-10",
+      "query": "romantiska filmer före 1960",
+      "expected": {
+        "genresInclude": [
+          "romance"
+        ],
+        "genresExclude": [],
+        "yearTo": 1959,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "romance"
+              ],
+              "genresExclude": [],
+              "yearTo": 1959
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3961.1333,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "romance"
+              ],
+              "genresExclude": [],
+              "yearTo": 1959
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3739.0485,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "romance"
+              ],
+              "genresExclude": [],
+              "yearTo": 1959
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3706.9103,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-11",
+      "query": "filmer av Ingmar Bergman",
+      "expected": {
+        "genresInclude": [],
+        "genresExclude": [],
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "Ingmar Bergman",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3571.4288,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "Ingmar Bergman",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3462.0237,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "Ingmar Bergman",
+            "filters": {
+              "genresInclude": [],
+              "genresExclude": []
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3389.1886,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    },
+    {
+      "id": "sv-qu-12",
+      "query": "thrillers under 4 dollar med högt betyg",
+      "expected": {
+        "genresInclude": [
+          "thriller"
+        ],
+        "genresExclude": [],
+        "minRating": 7.5,
+        "maxPriceMinor": 400,
+        "similarToTitles": []
+      },
+      "runs": [
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "minRating": 7.5,
+              "maxPriceMinor": 400
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 4012.5245,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "minRating": 7.5,
+              "maxPriceMinor": 400
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3766.8221,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        },
+        {
+          "understood": {
+            "semanticQuery": "",
+            "filters": {
+              "genresInclude": [
+                "thriller"
+              ],
+              "genresExclude": [],
+              "minRating": 7.5,
+              "maxPriceMinor": 400
+            },
+            "similarToTitles": [],
+            "detectedLocale": "sv",
+            "source": "llm",
+            "promptVersion": "query-understanding.v2"
+          },
+          "attempts": 1,
+          "latencyMs": 3693.4458,
+          "fields": {
+            "genresInclude": true,
+            "genresExclude": true,
+            "yearFrom": true,
+            "yearTo": true,
+            "minRating": true,
+            "maxPriceMinor": true,
+            "language": true,
+            "similarToTitles": true
+          },
+          "valid": true,
+          "exactMatch": true
+        }
+      ]
+    }
+  ]
+}

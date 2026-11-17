@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\FilmSearch.Api\FilmSearch.Api.csproj" />
+    <ProjectReference Include="..\..\evals\FilmSearch.Evals\FilmSearch.Evals.csproj" />
   </ItemGroup>
 
 </Project>

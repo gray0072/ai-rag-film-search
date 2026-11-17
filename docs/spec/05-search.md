@@ -47,7 +47,7 @@ Filters (genre, year, rating, price…) are applied **inside** both the keyword 
 
 ## 4. Hybrid search
 - Default mode of `POST /api/search` (FR-SRCH-3). Keyword and semantic retrieval each return their top `Search:Hybrid:CandidatesPerList` (50) candidates with the same pre-filters; the lists are fused with Reciprocal Rank Fusion: `score = Σ weight_i / (k + rank_i)` over the lists that contain the movie. RRF uses ranks only, so `ts_rank_cd` and cosine similarity never have to be made comparable. Ties: better best rank, more lists, movie id. The result list (union of the candidates, ≤ 100) is paged in memory; `score` is the fused score.
-- Parameters (`Search:Hybrid`), tuned on manual queries in I07 ([report](../../evals/reports/2026-11-17_I07_hybrid-and-query-understanding.md)), to be checked with the I08 golden set:
+- Parameters (`Search:Hybrid`), tuned on manual queries in I07 ([report](../../evals/reports/2026-11-17_I07_hybrid-and-query-understanding.md)) and checked on the I08 golden set (k 10 / 20 / 60, keyword weight 1.0 / 0.5 / 0.3: k 60 is clearly worse, the rest within about one query; [baseline](../../evals/reports/2026-11-17_search_baseline.md), [keyword weight 0.3](../../evals/reports/2026-11-17_search_hybrid-keyword-weight-0.3.md)):
   - `RrfK` = **20** (the paper's 60 flattened the ranks too much: a movie at keyword rank 1 and vector rank 30 beat the vector #1);
   - `KeywordWeight` = 1.0 when every query word matched (`keywordMatch = all`: titles, names);
   - `RelaxedKeywordWeight` = **0.1** when the keyword query was relaxed to any word (`keywordMatch = any`). For descriptions ("a man discovers that his life is a TV show") the relaxed list matches every overview with "man" or "life"; with full weight it pushed the right semantic hits down (hybrid MRR 0.51 vs semantic 0.87 on English plot queries);
@@ -88,5 +88,13 @@ An LLM call with structured output turns free text into:
 ## 6. Reranking (stretch)
 Options to compare in an evaluation: (a) LLM as listwise reranker on top 20, (b) a cross-encoder reranker model behind an HTTP endpoint (e.g. a local `bge-reranker` service), (c) no reranker. Recorded as an ADR if adopted.
 
-## 7. Quality targets (to calibrate in I08)
-Initial targets on the golden set, hybrid mode: Recall@10 ≥ 0.8, MRR ≥ 0.6, for each of `en`, `ru` and `sv` queries. The first evaluation run sets the real baseline; targets are adjusted then.
+## 7. Quality targets (calibrated in I08)
+Measured on `evals/datasets/search.golden.jsonl` (105 queries, 35 per language) with the evaluation runner (spec 09), hybrid mode, defaults of §4, EmbeddingGemma 300M — [baseline report](../../evals/reports/2026-11-17_search_baseline.md):
+
+| Locale | Recall@10 baseline | MRR@10 baseline | Target Recall@10 | Target MRR@10 |
+|---|---|---|---|---|
+| en | 0.914 | 0.808 | ≥ 0.85 | ≥ 0.75 |
+| ru | 0.871 | 0.833 | ≥ 0.85 | ≥ 0.75 |
+| sv | 0.834 | 0.721 | ≥ 0.80 | ≥ 0.70 |
+
+The initial targets (Recall@10 ≥ 0.8, MRR ≥ 0.6 per language) were met by the first run, so they are raised to just below the baseline: a change that drops a language below its target is a regression to explain. Swedish keeps a lower target until its gap is closed (weakest language since I05). Also tracked, without a target: excluded-genre rate of negative queries (hybrid 0.17, hybrid + QU 0.00), p50 latency in process (hybrid 78 ms, hybrid + QU 3.9 s on the laptop).

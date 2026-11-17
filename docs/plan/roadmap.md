@@ -27,7 +27,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I06 | [Embeddings and semantic search](iterations/I06-embeddings-semantic-search.md) | I03, I05 | 3 | 2 | done |
 | I09 | [Cart, orders, fake payment](iterations/I09-cart-orders-fake-payment.md) | I03 | 3 | 2 | todo |
 | I07 | [Hybrid search and query understanding](iterations/I07-hybrid-query-understanding.md) | I04, I06 | 4 | 2 | done |
-| I08 | [Search evaluation harness](iterations/I08-search-evaluation.md) | I04, I06 (dataset: I03) | 4 | 1–2 | todo |
+| I08 | [Search evaluation harness](iterations/I08-search-evaluation.md) | I04, I06 (dataset: I03) | 4 | 1–2 | done |
 | I10 | [Store UI: catalog, search, cart, checkout](iterations/I10-store-ui.md) | I02, I04, I09 | 4 | 2 | todo |
 | I15 | [Stripe test mode](iterations/I15-stripe-test-mode.md) | I09 | 4 | 1–2 | todo |
 | I11 | [Chat foundation: conversations, streaming, grounded answers](iterations/I11-chat-foundation.md) | I05, I07 | 5 | 2 | todo |

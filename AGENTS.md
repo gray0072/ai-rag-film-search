@@ -17,7 +17,7 @@ Instructions for AI coding agents (Claude Code, Codex, Cursor, …) working in t
 | Prompt history (one file per session) | [docs/prompts/](docs/prompts/README.md) |
 | Learning map | [docs/learning-path.md](docs/learning-path.md) |
 | Code layout (target) | [docs/spec/02-architecture.md §4](docs/spec/02-architecture.md#4-solution-layout-target) |
-| Evaluation datasets and reports | `evals/` (from I08) |
+| Evaluation runner, datasets and reports | [evals/](evals/README.md) |
 | Seed data | `data/seed/` (from I03) |
 
 ## Session workflow
@@ -126,7 +126,14 @@ dotnet run --project tools/ai-playground -- bench-chat --chat-model <id> --reaso
 dotnet run --project tools/ai-playground -- bench-embed --embedding-model <id> --query-prefix "..." --document-prefix "..."
 ```
 
-Expected later: `dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>` (I08).
+Evaluations (I08; Docker + LM Studio, a fresh pgvector container per run, see [evals/README.md](evals/README.md)):
+
+```bash
+dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>                      # keyword, semantic, hybrid, hybrid+qu
+dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name> --modes hybrid --set Search:Hybrid:RrfK=40
+dotnet run --project evals/FilmSearch.Evals -- --suite qu --label <name>                          # query understanding, --repeat 3
+dotnet run --project evals/FilmSearch.Evals -- --suite validate                                    # datasets vs seed (also a unit test)
+```
 
 Notes:
 - Tests run on **Microsoft.Testing.Platform** (`global.json` → `test.runner`), xUnit v3. Pass runner options after `--`, e.g. `dotnet test -- --filter-method "*Health*"`.

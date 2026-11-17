@@ -98,6 +98,17 @@ dotnet user-secrets set AI:ActiveChatProfile openrouter --project src/FilmSearch
 
 `/health` reports `Degraded` (not `Unhealthy`) when LM Studio is off: the store works without AI, and semantic search returns 503. To try another embedding model: reindex with its profile (`{ "profile": "nomic" }`), switch `AI:ActiveEmbeddingProfile`, then delete the old model's vectors ([spec 08 §4](docs/spec/08-data-ingestion.md#4-embeddings-pipeline)). To try chat, streaming, tools, JSON output and embeddings from the console, or to benchmark another model: [tools/ai-playground](tools/ai-playground/README.md). Stripe test keys (for I15) also live in the API user secrets: `Stripe:SecretKey`, `Stripe:PublishableKey`.
 
+### Evaluations
+
+Search quality is measured on golden datasets (Docker and LM Studio needed; each run uses a fresh database container):
+
+```bash
+dotnet run --project evals/FilmSearch.Evals -- --suite search --label my-change   # Recall@k, MRR, nDCG per mode, locale and tag
+dotnet run --project evals/FilmSearch.Evals -- --suite qu --label my-change       # query understanding accuracy
+```
+
+Reports go to `evals/reports/`; options, metrics and dataset rules: [evals/README.md](evals/README.md).
+
 More commands (migrations, single test project) are in [AGENTS.md](AGENTS.md#commands). Rebuilding the seed file from TMDB: [data/seed/README.md](data/seed/README.md).
 
 ---
