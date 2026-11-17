@@ -20,6 +20,24 @@ updates:
       - dependency-name: "EFCore.*"
         update-types: ["version-update:semver-major"]
 
+  - package-ecosystem: npm
+    directory: /src/web
+    schedule:
+      interval: weekly
+    groups:
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom", "react-router"]
+      lint:
+        patterns: ["eslint", "@eslint/*", "typescript-eslint", "eslint-*", "prettier", "globals"]
+      test:
+        patterns: ["vitest", "jsdom", "@testing-library/*"]
+      build:
+        patterns: ["vite", "@vitejs/*", "tailwindcss", "@tailwindcss/*"]
+    ignore:
+      # TypeScript 6+ is not yet supported by typescript-eslint and openapi-typescript (I02).
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: github-actions
     directory: /
     schedule:

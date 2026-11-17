@@ -1,12 +1,16 @@
 using System.Text.Json.Serialization;
 using FilmSearch.Api.Modules.AppInfo;
+using FilmSearch.Api.OpenApi;
 using FilmSearch.Api.Owners;
 using FilmSearch.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddDatabase();
+if (!BuildTimeOpenApi.IsGeneratingDocument)
+{
+    builder.AddDatabase();
+}
 
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();

@@ -72,7 +72,9 @@ Every prompt from the owner is saved **verbatim** to the prompt history:
 - Tests must not need LM Studio or network: use fake `IChatClient` / fake embedding generators. Real-model checks belong in evaluation suites and manual checks.
 
 ### Frontend
-- TypeScript strict. Types for the API are generated from OpenAPI; do not hand-write DTO types.
+- TypeScript strict. Types for the API are generated from OpenAPI; do not hand-write DTO types. The API build writes `src/web/openapi/v1.json`; after an API change run `npm run gen:api` and commit both files (CI checks them, [ADR-0007](docs/adr/0007-frontend-stack.md)).
+- Calls go through the typed client in `src/web/src/api/client.ts` (`api.useQuery("get", "/api/...")`); it sends `Accept-Language`.
+- UI components: shadcn/ui (`npx shadcn add <component>` in `src/web`), Tailwind CSS v4, icons from `lucide-react`.
 - Server state through TanStack Query. No user-facing text outside i18n resources.
 - Render assistant markdown safely (no raw HTML).
 
@@ -100,7 +102,16 @@ dotnet tool restore                                   # once: installs dotnet-ef
 dotnet ef migrations add I03_AddCatalog --project src/FilmSearch.Infrastructure --output-dir Persistence/Migrations   # new migration
 ```
 
-Expected later: `cd src/web && npm run lint && npm run typecheck && npm test` and `npm run gen:api` (I02); `dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>` (I08).
+Web app (`src/web`, Node 24, npm):
+
+```bash
+npm install                  # once (the AppHost also runs it before starting Vite)
+npm run dev                  # Vite dev server alone; /api is proxied to https://localhost:7180
+npm run gen:api              # regenerate src/api/schema.d.ts from openapi/v1.json (written by the API build)
+npm run lint && npm run format:check && npm run typecheck && npm test && npm run build   # same as CI
+```
+
+Expected later: `dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>` (I08).
 
 Notes:
 - Tests run on **Microsoft.Testing.Platform** (`global.json` → `test.runner`), xUnit v3. Pass runner options after `--`, e.g. `dotnet test -- --filter-method "*Health*"`.
@@ -121,3 +132,4 @@ Notes:
 - LM Studio local server: `http://localhost:1234/v1` (OpenAI-compatible). Model ids are in `appsettings.json` profiles after I05.
 - Docker Desktop is required for PostgreSQL (Aspire) and Testcontainers.
 - `gh` CLI is available for GitHub operations.
+- Vitest on Windows: run it from a path with an upper-case drive letter (`D:\Projects\...`). With `d:\...` (the VS Code terminal default) Vitest loads its runner twice and every test file fails with "Vitest failed to find the current suite". CI (Linux) is not affected.

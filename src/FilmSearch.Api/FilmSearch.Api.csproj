@@ -4,8 +4,22 @@
     <UserSecretsId>filmsearch-api-6f1d2c9e</UserSecretsId>
   </PropertyGroup>
 
+  <!--
+    Build-time OpenAPI document (Microsoft.Extensions.ApiDescription.Server): every build writes
+    src/web/openapi/v1.json, the contract the web app generates its types from (npm run gen:api).
+    CI fails when the committed file differs from the generated one.
+  -->
+  <PropertyGroup>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/../web/openapi</OpenApiDocumentsDirectory>
+    <OpenApiGenerateDocumentsOptions>--file-name v1</OpenApiGenerateDocumentsOptions>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

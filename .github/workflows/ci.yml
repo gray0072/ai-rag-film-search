@@ -38,6 +38,50 @@ jobs:
       - name: Format check
         run: dotnet format --verify-no-changes --no-restore
 
+      # The build writes the OpenAPI document to src/web/openapi/v1.json; the committed copy must match.
+      - name: OpenAPI document is up to date
+        run: git diff --exit-code -- src/web/openapi
+
       # Integration tests use Testcontainers; Docker is available on the Ubuntu runner.
       - name: Test
         run: dotnet test --no-build --configuration Release
+
+  web:
+    name: Web lint, typecheck, tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: src/web
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: src/web/.nvmrc
+          cache: npm
+          cache-dependency-path: src/web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      # The API types must be generated from the committed OpenAPI document.
+      - name: API types are up to date
+        run: |
+          npm run gen:api
+          git diff --exit-code -- src/api/schema.d.ts
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
