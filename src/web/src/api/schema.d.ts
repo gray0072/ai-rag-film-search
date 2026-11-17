@@ -211,10 +211,7 @@ export interface components {
             id: string;
             name: string;
         };
-        /**
-         * @description Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null.
-         *     Ranks start at 1 and are positions in that retriever's list.
-         */
+        /** @description Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null. Ranks start at 1 and are positions in that retriever's list. */
         SearchDebug: {
             /** Format: int32 */
             keywordRank?: null | number | string;
@@ -223,10 +220,7 @@ export interface components {
              * @description `ts_rank_cd` over the best-matching text search config, normalized to 0–1.
              */
             keywordScore?: null | number | string;
-            /**
-             * @description `all`: every query term matched (`websearch_to_tsquery`). `any`: no movie matched all terms,
-             *             so the query was relaxed to match any term.
-             */
+            /** @description `all`: every query term matched (`websearch_to_tsquery`). `any`: no movie matched all terms, so the query was relaxed to match any term. */
             keywordMatch?: null | string;
             /** Format: int32 */
             vectorRank?: null | number | string;

@@ -126,6 +126,7 @@ Notes:
 - Integration tests: one shared `pgvector/pgvector:pg17` container per test assembly (`PostgresFixture`), API in-process through `FilmSearchApiFactory` (`WebApplicationFactory<Program>`), migrations applied on startup. Catalog tests use `CatalogApiFixture` (seed loaded once). The database is shared: assert on properties of results, not on global counts; a test that adds many rows gets its own database (`PostgresFixture.CreateDatabaseAsync`).
 - Minimal APIs bind enum query parameters case-sensitively. Query enums (`sort`, `offerType`) are strings parsed case-insensitively in the request class; JSON enums are camelCase strings.
 - Migrations live in `src/FilmSearch.Infrastructure/Persistence/Migrations`. `DesignTimeDbContextFactory` lets `dotnet ef` work without a running DB or the API. The API applies migrations on startup when `Database:MigrateOnStartup` is true (Development, tests).
+- Doc comments (`<summary>`, `<param>`) of types and endpoints that appear in the OpenAPI document must be single-line: the generator joins lines with the OS newline, so a multi-line comment gives `\r\n` in `v1.json` on Windows and fails the CI check "OpenAPI document is up to date".
 - The AppHost Postgres container is named `filmsearch-postgres`, uses `ContainerLifetime.Persistent` and the named volume `filmsearch-postgres-data`: it keeps running after the AppHost stops. Its password is stored in the AppHost user secrets. To reset the DB: `docker rm -f filmsearch-postgres` and `docker volume rm filmsearch-postgres-data`.
 
 ## Git

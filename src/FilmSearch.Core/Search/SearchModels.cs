@@ -37,10 +37,10 @@ public sealed record SearchResult(IReadOnlyList<SearchItem> Items, int Page, int
 /// <param name="Debug">Retrieval details, when requested.</param>
 public sealed record SearchItem(MovieSummary Movie, double Score, SearchDebug? Debug);
 
-/// <summary>
-/// Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null.
-/// Ranks start at 1 and are positions in that retriever's list.
-/// </summary>
+// Doc comments of types in the OpenAPI document stay on one line: the generator joins lines with the OS newline,
+// so a multi-line summary gives a different v1.json on Windows and on the Linux CI.
+
+/// <summary>Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null. Ranks start at 1 and are positions in that retriever's list.</summary>
 public sealed record SearchDebug
 {
     public int? KeywordRank { get; init; }
@@ -48,10 +48,7 @@ public sealed record SearchDebug
     /// <summary><c>ts_rank_cd</c> over the best-matching text search config, normalized to 0–1.</summary>
     public double? KeywordScore { get; init; }
 
-    /// <summary>
-    /// <c>all</c>: every query term matched (<c>websearch_to_tsquery</c>). <c>any</c>: no movie matched all terms,
-    /// so the query was relaxed to match any term.
-    /// </summary>
+    /// <summary><c>all</c>: every query term matched (<c>websearch_to_tsquery</c>). <c>any</c>: no movie matched all terms, so the query was relaxed to match any term.</summary>
     public string? KeywordMatch { get; init; }
 
     public int? VectorRank { get; init; }

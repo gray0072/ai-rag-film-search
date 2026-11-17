@@ -802,7 +802,7 @@
               "null",
               "string"
             ],
-            "description": "`all`: every query term matched (`websearch_to_tsquery`). `any`: no movie matched all terms,\r\n        so the query was relaxed to match any term."
+            "description": "`all`: every query term matched (`websearch_to_tsquery`). `any`: no movie matched all terms, so the query was relaxed to match any term."
           },
           "vectorRank": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -832,7 +832,7 @@
             "format": "double"
           }
         },
-        "description": "Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null.\r\nRanks start at 1 and are positions in that retriever's list."
+        "description": "Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null. Ranks start at 1 and are positions in that retriever's list."
       },
       "SearchFilters": {
         "type": "object",
