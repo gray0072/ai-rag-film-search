@@ -43,3 +43,4 @@ Rules:
 |---|---|---|---|
 | [S01](sessions/2026-11-17_S01_preparation.md) | 2026-11-17 | I00 | Project preparation: spec, plan, AGENTS.md |
 | [S02](sessions/2026-11-17_S02_solution-skeleton.md) | 2026-11-17 | I01 | Solution skeleton, Aspire, DB, CI |
+| [S03](sessions/2026-11-17_S03_web-skeleton.md) | 2026-11-17 | I02 | Web app skeleton: React, i18n, API client |
