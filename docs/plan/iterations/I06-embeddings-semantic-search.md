@@ -61,6 +61,7 @@ Embeddings in practice: what text to embed, query vs document prefixes, cosine s
 - **Catalog changes do not trigger re-embedding by themselves** (an LLM call inside the catalog transaction would be wrong, and a post-commit hook needs the Worker): the next reindex finds them by hash. I16 schedules it.
 - **`VACUUM (ANALYZE)` after reindex** — found in the experiments: missing statistics made the planner estimate 1 row, and dead graph entries returned 4.8 of 10 rows at low `ef_search`.
 - **Bug fixed in I05 code:** the OpenAI client throws `AggregateException` ("Retry failed after N tries") when every retry fails, so `POST /api/admin/ai/chat` answered 500 instead of 503 with LM Studio off. Shared `AiProviderErrors.IsProviderFailure` now handles it for chat and embeddings.
+- **Flaky I05 test fixed after the first CI run:** `Chat_call_produces_a_GenAI_span_…` collected spans of the whole process, so the new `ProfileTextEmbedderTests` (running in parallel, same `FilmSearch.AI` source) added embedding spans. The test now keeps only spans of its own trace; `MeasurementRecorder` returns snapshots under its lock.
 - **Package:** `Pgvector.EntityFrameworkCore` 0.3.0 (named in spec 02; brings `Pgvector` 0.3.2): `vector` column type and Npgsql mapping of `Vector` parameters. Requires Npgsql EF ≥ 9.0.1; works with the pinned 10.0.3.
 
 ### Follow-ups

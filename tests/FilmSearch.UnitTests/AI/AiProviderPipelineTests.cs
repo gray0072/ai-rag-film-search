@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
@@ -118,18 +119,24 @@ public sealed class AiProviderPipelineTests
     {
         var handler = new FakeProviderHandler();
         using var host = AiTestHost.Build(handler);
-        var spans = new List<Activity>();
+        // The listener sees spans of the whole process (other test classes run in parallel): keep only this test's trace.
+        var spans = new ConcurrentQueue<Activity>();
         using var listener = new ActivityListener
         {
             ShouldListenTo = source => source.Name == AiMetrics.SourceName,
             Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
-            ActivityStopped = spans.Add,
+            ActivityStopped = spans.Enqueue,
         };
         ActivitySource.AddActivityListener(listener);
 
-        await host.Services.GetRequiredService<IChatClient>().GetResponseAsync("Hi", cancellationToken: Ct);
+        ActivityTraceId traceId;
+        using (var test = new Activity("test").Start())
+        {
+            traceId = test.TraceId;
+            await host.Services.GetRequiredService<IChatClient>().GetResponseAsync("Hi", cancellationToken: Ct);
+        }
 
-        var span = spans.ShouldHaveSingleItem();
+        var span = spans.Where(s => s.TraceId == traceId).ShouldHaveSingleItem();
         span.GetTagItem("gen_ai.request.model").ShouldBe("local-model");
         span.GetTagItem("gen_ai.usage.input_tokens").ShouldBe(100);
         span.GetTagItem("gen_ai.usage.output_tokens").ShouldBe(50);
@@ -204,15 +211,27 @@ internal sealed class MeasurementRecorder<T> : IDisposable
                 copy[tag.Key] = tag.Value;
             }
 
-            lock (Values)
+            lock (_values)
             {
-                Values.Add((value, copy));
+                _values.Add((value, copy));
             }
         });
         _listener.Start();
     }
 
-    public List<(T Value, Dictionary<string, object?> Tags)> Values { get; } = [];
+    private readonly List<(T Value, Dictionary<string, object?> Tags)> _values = [];
+
+    /// <summary>A snapshot: the listener sees the whole process, and other test classes record measurements in parallel.</summary>
+    public List<(T Value, Dictionary<string, object?> Tags)> Values
+    {
+        get
+        {
+            lock (_values)
+            {
+                return [.. _values];
+            }
+        }
+    }
 
     public void Dispose() => _listener.Dispose();
 }
