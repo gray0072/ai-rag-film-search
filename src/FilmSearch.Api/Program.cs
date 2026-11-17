@@ -30,7 +30,7 @@ builder.AddAiProviders();
 // Modules
 builder.Services.AddAppInfoModule();
 builder.Services.AddCatalogModule(builder.Configuration);
-builder.Services.AddSearchModule();
+builder.Services.AddSearchModule(builder.Configuration);
 
 var app = builder.Build();
 
@@ -64,5 +64,6 @@ if (app.Configuration.GetValue<bool>(DatabaseSetup.MigrateOnStartupKey))
 }
 
 await app.SeedCatalogOnStartupAsync();
+app.IndexEmbeddingsOnStartup();
 
 await app.RunAsync();

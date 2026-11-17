@@ -4,6 +4,7 @@
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="EFCore.NamingConventions" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Pgvector.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -12,6 +13,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="FilmSearch.UnitTests" />
+    <InternalsVisibleTo Include="FilmSearch.IntegrationTests" />
   </ItemGroup>
 
   <ItemGroup>

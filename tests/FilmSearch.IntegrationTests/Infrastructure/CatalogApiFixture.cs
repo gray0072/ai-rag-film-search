@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using FilmSearch.Core.Catalog;
 using FilmSearch.Core.Ingestion;
+using FilmSearch.Core.Search;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FilmSearch.IntegrationTests.Infrastructure;
@@ -18,6 +19,9 @@ public sealed class CatalogApiFixture(PostgresFixture postgres) : IAsyncLifetime
     public FilmSearchApiFactory Factory { get; } = new(postgres);
 
     public SeedFile Seed { get; private set; } = null!;
+
+    private readonly SemaphoreSlim _embeddingsLock = new(1, 1);
+    private bool _embedded;
 
     public static JsonSerializerOptions Json => SeedJson.Options;
 
@@ -38,7 +42,36 @@ public sealed class CatalogApiFixture(PostgresFixture postgres) : IAsyncLifetime
         await writer.UpsertMoviesAsync([FallbackMovie], MovieSource.Manual, CancellationToken.None);
     }
 
-    public ValueTask DisposeAsync() => Factory.DisposeAsync();
+    public async ValueTask DisposeAsync()
+    {
+        await Factory.DisposeAsync();
+        _embeddingsLock.Dispose();
+    }
+
+    /// <summary>
+    /// Embeds the catalog once per fixture with the fake model (<see cref="HashingEmbeddingGenerator"/>) of the active
+    /// profile. Embeddings are keyed by model, so other test classes on the shared database see the same vectors.
+    /// </summary>
+    public async Task EnsureEmbeddingsAsync()
+    {
+        await _embeddingsLock.WaitAsync();
+        try
+        {
+            if (_embedded)
+            {
+                return;
+            }
+
+            await using var scope = Factory.Services.CreateAsyncScope();
+            await scope.ServiceProvider.GetRequiredService<IMovieEmbeddingIndexer>()
+                .ReindexAsync(new ReindexRequest(), progress: null, CancellationToken.None);
+            _embedded = true;
+        }
+        finally
+        {
+            _embeddingsLock.Release();
+        }
+    }
 
     public HttpClient CreateClient(string? acceptLanguage = null)
     {

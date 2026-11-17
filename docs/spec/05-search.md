@@ -39,9 +39,11 @@ Filters (genre, year, rating, price…) are applied **inside** both the keyword 
   Overview: Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious...
   ```
   The builder version is part of `ContentHash`, so changing the template triggers re-embedding.
-- One vector per movie and locale (`en` first; `ru` / `sv` vectors are an experiment in I06/I08, compared with "multilingual model + en only").
+  Labels stay in English for every locale; empty fields are left out; up to 5 cast members and 20 keywords; `Original title` only when it differs. `MovieEmbeddingText.Version` (`movie-profile-v1`) is part of `ContentHash` together with the exact text sent (document prefix included), so changing the template or the prefix triggers re-embedding.
+- One vector per movie and locale. Default `Search:Embeddings:Locales = ["en"]`: the multilingual model maps ru / sv queries close to English texts. Per-locale vectors (`en`, `ru`, `sv`) can be added with the reindex endpoint; search then takes the best vector per movie. I06 experiment: per-locale vectors helped Russian a little and Swedish not at all ([report](../../evals/reports/2026-11-17_I06_semantic-search-experiments.md)); I08 measures it properly.
 - Query side: some models need prefixes (`query: ` / `passage: ` for e5; instructions for others). This is part of the embedding profile config.
-- Index: HNSW, `vector_cosine_ops`. For 1000–10 000 rows an exact scan is fast too; the index is there to learn how it works and to measure recall vs. exact search.
+- Query: the text is embedded with the active profile's model (query prefix), compared with that model's vectors by cosine distance (`<=>`), `similarity = 1 − distance`. Catalog filters are in the same SQL (pre-filtering). The list is cut at `Search:Semantic:MaxResults` (100) and paged in memory; `total` is the list length. If the provider is down, semantic search returns 503 and keyword search keeps working.
+- Index: HNSW, `vector_cosine_ops`, a partial expression index per dimension ([ADR-0008](../adr/0008-vector-storage-per-dimension.md)). Per query `hnsw.ef_search = max(40, rows requested)` and `hnsw.iterative_scan = relaxed_order` (pgvector 0.8: keep walking the graph while filters reject candidates). On the seed, HNSW recall@10 vs exact is ≥ 0.999 and a query is 10–40× faster, but the planner still prefers the exact scan at ~1000 rows; both are far below the query embedding time. After changing vectors the indexer runs `VACUUM (ANALYZE)`: dead entries in the graph cost recall, and fresh statistics guide the planner.
 
 ## 4. Hybrid search
 - Reciprocal Rank Fusion: `score = Σ 1 / (k + rank_i)`, `k = 60`, per list. Weights per list are configurable (start 1.0 / 1.0) and tuned with evaluations.

@@ -28,6 +28,18 @@ public sealed record MovieFilter
 
     /// <summary>The movie must have an active offer of this type (combined with <see cref="PriceMax"/> on the same offer).</summary>
     public OfferType? OfferType { get; init; }
+
+    /// <summary>True when at least one condition is set (a method, so it is not serialized with the filter).</summary>
+    public bool HasConditions() =>
+        GenreSlugs.Count > 0
+        || YearFrom is not null
+        || YearTo is not null
+        || MinRating is not null
+        || RuntimeMin is not null
+        || RuntimeMax is not null
+        || !string.IsNullOrWhiteSpace(Language)
+        || PriceMax is not null
+        || OfferType is not null;
 }
 
 public sealed record MovieListQuery(MovieFilter Filter, MovieSort Sort, int Page, int PageSize);

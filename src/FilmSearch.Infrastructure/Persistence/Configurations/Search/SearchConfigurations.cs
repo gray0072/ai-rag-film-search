@@ -1,5 +1,6 @@
 using FilmSearch.Core.Catalog;
 using FilmSearch.Infrastructure.Search.Keyword;
+using FilmSearch.Infrastructure.Search.Semantic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -52,5 +53,32 @@ internal sealed class MovieSearchDocumentConfiguration : IEntityTypeConfiguratio
             Part("keywords || ' ' || people", 'B'),
             Part($"coalesce(tagline_{locale}, '')", 'C'),
             Part($"coalesce(overview_{locale}, '')", 'D'));
+    }
+}
+
+internal sealed class MovieEmbeddingConfiguration : IEntityTypeConfiguration<MovieEmbedding>
+{
+    public void Configure(EntityTypeBuilder<MovieEmbedding> builder)
+    {
+        builder.ToTable("movie_embeddings", SearchSchema.Name);
+        builder.HasKey(e => e.Id);
+
+        // Deleting a movie deletes its vectors. No navigation, as for the search documents.
+        builder.HasOne<Movie>()
+            .WithMany()
+            .HasForeignKey(e => e.MovieId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(e => e.Model).HasMaxLength(200);
+        builder.Property(e => e.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.Property(e => e.Locale).HasMaxLength(8);
+        builder.Property(e => e.ContentHash).HasMaxLength(64);
+
+        // No dimension in the column type (ADR-0008): vectors of several models live side by side. The HNSW indexes are
+        // partial expression indexes per dimension (VectorIndex), created in SQL: EF Core cannot model them.
+        builder.Property(e => e.Vector).HasColumnType("vector");
+
+        builder.HasIndex(e => new { e.MovieId, e.Model, e.Kind, e.Locale }).IsUnique();
+        builder.HasIndex(e => new { e.Model, e.Locale });
     }
 }

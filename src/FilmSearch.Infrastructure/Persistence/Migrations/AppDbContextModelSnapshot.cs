@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
+using Pgvector;
 
 #nullable disable
 
@@ -438,6 +439,72 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                     b.ToTable("movie_documents", "search");
                 });
 
+            modelBuilder.Entity("FilmSearch.Infrastructure.Search.Semantic.MovieEmbedding", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ContentHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("content_hash");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("Dimensions")
+                        .HasColumnType("integer")
+                        .HasColumnName("dimensions");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("kind");
+
+                    b.Property<string>("Locale")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("locale");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("model");
+
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("movie_id");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("text");
+
+                    b.Property<Vector>("Vector")
+                        .IsRequired()
+                        .HasColumnType("vector")
+                        .HasColumnName("vector");
+
+                    b.HasKey("Id")
+                        .HasName("pk_movie_embeddings");
+
+                    b.HasIndex("Model", "Locale")
+                        .HasDatabaseName("ix_movie_embeddings_model_locale");
+
+                    b.HasIndex("MovieId", "Model", "Kind", "Locale")
+                        .IsUnique()
+                        .HasDatabaseName("ix_movie_embeddings_movie_id_model_kind_locale");
+
+                    b.ToTable("movie_embeddings", "search");
+                });
+
             modelBuilder.Entity("MovieGenre", b =>
                 {
                     b.Property<Guid>("MovieId")
@@ -504,6 +571,16 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_movie_documents_movies_movie_id");
+                });
+
+            modelBuilder.Entity("FilmSearch.Infrastructure.Search.Semantic.MovieEmbedding", b =>
+                {
+                    b.HasOne("FilmSearch.Core.Catalog.Movie", null)
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_movie_embeddings_movies_movie_id");
                 });
 
             modelBuilder.Entity("MovieGenre", b =>

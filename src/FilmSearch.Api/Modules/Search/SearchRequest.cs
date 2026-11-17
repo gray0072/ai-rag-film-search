@@ -15,7 +15,7 @@ public sealed class SearchRequest
     [StringLength(500, MinimumLength = 1)]
     public string Query { get; init; } = string.Empty;
 
-    /// <summary><c>keyword</c> (default). <c>semantic</c> and <c>hybrid</c> return 400 until I06 / I07.</summary>
+    /// <summary><c>keyword</c> (default) or <c>semantic</c>. <c>hybrid</c> returns 400 until I07.</summary>
     public SearchMode? Mode { get; init; }
 
     /// <summary>The same filters as <c>GET /api/movies</c>, applied inside the search query.</summary>

@@ -55,6 +55,27 @@ internal sealed class CatalogReader(AppDbContext db) : ICatalogReader
             .FirstOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<MovieDetails>> GetMovieDetailsAsync(IReadOnlyList<Guid> ids, string locale, CancellationToken cancellationToken)
+    {
+        if (ids.Count == 0)
+        {
+            return [];
+        }
+
+        locale = Locales.Normalize(locale);
+        var found = await db.Set<Movie>()
+            .AsNoTracking()
+            .Where(m => ids.Contains(m.Id))
+            .Select(MovieQueryExtensions.ToDetails(locale))
+            .AsSplitQuery()
+            .ToDictionaryAsync(m => m.Id, cancellationToken);
+
+        return [.. ids.Distinct().Where(found.ContainsKey).Select(id => found[id])];
+    }
+
+    public async Task<IReadOnlyList<Guid>> GetMovieIdsAsync(CancellationToken cancellationToken) =>
+        await db.Set<Movie>().AsNoTracking().OrderBy(m => m.Id).Select(m => m.Id).ToListAsync(cancellationToken);
+
     public async Task<IReadOnlyList<GenreItem>> ListGenresAsync(string locale, CancellationToken cancellationToken)
     {
         locale = Locales.Normalize(locale);

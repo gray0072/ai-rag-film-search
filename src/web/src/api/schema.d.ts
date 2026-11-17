@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/movies/{id}/similar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Movies nearest to this one by embedding (cosine similarity), best first. Empty while the movie has no vector. */
+        get: operations["GetSimilarMovies"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/info": {
         parameters: {
             query?: never;
@@ -123,6 +140,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/embeddings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Active embedding model, stored vectors per model and locale, and the current or last reindex job. */
+        get: operations["GetEmbeddingIndex"];
+        put?: never;
+        post?: never;
+        /** Deletes all vectors of a model that is not the active one. */
+        delete: operations["DeleteEmbeddingModel"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/embeddings/reindex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Starts a background reindex job (202). 409 while another job is queued or running. */
+        post: operations["ReindexEmbeddings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -146,6 +198,15 @@ export interface components {
             /** Format: double */
             estimatedCostUsd: null | number | string;
         };
+        /** @description Body of `POST /api/admin/embeddings/reindex`. */
+        AdminReindexRequest: {
+            /** @description Embedding profile from `AI:EmbeddingProfiles`; the active one when empty. */
+            profile?: null | string;
+            /** @description Embed only movies whose embedding text changed (default). False re-embeds every movie. */
+            onlyStale?: boolean;
+            /** @description Locales to keep vectors for (`en`, `ru`, `sv`); `Search:Embeddings:Locales` when empty. Vectors of other locales of this model are deleted. */
+            locales?: null | string[];
+        };
         AppInfoResponse: {
             name: string;
             version: string;
@@ -155,6 +216,48 @@ export interface components {
             id: string;
             name: string;
             character: null | string;
+        };
+        DeleteEmbeddingsResponse: {
+            model: string;
+            /** Format: int32 */
+            deleted: number | string;
+        };
+        /** @description State of the embedding index: the active model and the stored vectors of every model. */
+        EmbeddingIndexState: {
+            activeProfile: string;
+            activeModel: string;
+            /** Format: int32 */
+            activeDimensions: number | string;
+            sets: components["schemas"]["EmbeddingSetStats"][];
+            job: null | components["schemas"]["EmbeddingJobStatus"];
+        };
+        /** @enum {unknown} */
+        EmbeddingJobState: "queued" | "running" | "succeeded" | "failed" | "cancelled";
+        /** @description State of a background reindex job. `Progress` while it runs, `Result` when it succeeded, `Error` when it failed. */
+        EmbeddingJobStatus: {
+            /** Format: uuid */
+            id: string;
+            state: components["schemas"]["EmbeddingJobState"];
+            request: components["schemas"]["ReindexRequest"];
+            /** Format: date-time */
+            queuedAt: string;
+            /** Format: date-time */
+            startedAt?: null | string;
+            /** Format: date-time */
+            finishedAt?: null | string;
+            progress?: null | components["schemas"]["ReindexProgress"];
+            result?: null | components["schemas"]["ReindexResult"];
+            error?: null | string;
+            isActive?: boolean;
+        };
+        /** @description Number of stored vectors of one model and locale. */
+        EmbeddingSetStats: {
+            model: string;
+            /** Format: int32 */
+            dimensions: number | string;
+            locale: string;
+            /** Format: int32 */
+            count: number | string;
         };
         GenreItem: {
             /** Format: int32 */
@@ -246,6 +349,42 @@ export interface components {
             /** Format: uuid */
             id: string;
             name: string;
+        };
+        /** @description Progress of a reindex: `Processed` of `Total` movie texts (movies × locales) checked so far. */
+        ReindexProgress: {
+            /** Format: int32 */
+            total: number | string;
+            /** Format: int32 */
+            processed: number | string;
+            /** Format: int32 */
+            embedded: number | string;
+            /** Format: int32 */
+            unchanged: number | string;
+        };
+        /** @description What to (re)embed. `Profile`: embedding profile, the active one when null. `OnlyStale`: embed only movies whose text hash changed; false re-embeds everything. `Locales`: locales to keep vectors for, the configured ones when null; vectors of other locales of this model are deleted. */
+        ReindexRequest: {
+            profile?: null | string;
+            /** @default true */
+            onlyStale: boolean;
+            locales?: null | string[];
+        };
+        /** @description Outcome of a reindex. `Deleted`: vectors of this model for locales that are no longer indexed. */
+        ReindexResult: {
+            profile: string;
+            model: string;
+            /** Format: int32 */
+            dimensions: number | string;
+            locales: string[];
+            /** Format: int32 */
+            movies: number | string;
+            /** Format: int32 */
+            embedded: number | string;
+            /** Format: int32 */
+            unchanged: number | string;
+            /** Format: int32 */
+            deleted: number | string;
+            /** Format: int64 */
+            elapsedMilliseconds: number | string;
         };
         /** @description Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null. Ranks start at 1 and are positions in that retriever's list. */
         SearchDebug: {
@@ -387,6 +526,46 @@ export interface operations {
                 content: {
                     "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
                 };
+            };
+        };
+    };
+    GetSimilarMovies: {
+        parameters: {
+            query?: {
+                limit?: number | string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchItem"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -541,6 +720,99 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    GetEmbeddingIndex: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmbeddingIndexState"];
+                };
+            };
+        };
+    };
+    DeleteEmbeddingModel: {
+        parameters: {
+            query: {
+                model: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeleteEmbeddingsResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    ReindexEmbeddings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminReindexRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmbeddingJobStatus"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmbeddingJobStatus"];
                 };
             };
         };

@@ -1,4 +1,3 @@
-using System.ClientModel;
 using System.ComponentModel.DataAnnotations;
 using FilmSearch.AI.Providers;
 using FilmSearch.AI.Telemetry;
@@ -60,7 +59,7 @@ internal static class AdminAiEndpoints
                 usage?.OutputTokens ?? 0,
                 usage?.EstimatedCostUsd));
         }
-        catch (Exception ex) when (ex is HttpRequestException or ClientResultException or TimeoutException)
+        catch (Exception ex) when (AiProviderErrors.IsProviderFailure(ex, cancellationToken))
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status503ServiceUnavailable,

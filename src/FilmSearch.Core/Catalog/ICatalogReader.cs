@@ -10,6 +10,12 @@ public interface ICatalogReader
 
     Task<MovieDetails?> GetMovieAsync(Guid id, string locale, CancellationToken cancellationToken);
 
+    /// <summary>Details of several movies in the order of <paramref name="ids"/>; unknown ids are skipped.</summary>
+    Task<IReadOnlyList<MovieDetails>> GetMovieDetailsAsync(IReadOnlyList<Guid> ids, string locale, CancellationToken cancellationToken);
+
+    /// <summary>Ids of all movies, in id order (Guid v7: creation order). Used by indexers that walk the whole catalog.</summary>
+    Task<IReadOnlyList<Guid>> GetMovieIdsAsync(CancellationToken cancellationToken);
+
     Task<IReadOnlyList<GenreItem>> ListGenresAsync(string locale, CancellationToken cancellationToken);
 
     Task<bool> HasMoviesAsync(CancellationToken cancellationToken);

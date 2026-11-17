@@ -13,7 +13,7 @@ Stack: .NET 10, ASP.NET Core, EF Core, PostgreSQL + pgvector, .NET Aspire, Micro
 
 ## Status
 
-The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
+The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
 
 ## Documentation
 
@@ -53,12 +53,14 @@ The API listens on `https://localhost:7180`:
 - `GET /health`: readiness (includes the database), `GET /alive`: liveness
 - `GET /api/info`: application name and version
 - `GET /api/movies`, `GET /api/movies/{id}`, `GET /api/genres`: catalog; texts follow `Accept-Language` (`en`, `ru`, `sv`)
-- `POST /api/search` with `{ "query": "nolan dream", "debug": true }`: keyword search (filters as in `GET /api/movies`)
+- `POST /api/search` with `{ "query": "nolan dream", "debug": true }`: keyword search (filters as in `GET /api/movies`); `"mode": "semantic"` searches by meaning (`{ "query": "a heist inside dreams", "mode": "semantic" }`, needs LM Studio)
+- `GET /api/movies/{id}/similar`: movies nearest to this one by embedding
 - `POST /api/admin/ingestion/seed`: reload the seed file (Development only, idempotent)
+- `GET /api/admin/embeddings`, `POST /api/admin/embeddings/reindex`, `DELETE /api/admin/embeddings?model=`: embedding index state, background reindex, deleting an old model's vectors (Development only)
 - `POST /api/admin/ai/chat` with `{ "message": "Hi", "profile": "local" }`: one call to a chat profile, with token usage (Development only); the call shows up as a GenAI trace in the dashboard
 - `GET /openapi/v1.json`: OpenAPI document (Development)
 
-On first start the API applies EF Core migrations and, if the catalog is empty, loads `data/seed/movies.seed.json` (Development only). The Postgres container `filmsearch-postgres` is persistent: it keeps running after you stop the AppHost, and its data lives in the Docker volume `filmsearch-postgres-data`.
+On first start the API applies EF Core migrations and, if the catalog is empty, loads `data/seed/movies.seed.json` (Development only). Then it queues a background job that embeds every movie whose embedding text changed (about 30 s for the whole seed with LM Studio running; with LM Studio off the job fails, keyword search works, and the next start or `POST /api/admin/embeddings/reindex` catches up). The Postgres container `filmsearch-postgres` is persistent: it keeps running after you stop the AppHost, and its data lives in the Docker volume `filmsearch-postgres-data`.
 
 ### Build and test
 
@@ -94,7 +96,7 @@ dotnet user-secrets set AI:ChatProfiles:openrouter:ApiKey <key> --project src/Fi
 dotnet user-secrets set AI:ActiveChatProfile openrouter --project src/FilmSearch.Api
 ```
 
-`/health` reports `Degraded` (not `Unhealthy`) when LM Studio is off: the store works without AI. To try chat, streaming, tools, JSON output and embeddings from the console, or to benchmark another model: [tools/ai-playground](tools/ai-playground/README.md). Stripe test keys (for I15) also live in the API user secrets: `Stripe:SecretKey`, `Stripe:PublishableKey`.
+`/health` reports `Degraded` (not `Unhealthy`) when LM Studio is off: the store works without AI, and semantic search returns 503. To try another embedding model: reindex with its profile (`{ "profile": "nomic" }`), switch `AI:ActiveEmbeddingProfile`, then delete the old model's vectors ([spec 08 §4](docs/spec/08-data-ingestion.md#4-embeddings-pipeline)). To try chat, streaming, tools, JSON output and embeddings from the console, or to benchmark another model: [tools/ai-playground](tools/ai-playground/README.md). Stripe test keys (for I15) also live in the API user secrets: `Stripe:SecretKey`, `Stripe:PublishableKey`.
 
 More commands (migrations, single test project) are in [AGENTS.md](AGENTS.md#commands). Rebuilding the seed file from TMDB: [data/seed/README.md](data/seed/README.md).
 

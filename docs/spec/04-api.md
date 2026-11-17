@@ -18,7 +18,7 @@ Locale: `Accept-Language` (`en`, `ru`, `sv`) selects translated titles and overv
 |---|---|---|
 | GET | `/api/movies` | Paged list. Query: `page` (default 1), `pageSize` (default 20, ≤ 50), `sort` (`popularity` default, `rating`, `year`, `title`; case-insensitive; `title` uses the localized title), `genres` (csv slugs, any of), `yearFrom`, `yearTo`, `minRating`, `runtimeMin`, `runtimeMax`, `language` (original language), `priceMax` (minor units), `offerType` (`buy`/`rent`; with `priceMax` both apply to the same offer). Response `{ items: [MovieSummary], page, pageSize, total }`. Invalid input → 400 Problem Details. |
 | GET | `/api/movies/{id}` | Movie details: localized texts, genres, keywords, `directors`, `writers`, `cast` (top 10), active offers. 404 Problem Details for an unknown id. |
-| GET | `/api/movies/{id}/similar` | Similar movies (vector neighbors, from I06). |
+| GET | `/api/movies/{id}/similar` | Similar movies (from I06): nearest neighbours of the movie's vector of the active embedding model, best first, without the movie itself. Query: `limit` (1–50, default 10). Response `[{ movie: MovieSummary, score }]` (`score` = cosine similarity). Empty while the movie has no vector; 404 for an unknown id. |
 | GET | `/api/genres` | Genres `{ id, slug, name }` with localized names, sorted by name. |
 
 Locale: from `Accept-Language` (`en`, `ru`, `sv`; `sv-SE` → `sv`; anything else → `en`), echoed in `Content-Language`. Missing texts fall back to English per field. JSON enums are camelCase strings (`buy`, `rent`). Posters are TMDB paths (`posterPath`); the UI builds the image URL.
@@ -26,7 +26,7 @@ Locale: from `Accept-Language` (`en`, `ru`, `sv`; `sv-SE` → `sv`; anything els
 ## Search
 | Method | Path | Description |
 |---|---|---|
-| POST | `/api/search` | Body: `{ query (1–500 chars), mode: "keyword"\|"semantic"\|"hybrid" (default keyword), filters: { genres: [slug], yearFrom, yearTo, minRating, runtimeMin, runtimeMax, language, priceMax, offerType }, understand: bool, page, pageSize (≤ 50, default 20), debug: bool }`. Response: `{ items: [{ movie: MovieSummary, score, debug? }], appliedFilters, understoodQuery?, page, pageSize, total }`; `debug` = `{ keywordRank, keywordScore, keywordMatch: "all"\|"any", vectorRank, similarity, fusedScore }`. `understand=true` runs query understanding (FR-SRCH-4). Movie texts follow `Accept-Language`; the query may be in any supported language. Until I06 / I07, `semantic`, `hybrid` and `understand=true` return 400. |
+| POST | `/api/search` | Body: `{ query (1–500 chars), mode: "keyword"\|"semantic"\|"hybrid" (default keyword), filters: { genres: [slug], yearFrom, yearTo, minRating, runtimeMin, runtimeMax, language, priceMax, offerType }, understand: bool, page, pageSize (≤ 50, default 20), debug: bool }`. Response: `{ items: [{ movie: MovieSummary, score, debug? }], appliedFilters, understoodQuery?, page, pageSize, total }`; `debug` = `{ keywordRank, keywordScore, keywordMatch: "all"\|"any", vectorRank, similarity, fusedScore }`. `understand=true` runs query understanding (FR-SRCH-4). Movie texts follow `Accept-Language`; the query may be in any supported language. `semantic` (from I06): `score` = cosine similarity, `total` ≤ `Search:Semantic:MaxResults` (100); 503 Problem Details when the query cannot be embedded (provider down). Until I07, `hybrid` and `understand=true` return 400. |
 
 ## Commerce
 | Method | Path | Description |
@@ -76,7 +76,9 @@ Each event: `event: <type>` and `data: <json>`.
 | POST | `/api/admin/ingestion/seed` | Load the seed file (idempotent). |
 | POST | `/api/admin/ingestion/tmdb` | `{ list: "top_rated"\|"popular", pages }` or `{ tmdbIds: [] }`. Starts a job → `{ jobId }`. |
 | GET | `/api/admin/jobs/{id}` | Job status and counters. |
-| POST | `/api/admin/embeddings/reindex` | `{ model?, onlyStale: bool }`. Starts a job. |
+| POST | `/api/admin/embeddings/reindex` | `{ profile?, onlyStale: bool (default true), locales?: ["en", "ru", "sv"] }`. Starts a background job → 202 with the job status; 409 while a job is queued or running; 400 for an unknown profile or locale. `profile` is an embedding profile (model, dimension and prefixes come with it); vectors of other locales of that model are deleted. |
+| GET | `/api/admin/embeddings` | Active profile, model and dimension; vector counts per model and locale; the current or last job (state, progress, result, error). |
+| DELETE | `/api/admin/embeddings?model=` | Deletes all vectors of a model; 400 for the active model. |
 
 ## Health
 `/health` (readiness: DB, AI provider reachable) and `/alive` (liveness), from ServiceDefaults.

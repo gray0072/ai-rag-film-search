@@ -180,7 +180,6 @@ public sealed class SearchApiTests(CatalogApiFixture fixture) : IClassFixture<Ca
 
     [Theory]
     [InlineData("""{ "query": "" }""", "Query")]
-    [InlineData("""{ "query": "godfather", "mode": "semantic" }""", "mode")]
     [InlineData("""{ "query": "godfather", "mode": "hybrid" }""", "mode")]
     [InlineData("""{ "query": "godfather", "understand": true }""", "understand")]
     [InlineData("""{ "query": "godfather", "pageSize": 51 }""", "PageSize")]

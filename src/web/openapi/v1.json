@@ -46,6 +46,68 @@
         }
       }
     },
+    "/api/movies/{id}/similar": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Movies nearest to this one by embedding (cosine similarity), best first. Empty while the movie has no vector.",
+        "operationId": "GetSimilarMovies",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "maximum": 50,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchItem"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/info": {
       "get": {
         "tags": [
@@ -358,6 +420,119 @@
           }
         }
       }
+    },
+    "/api/admin/embeddings": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Active embedding model, stored vectors per model and locale, and the current or last reindex job.",
+        "operationId": "GetEmbeddingIndex",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmbeddingIndexState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Deletes all vectors of a model that is not the active one.",
+        "operationId": "DeleteEmbeddingModel",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteEmbeddingsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/embeddings/reindex": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Starts a background reindex job (202). 409 while another job is queued or running.",
+        "operationId": "ReindexEmbeddings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminReindexRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmbeddingJobStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmbeddingJobStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -434,6 +609,36 @@
         },
         "description": "Answer of a chat profile with token usage and estimated cost (null when the model has no price)."
       },
+      "AdminReindexRequest": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Embedding profile from `AI:EmbeddingProfiles`; the active one when empty."
+          },
+          "onlyStale": {
+            "type": "boolean",
+            "description": "Embed only movies whose embedding text changed (default). False re-embeds every movie."
+          },
+          "locales": {
+            "maxItems": 3,
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Locales to keep vectors for (`en`, `ru`, `sv`); `Search:Embeddings:Locales` when empty. Vectors of other locales of this model are deleted."
+          }
+        },
+        "description": "Body of `POST /api/admin/embeddings/reindex`."
+      },
       "AppInfoResponse": {
         "required": [
           "name",
@@ -471,6 +676,181 @@
             ]
           }
         }
+      },
+      "DeleteEmbeddingsResponse": {
+        "required": [
+          "model",
+          "deleted"
+        ],
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "deleted": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "EmbeddingIndexState": {
+        "required": [
+          "activeProfile",
+          "activeModel",
+          "activeDimensions",
+          "sets",
+          "job"
+        ],
+        "type": "object",
+        "properties": {
+          "activeProfile": {
+            "type": "string"
+          },
+          "activeModel": {
+            "type": "string"
+          },
+          "activeDimensions": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "sets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmbeddingSetStats"
+            }
+          },
+          "job": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/EmbeddingJobStatus"
+              }
+            ]
+          }
+        },
+        "description": "State of the embedding index: the active model and the stored vectors of every model."
+      },
+      "EmbeddingJobState": {
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed",
+          "cancelled"
+        ]
+      },
+      "EmbeddingJobStatus": {
+        "required": [
+          "id",
+          "state",
+          "request",
+          "queuedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "$ref": "#/components/schemas/EmbeddingJobState"
+          },
+          "request": {
+            "$ref": "#/components/schemas/ReindexRequest"
+          },
+          "queuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "progress": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ReindexProgress"
+              }
+            ]
+          },
+          "result": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ReindexResult"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "description": "State of a background reindex job. `Progress` while it runs, `Result` when it succeeded, `Error` when it failed."
+      },
+      "EmbeddingSetStats": {
+        "required": [
+          "model",
+          "dimensions",
+          "locale",
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "dimensions": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "Number of stored vectors of one model and locale."
       },
       "GenreItem": {
         "required": [
@@ -888,6 +1268,152 @@
           }
         }
       },
+      "ReindexProgress": {
+        "required": [
+          "total",
+          "processed",
+          "embedded",
+          "unchanged"
+        ],
+        "type": "object",
+        "properties": {
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "processed": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "embedded": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unchanged": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "Progress of a reindex: `Processed` of `Total` movie texts (movies × locales) checked so far."
+      },
+      "ReindexRequest": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "onlyStale": {
+            "type": "boolean",
+            "default": true
+          },
+          "locales": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "What to (re)embed. `Profile`: embedding profile, the active one when null. `OnlyStale`: embed only movies whose text hash changed; false re-embeds everything. `Locales`: locales to keep vectors for, the configured ones when null; vectors of other locales of this model are deleted."
+      },
+      "ReindexResult": {
+        "required": [
+          "profile",
+          "model",
+          "dimensions",
+          "locales",
+          "movies",
+          "embedded",
+          "unchanged",
+          "deleted",
+          "elapsedMilliseconds"
+        ],
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "dimensions": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "locales": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "movies": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "embedded": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unchanged": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "deleted": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "elapsedMilliseconds": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          }
+        },
+        "description": "Outcome of a reindex. `Deleted`: vectors of this model for locales that are no longer indexed."
+      },
       "SearchDebug": {
         "type": "object",
         "properties": {
@@ -1110,7 +1636,7 @@
                 "type": "null"
               },
               {
-                "description": "`keyword` (default). `semantic` and `hybrid` return 400 until I06 / I07.",
+                "description": "`keyword` (default) or `semantic`. `hybrid` returns 400 until I07.",
                 "$ref": "#/components/schemas/SearchMode"
               }
             ]

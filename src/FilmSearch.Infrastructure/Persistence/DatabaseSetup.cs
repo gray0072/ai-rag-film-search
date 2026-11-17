@@ -19,7 +19,10 @@ public static partial class DatabaseSetup
 
     internal static void Configure(DbContextOptionsBuilder options, string? connectionString) =>
         options
-            .UseNpgsql(connectionString, npgsql => npgsql.MigrationsHistoryTable("__ef_migrations_history", "public"))
+            .UseNpgsql(connectionString, npgsql => npgsql
+                .MigrationsHistoryTable("__ef_migrations_history", "public")
+                // pgvector: the vector column type and the Npgsql mapping of Pgvector.Vector parameters (I06).
+                .UseVector())
             .UseSnakeCaseNamingConvention();
 
     /// <summary>

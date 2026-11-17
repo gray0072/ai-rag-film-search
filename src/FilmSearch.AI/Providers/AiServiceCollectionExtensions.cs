@@ -1,6 +1,8 @@
 using FilmSearch.AI.Diagnostics;
+using FilmSearch.AI.Embeddings;
 using FilmSearch.AI.Health;
 using FilmSearch.AI.Telemetry;
+using FilmSearch.Core.Search;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,7 @@ public static class AiServiceCollectionExtensions
     /// <list type="bullet">
     /// <item><c>IChatClient</c> and <c>IEmbeddingGenerator&lt;string, Embedding&lt;float&gt;&gt;</c> of the active profiles (unkeyed);</item>
     /// <item>the same for any named profile as keyed services: <c>[FromKeyedServices("openrouter")] IChatClient</c>;</item>
+    /// <item><see cref="ITextEmbedder"/> over the embedding profiles;</item>
     /// <item>health checks of the active providers (tag <c>ai</c>, Degraded on failure).</item>
     /// </list>
     /// Options are validated on start. Clients are singletons and are created on first use.
@@ -57,6 +60,9 @@ public static class AiServiceCollectionExtensions
             sp.GetRequiredService<IOptions<AiOptions>>().Value.ActiveChatProfile));
         services.AddSingleton(sp => sp.GetRequiredKeyedService<IEmbeddingGenerator<string, Embedding<float>>>(
             sp.GetRequiredService<IOptions<AiOptions>>().Value.ActiveEmbeddingProfile));
+
+        // Search code embeds through this contract of FilmSearch.Core (I06), not through the generator directly.
+        services.AddSingleton<ITextEmbedder, ProfileTextEmbedder>();
 
         if (section.GetValue(nameof(AiOptions.HealthChecksEnabled), defaultValue: true))
         {

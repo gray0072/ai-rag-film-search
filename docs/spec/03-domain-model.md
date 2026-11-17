@@ -41,9 +41,9 @@ The catalog tables live in the `catalog` schema: `movies`, `movie_translations`,
 | Entity | Fields |
 |---|---|
 | **MovieSearchDocument** (`search.movie_documents`, from I04) | `MovieId` (PK, FK to the movie, cascade), texts flattened per locale with English fallback: `TitleEn/Ru/Sv`, `OriginalTitle`, `Keywords`, `People` (directors, writers, cast), `TaglineEn/Ru/Sv`, `OverviewEn/Ru/Sv`; generated `SearchEn/Ru/Sv` (`tsvector`, GIN index). Written only by the SQL function `search.refresh_movie_documents(uuid[])`, which the catalog writer calls for created / changed movies through `ICatalogChangeHandler` (spec 05 §2). |
-| **MovieEmbedding** | `Id`, `MovieId`, `Model` (string), `Dimensions` (int), `Kind` (`Profile` for now; `Review`, `Plot` chunks possible later), `Locale`, `Text` (the exact embedded text), `ContentHash` (sha256 of text), `Vector` (vector(N)), `CreatedAt`. Unique: (`MovieId`, `Model`, `Kind`, `Locale`). |
+| **MovieEmbedding** (`search.movie_embeddings`, from I06) | `Id`, `MovieId` (FK, cascade), `Model` (string), `Dimensions` (int), `Kind` (`Profile` for now; `Review`, `Plot` chunks possible later), `Locale`, `Text` (the exact embedded text, document prefix included), `ContentHash` (sha256 of the template version and `Text`), `Vector` (`vector` without a fixed dimension), `CreatedAt` (when the vector was computed). Unique: (`MovieId`, `Model`, `Kind`, `Locale`); index (`Model`, `Locale`). |
 
-One vector column per dimension is a pgvector limitation for indexes. Approach: one table per active dimension, or a fixed `vector(1024)` column and models with that size. Decided in I06 and recorded as an ADR.
+pgvector indexes only columns of a fixed dimension, so the HNSW index is a partial expression index per dimension: `((vector::vector(768)) vector_cosine_ops) WHERE dimensions = 768` ([ADR-0008](../adr/0008-vector-storage-per-dimension.md)). The migration creates it for 768; the embedding indexer creates it for any other dimension on first use.
 
 ### Commerce
 | Entity | Fields |
