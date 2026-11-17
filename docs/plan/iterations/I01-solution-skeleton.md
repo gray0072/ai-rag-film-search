@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | in progress |
+| **Status** | done |
 | **Depends on** | I00 |
 | **Parallel with** | — (blocks all others) |
 | **Branch** | `iter/I01-skeleton` |
@@ -32,7 +32,7 @@ Domain entities (I03), frontend (I02), AI (I05).
 ## Acceptance criteria
 - [x] AppHost starts; Aspire dashboard shows Api and Postgres healthy; `/health` returns 200.
 - [x] Integration smoke test starts the API against a Testcontainers DB and calls `/health`.
-- [ ] CI is green on the PR. _(Waiting for push and PR; all workflow steps pass locally.)_
+- [x] CI is green on the PR ([#1](https://github.com/gray0072/ai-rag-film-search/pull/1), run 44134894525, 1 min).
 - [x] AGENTS.md "Commands" section filled in with real commands.
 
 ## Open questions
@@ -71,7 +71,8 @@ Domain entities (I03), frontend (I02), AI (I05).
 - **Spec changes requested by the owner in S02:** Swedish (`sv`) is a supported locale next to `ru` (UI, movie texts, FTS config `swedish`, assistant answers, evaluation cases), and the seed grows from about 100 to about 1000 movies (`data/seed/movies.seed.json`, batched loading). Updated: spec 00, 01, 02, 03, 04, 05, 06, 08, 09; ADR-0001, ADR-0003; AGENTS.md, README; plans I02–I06, I08, I10, I11, I13, I14; roadmap (I03 title).
 
 ### Follow-ups
-- Push the branch and open a PR to see CI green (the last open acceptance criterion).
+- The `ubuntu-latest` runner moves to Ubuntu 26 (GitHub notice); check the Testcontainers job after the switch.
+- `main` was first pushed in S02 (the remote was empty); the default branch is set to `main`.
 - I06: add `Pgvector.EntityFrameworkCore` and call `UseVector()` in `DatabaseSetup.Configure`.
 - I02: add the web job to CI and the Vite app to the AppHost.
 - I20: decide on `UseHttpsRedirection` behind a reverse proxy (health probes over HTTP).

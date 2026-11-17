@@ -2,7 +2,7 @@
 
 - **Iteration:** I01 (solution skeleton, Aspire, DB, CI)
 - **Agent:** Claude Code (VS Code)
-- **Outcome:** I01 implemented: Aspire AppHost with Postgres + pgvector (container `filmsearch-postgres`), API skeleton (health, ProblemDetails, OpenAPI, owner cookie), first migration, unit + integration tests, CI workflow. Spec updated: Swedish locale, seed of about 1000 movies. Branch pushed, PR opened.
+- **Outcome:** I01 implemented: Aspire AppHost with Postgres + pgvector (container `filmsearch-postgres`), API skeleton (health, ProblemDetails, OpenAPI, owner cookie), first migration, unit + integration tests, CI workflow. Spec updated: Swedish locale, seed of about 1000 movies. Branch and `main` pushed, PR #1 opened, CI green.
 
 ---
 
