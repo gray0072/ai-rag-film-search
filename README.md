@@ -13,7 +13,7 @@ Stack: .NET 10, ASP.NET Core, EF Core, PostgreSQL + pgvector, .NET Aspire, Micro
 
 ## Status
 
-The solution skeleton (I01) is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks, tests and CI. See the [roadmap](docs/plan/roadmap.md).
+The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), and a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02); tests and CI for both. See the [roadmap](docs/plan/roadmap.md).
 
 ## Documentation
 
@@ -35,7 +35,7 @@ The solution skeleton (I01) is in place: Aspire AppHost, PostgreSQL + pgvector, 
 | [.NET 10 SDK](https://dotnet.microsoft.com/download) (10.0.100 or later) | build, run, tests | I01 |
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | PostgreSQL through Aspire, integration tests (Testcontainers) | I01 |
 | Trusted HTTPS dev certificate: `dotnet dev-certs https --trust` | Aspire dashboard and API over HTTPS | I01 |
-| Node.js LTS | web app | I02 |
+| [Node.js](https://nodejs.org/) 24 LTS (npm 11) | web app | I02 |
 | [LM Studio](https://lmstudio.ai/) with a chat model and a multilingual embedding model, local server on `http://localhost:1234/v1` | AI features | I05 |
 
 No Aspire workload or Aspire CLI is needed: the AppHost uses the `Aspire.AppHost.Sdk` NuGet SDK.
@@ -46,7 +46,9 @@ No Aspire workload or Aspire CLI is needed: the AppHost uses the `Aspire.AppHost
 dotnet run --project src/FilmSearch.AppHost
 ```
 
-The console prints the Aspire dashboard login URL (`https://localhost:17180/login?t=...`). The dashboard shows the `postgres` container, the `filmsearch` database and the `api` project with logs, traces and metrics. The API listens on `https://localhost:7180`:
+The console prints the Aspire dashboard login URL (`https://localhost:17180/login?t=...`). The dashboard shows the `postgres` container, the `filmsearch` database, the `api` project and the `web` app with logs, traces and metrics. Open the **web** URL from the dashboard to use the app; before the first start the AppHost runs `npm install` for it, which takes a minute. The web app's dev server proxies `/api` to the API.
+
+The API listens on `https://localhost:7180`:
 
 - `GET /health`: readiness (includes the database), `GET /alive`: liveness
 - `GET /api/info`: application name and version
@@ -60,6 +62,15 @@ On first start the API applies EF Core migrations (Development only). The Postgr
 dotnet build
 dotnet test                          # unit + integration tests (Docker must be running)
 dotnet format --verify-no-changes    # the same format check as CI
+```
+
+Web app (in `src/web`):
+
+```bash
+npm install
+npm run dev                          # Vite dev server without Aspire; needs the API on https://localhost:7180
+npm run lint && npm run typecheck && npm test && npm run build
+npm run gen:api                      # regenerate API types after an API change (the API build writes openapi/v1.json)
 ```
 
 More commands (migrations, single test project) are in [AGENTS.md](AGENTS.md#commands).

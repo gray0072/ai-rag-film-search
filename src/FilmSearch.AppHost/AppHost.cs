@@ -10,9 +10,17 @@ var postgres = builder.AddPostgres("postgres")
 
 var database = postgres.AddDatabase("filmsearch");
 
-builder.AddProject<Projects.FilmSearch_Api>("api")
+var api = builder.AddProject<Projects.FilmSearch_Api>("api")
     .WithReference(database)
     .WaitFor(database)
     .WithHttpHealthCheck("/health");
+
+// React app (Vite dev server). `npm install` runs before the start; the API URL is injected
+// as service discovery variables and the Vite dev server proxies /api to it (src/web/vite.config.ts).
+builder.AddViteApp("web", "../web")
+    .WithNpm(install: true)
+    .WithReference(api)
+    .WaitFor(api)
+    .WithExternalHttpEndpoints();
 
 await builder.Build().RunAsync();

@@ -55,7 +55,7 @@ Local orchestration: **.NET Aspire AppHost** starts PostgreSQL (container with p
 | Movie data | Seed JSON, then TMDB API | [ADR-0003](../adr/0003-movie-data-source-tmdb.md) |
 | Resilience | `Microsoft.Extensions.Http.Resilience` (Polly v8) | |
 | Observability | OpenTelemetry (ServiceDefaults), Aspire dashboard; Langfuse as an option | |
-| Frontend | React 19 + TypeScript + Vite, React Router, TanStack Query, i18next, a component library (shadcn/ui or Mantine, decided in I02) | API types generated from OpenAPI |
+| Frontend | React 19 + TypeScript + Vite, React Router, TanStack Query, i18next, shadcn/ui + Tailwind CSS v4 ([ADR-0007](../adr/0007-frontend-stack.md)) | API types generated from OpenAPI (openapi-typescript + openapi-fetch + openapi-react-query) |
 | Tests | xUnit, FluentAssertions or Shouldly, Testcontainers, Vitest + Testing Library, Playwright (e2e, later) | |
 | CI | GitHub Actions | |
 | Containers | Dockerfiles for Api, Worker, Web; deployment target decided in I20 | |

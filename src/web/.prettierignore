@@ -1,0 +1,7 @@
+dist
+coverage
+node_modules
+package-lock.json
+# Generated from the OpenAPI document (npm run gen:api) and by the .NET build.
+src/api/schema.d.ts
+openapi

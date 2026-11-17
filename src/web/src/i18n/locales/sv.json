@@ -1,0 +1,65 @@
+{
+  "app": {
+    "name": "FilmSearch"
+  },
+  "nav": {
+    "main": "Huvudnavigering",
+    "catalog": "Katalog",
+    "library": "Mitt bibliotek",
+    "chat": "Assistent",
+    "cart": "Varukorg"
+  },
+  "search": {
+    "label": "Sök filmer",
+    "placeholder": "Sök filmer, skådespelare, stämningar…",
+    "submit": "Sök"
+  },
+  "language": {
+    "label": "Språk"
+  },
+  "footer": {
+    "tmdbAttribution": "Denna produkt använder TMDB:s API men är inte godkänd eller certifierad av TMDB.",
+    "apiLoading": "Ansluter till API:t…",
+    "apiVersion": "API {{version}}",
+    "apiUnavailable": "API:t är inte tillgängligt"
+  },
+  "placeholder": {
+    "comingIn": "Den här sidan är en platshållare. Den byggs i iteration {{iteration}}."
+  },
+  "pages": {
+    "catalog": {
+      "title": "Katalog",
+      "description": "Bläddra bland filmer med filter för genre, år, betyg och pris."
+    },
+    "movie": {
+      "title": "Om filmen",
+      "description": "Film {{id}}: handling, skådespelare, erbjudanden och liknande filmer."
+    },
+    "search": {
+      "title": "Sök",
+      "description": "Nyckelords-, semantisk och hybridsökning i katalogen.",
+      "query": "Din sökning: ”{{query}}”"
+    },
+    "cart": {
+      "title": "Varukorg",
+      "description": "Filmer som du tänker köpa eller hyra."
+    },
+    "checkoutSuccess": {
+      "title": "Tack!",
+      "description": "Din betalning bekräftas. Filmerna visas i ditt bibliotek så snart det är klart."
+    },
+    "library": {
+      "title": "Mitt bibliotek",
+      "description": "Filmer som du har köpt eller hyrt."
+    },
+    "chat": {
+      "title": "Assistent",
+      "description": "Be AI-assistenten hitta filmer, förklara sina val och hjälpa dig till kassan."
+    },
+    "notFound": {
+      "title": "Sidan hittades inte",
+      "description": "Sidan du letar efter finns inte.",
+      "backHome": "Tillbaka till katalogen"
+    }
+  }
+}

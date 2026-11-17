@@ -1,0 +1,65 @@
+{
+  "app": {
+    "name": "FilmSearch"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "catalog": "Catalog",
+    "library": "My library",
+    "chat": "Assistant",
+    "cart": "Cart"
+  },
+  "search": {
+    "label": "Search movies",
+    "placeholder": "Search movies, actors, moods…",
+    "submit": "Search"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "footer": {
+    "tmdbAttribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "apiLoading": "Connecting to the API…",
+    "apiVersion": "API {{version}}",
+    "apiUnavailable": "API unavailable"
+  },
+  "placeholder": {
+    "comingIn": "This page is a placeholder. It is built in iteration {{iteration}}."
+  },
+  "pages": {
+    "catalog": {
+      "title": "Catalog",
+      "description": "Browse movies with filters by genre, year, rating and price."
+    },
+    "movie": {
+      "title": "Movie details",
+      "description": "Movie {{id}}: overview, cast, offers and similar movies."
+    },
+    "search": {
+      "title": "Search",
+      "description": "Keyword, semantic and hybrid search over the catalog.",
+      "query": "Your query: “{{query}}”"
+    },
+    "cart": {
+      "title": "Cart",
+      "description": "Movies you are about to buy or rent."
+    },
+    "checkoutSuccess": {
+      "title": "Thank you!",
+      "description": "Your payment is being confirmed. The movies appear in your library as soon as it is done."
+    },
+    "library": {
+      "title": "My library",
+      "description": "Movies you bought or rented."
+    },
+    "chat": {
+      "title": "Assistant",
+      "description": "Ask the AI assistant to find movies, explain its picks and help you check out."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you are looking for does not exist.",
+      "backHome": "Back to the catalog"
+    }
+  }
+}

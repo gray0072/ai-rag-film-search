@@ -12,3 +12,4 @@ Template: [0000-template.md](0000-template.md).
 | [0004](0004-payment-gateway-abstraction.md) | Payment gateway abstraction: Fake first, then Stripe test mode | Accepted |
 | [0005](0005-dotnet-aspire.md) | .NET Aspire for local orchestration and observability | Accepted |
 | [0006](0006-agent-own-loop-first.md) | Own agent loop first, frameworks later | Accepted |
+| [0007](0007-frontend-stack.md) | Frontend stack: npm, shadcn/ui + Tailwind, OpenAPI-generated client | Accepted |
