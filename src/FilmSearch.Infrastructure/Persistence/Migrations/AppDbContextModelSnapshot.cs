@@ -27,6 +27,179 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("FilmSearch.Core.Assistant.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<decimal>("EstimatedCostUsd")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("numeric(18,8)")
+                        .HasColumnName("estimated_cost_usd");
+
+                    b.Property<string>("Locale")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("locale");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_id");
+
+                    b.Property<string>("ProfileName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("profile_name");
+
+                    b.Property<int>("SummarizedThroughSeq")
+                        .HasColumnType("integer")
+                        .HasColumnName("summarized_through_seq");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("text")
+                        .HasColumnName("summary");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(81)
+                        .HasColumnType("character varying(81)")
+                        .HasColumnName("title");
+
+                    b.Property<long>("TotalInputTokens")
+                        .HasColumnType("bigint")
+                        .HasColumnName("total_input_tokens");
+
+                    b.Property<long>("TotalOutputTokens")
+                        .HasColumnType("bigint")
+                        .HasColumnName("total_output_tokens");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_conversations");
+
+                    b.HasIndex("OwnerId", "UpdatedAt")
+                        .HasDatabaseName("ix_conversations_owner_id_updated_at");
+
+                    b.ToTable("conversations", "assistant");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Assistant.ConversationMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("conversation_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<decimal?>("EstimatedCostUsd")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("numeric(18,8)")
+                        .HasColumnName("estimated_cost_usd");
+
+                    b.Property<long?>("InputTokens")
+                        .HasColumnType("bigint")
+                        .HasColumnName("input_tokens");
+
+                    b.Property<int?>("LatencyMs")
+                        .HasColumnType("integer")
+                        .HasColumnName("latency_ms");
+
+                    b.Property<string>("Model")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("model");
+
+                    b.PrimitiveCollection<List<Guid>>("MovieIds")
+                        .IsRequired()
+                        .HasColumnType("uuid[]")
+                        .HasColumnName("movie_ids");
+
+                    b.Property<long?>("OutputTokens")
+                        .HasColumnType("bigint")
+                        .HasColumnName("output_tokens");
+
+                    b.Property<string>("PromptVersion")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("prompt_version");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("role");
+
+                    b.Property<int>("Seq")
+                        .HasColumnType("integer")
+                        .HasColumnName("seq");
+
+                    b.Property<string>("ToolCallId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("tool_call_id");
+
+                    b.Property<string>("ToolCallsJson")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("tool_calls_json");
+
+                    b.HasKey("Id")
+                        .HasName("pk_messages");
+
+                    b.HasIndex("ConversationId", "Seq")
+                        .IsUnique()
+                        .HasDatabaseName("ix_messages_conversation_id_seq");
+
+                    b.ToTable("messages", "assistant");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Assistant.MessageFeedback", b =>
+                {
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("message_id");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("comment");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer")
+                        .HasColumnName("rating");
+
+                    b.HasKey("MessageId")
+                        .HasName("pk_message_feedback");
+
+                    b.ToTable("message_feedback", "assistant", t =>
+                        {
+                            t.HasCheckConstraint("ck_message_feedback_rating", "rating IN (-1, 1)");
+                        });
+                });
+
             modelBuilder.Entity("FilmSearch.Core.Catalog.Genre", b =>
                 {
                     b.Property<int>("Id")
@@ -879,6 +1052,26 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_movie_genres_genre_id");
 
                     b.ToTable("movie_genres", "catalog");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Assistant.ConversationMessage", b =>
+                {
+                    b.HasOne("FilmSearch.Core.Assistant.Conversation", null)
+                        .WithMany()
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_messages_conversations_conversation_id");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Assistant.MessageFeedback", b =>
+                {
+                    b.HasOne("FilmSearch.Core.Assistant.ConversationMessage", null)
+                        .WithOne()
+                        .HasForeignKey("FilmSearch.Core.Assistant.MessageFeedback", "MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_message_feedback_messages_message_id");
                 });
 
             modelBuilder.Entity("FilmSearch.Core.Catalog.MovieCredit", b =>

@@ -61,9 +61,11 @@ The commerce tables live in the `commerce` schema: `carts`, `cart_items`, `order
 ### Assistant
 | Entity | Fields |
 |---|---|
-| **Conversation** | `Id`, `OwnerId`, `Title?`, `Locale`, `ProfileName` (AI profile), `CreatedAt`, `UpdatedAt`, `TotalInputTokens`, `TotalOutputTokens`, `EstimatedCostUsd` |
-| **ChatMessage** | `Id`, `ConversationId`, `Seq`, `Role` (`user`/`assistant`/`tool`/`system`), `Content`, `ToolCallsJson?`, `ToolCallId?`, `Model?`, `InputTokens?`, `OutputTokens?`, `LatencyMs?`, `PromptVersion?`, `CreatedAt` |
-| **MessageFeedback** | `MessageId`, `Rating` (+1/−1), `Comment?`, `CreatedAt` |
+| **Conversation** | `Id`, `OwnerId`, `Title?` (first user message, ≤ 80 chars), `Locale`, `ProfileName` (AI profile of the last turn), `CreatedAt`, `UpdatedAt`, `TotalInputTokens`, `TotalOutputTokens`, `EstimatedCostUsd` (answers and summaries), `Summary?` (rolling summary), `SummarizedThroughSeq` (last message covered by the summary; 0 = none) |
+| **ChatMessage** (class `ConversationMessage`, so it does not clash with `Microsoft.Extensions.AI.ChatMessage`) | `Id`, `ConversationId`, `Seq` (unique per conversation), `Role` (`user`/`assistant`/`tool`/`system`), `Content`, `ToolCallsJson?` (jsonb `[{ callId, name, arguments }]`), `ToolCallId?`, `Model?`, `InputTokens?`, `OutputTokens?`, `EstimatedCostUsd?`, `LatencyMs?`, `PromptVersion?`, `MovieIds` (uuid[], the cards of an answer; no foreign key), `CreatedAt`. A turn is stored as: user message → per tool round an assistant message with `ToolCallsJson` and one tool message per call → the answer (assistant, no tool calls: all text the user saw, usage, cost, prompt version, cards). |
+| **MessageFeedback** | `MessageId` (key: one per answer, a new rating replaces the old one), `Rating` (+1/−1, check constraint), `Comment?` (≤ 1000), `CreatedAt` |
+
+The assistant tables live in the `assistant` schema: `conversations`, `messages`, `message_feedback`.
 
 ### Identity (from I17)
 ASP.NET Core Identity tables in schema `identity`. `OwnerId` in other modules becomes the user id after login. The anonymous id is migrated on login.

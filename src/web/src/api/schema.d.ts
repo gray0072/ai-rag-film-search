@@ -226,6 +226,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/chat/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The owner's conversations, most recently updated first (at most 50). */
+        get: operations["ListConversations"];
+        put?: never;
+        /** Starts a conversation with the assistant. The body is optional. */
+        post: operations["CreateConversation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A conversation with its user messages and answers; movie cards with current prices in the Accept-Language locale. */
+        get: operations["GetConversation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/conversations/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sends a message and streams the answer as server-sent events: message.started, message.delta, tool.started, tool.completed, movies, message.completed or error (spec 04). */
+        post: operations["SendMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/messages/{messageId}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rates an answer with thumbs up (1) or down (-1); a new rating replaces the old one. */
+        post: operations["SaveMessageFeedback"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/ingestion/seed": {
         parameters: {
             query?: never;
@@ -337,6 +406,76 @@ export interface components {
             name: string;
             version: string;
         };
+        /** @description An event of an assistant turn. The JSON data carries the event name as `type` (a discriminated union in the OpenAPI document). */
+        AssistantEvent: components["schemas"]["AssistantEventMessageStartedEvent"] | components["schemas"]["AssistantEventMessageDeltaEvent"] | components["schemas"]["AssistantEventToolStartedEvent"] | components["schemas"]["AssistantEventToolCompletedEvent"] | components["schemas"]["AssistantEventMoviesEvent"] | components["schemas"]["AssistantEventCartUpdatedEvent"] | components["schemas"]["AssistantEventConfirmationRequiredEvent"] | components["schemas"]["AssistantEventMessageCompletedEvent"] | components["schemas"]["AssistantEventErrorEvent"];
+        /** @description The cart changed through a tool (I12). */
+        AssistantEventCartUpdatedEvent: {
+            /** @enum {string} */
+            type?: "cart.updated";
+            cart: components["schemas"]["CartView"];
+        };
+        /** @description The assistant asks the user to confirm an action (checkout, I12). Nothing is paid until the user confirms. */
+        AssistantEventConfirmationRequiredEvent: {
+            /** @enum {string} */
+            type?: "confirmation.required";
+            /** Format: uuid */
+            confirmationId: string;
+            kind: string;
+            summary: components["schemas"]["ConfirmationSummary"];
+        };
+        /** @description The turn failed; the stream ends. Code is one of AssistantErrorCodes. */
+        AssistantEventErrorEvent: {
+            /** @enum {string} */
+            type?: "error";
+            code: string;
+            message: string;
+        };
+        /** @description The answer is complete and stored. */
+        AssistantEventMessageCompletedEvent: {
+            /** @enum {string} */
+            type?: "message.completed";
+            /** Format: uuid */
+            messageId: string;
+            usage: components["schemas"]["TokenUsage"];
+            model: string;
+            /** Format: int64 */
+            latencyMs: number;
+        };
+        /** @description The next chunk of the answer text (markdown). */
+        AssistantEventMessageDeltaEvent: {
+            /** @enum {string} */
+            type?: "message.delta";
+            text: string;
+        };
+        /** @description The answer was started; MessageId is the id of the stored answer (for feedback). */
+        AssistantEventMessageStartedEvent: {
+            /** @enum {string} */
+            type?: "message.started";
+            /** Format: uuid */
+            messageId: string;
+        };
+        /** @description Movie cards to show next to the answer, built from tool results (catalog data), not from model text. */
+        AssistantEventMoviesEvent: {
+            /** @enum {string} */
+            type?: "movies";
+            items: components["schemas"]["MovieCard"][];
+        };
+        /** @description A tool call finished; Ok is false when the tool refused the arguments or failed. */
+        AssistantEventToolCompletedEvent: {
+            /** @enum {string} */
+            type?: "tool.completed";
+            callId: string;
+            name: string;
+            ok: boolean;
+        };
+        /** @description A tool call started; the UI shows e.g. "Searching the catalog…". */
+        AssistantEventToolStartedEvent: {
+            /** @enum {string} */
+            type?: "tool.started";
+            callId: string;
+            name: string;
+            argsSummary: string;
+        };
         /**
          * @description Who put a line into the cart.
          * @enum {unknown}
@@ -417,6 +556,66 @@ export interface components {
              */
             expiresAt: string;
         };
+        /** @description What the user confirms: the cart lines and the total computed by the server. */
+        ConfirmationSummary: {
+            items: components["schemas"]["CartLine"][];
+            /** Format: int64 */
+            totalMinor: number;
+            currency: string;
+        };
+        /** @description A conversation in the list. */
+        ConversationListItem: {
+            /**
+             * Format: uuid
+             * @description Conversation id.
+             */
+            id: string;
+            /** @description Beginning of the first user message; null before it. */
+            title: null | string;
+            /** @description Locale given at creation. */
+            locale: string;
+            /**
+             * Format: date-time
+             * @description Creation time.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Time of the last message.
+             */
+            updatedAt: string;
+        };
+        /** @description A conversation with its visible messages (user messages and answers; tool rounds are left out). */
+        ConversationView: {
+            /**
+             * Format: uuid
+             * @description Conversation id.
+             */
+            id: string;
+            /** @description Beginning of the first user message. */
+            title: null | string;
+            /** @description Locale given at creation. */
+            locale: string;
+            /**
+             * Format: date-time
+             * @description Creation time.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Time of the last message.
+             */
+            updatedAt: string;
+            /** @description Tokens and estimated cost of the whole conversation (answers and summaries). */
+            usage: components["schemas"]["UsageView"];
+            /** @description Messages in order. */
+            messages: components["schemas"]["MessageView"][];
+        };
+        /** @description Body of `POST /api/chat/conversations`. */
+        CreateConversationRequest: {
+            /** @description Locale of movie texts when a message request has no Accept-Language header: en, ru or sv. Default: the request locale. */
+            locale?: null | string;
+        };
         DeleteEmbeddingsResponse: {
             model: string;
             /** Format: int32 */
@@ -461,6 +660,16 @@ export interface components {
         };
         /** @enum {unknown} */
         EntitlementType: "owned" | "rental";
+        /** @description A rating of an answer. */
+        FeedbackView: {
+            /**
+             * Format: int32
+             * @description 1 (thumbs up) or -1 (thumbs down).
+             */
+            rating: number;
+            /** @description Optional comment. */
+            comment: null | string;
+        };
         GenreItem: {
             /** Format: int32 */
             id: number;
@@ -510,6 +719,76 @@ export interface components {
              * @description The order that granted it.
              */
             orderId: string;
+        };
+        /** @description Body of `POST /api/chat/messages/{messageId}/feedback`. */
+        MessageFeedbackRequest: {
+            /**
+             * Format: int32
+             * @description 1 (thumbs up) or -1 (thumbs down).
+             */
+            rating: null | number;
+            /** @description Optional comment, up to 1000 characters. */
+            comment?: null | string;
+        };
+        /** @enum {unknown} */
+        MessageRole: "user" | "assistant" | "tool" | "system";
+        /** @description A user message or an answer of the assistant. */
+        MessageView: {
+            /**
+             * Format: uuid
+             * @description Message id (used for feedback).
+             */
+            id: string;
+            /** @description user or assistant. */
+            role: components["schemas"]["MessageRole"];
+            /** @description Message text (assistant text is markdown). */
+            text: string;
+            /**
+             * Format: date-time
+             * @description Creation time.
+             */
+            createdAt: string;
+            /** @description Movie cards of an answer, built from the catalog now (current prices). */
+            movies: components["schemas"]["MovieCard"][];
+            /** @description Model that wrote the answer. */
+            model: null | string;
+            /** @description System prompt id of the answer. */
+            promptVersion: null | string;
+            usage: null | components["schemas"]["UsageView"];
+            /**
+             * Format: int32
+             * @description Time to the end of the answer.
+             */
+            latencyMs: null | number;
+            feedback: null | components["schemas"]["FeedbackView"];
+        };
+        /** @description A movie shown next to an assistant message. Built from the catalog (prices from the DB), never from model text (FR-AST-3). */
+        MovieCard: {
+            /**
+             * Format: uuid
+             * @description Movie id.
+             */
+            id: string;
+            /** @description Title in the request locale. */
+            title: string;
+            /**
+             * Format: int32
+             * @description Release year.
+             */
+            year: null | number;
+            /** @description TMDB poster path; the UI builds the image URL. */
+            posterPath: null | string;
+            /** @description Genre names in the request locale. */
+            genres: string[];
+            /**
+             * Format: double
+             * @description Average user rating, 0–10.
+             */
+            rating: number;
+            /** @description Active offers with current prices. */
+            offers: components["schemas"]["OfferItem"][];
+            /** @description Why the movie fits the request (reserved; not filled yet). */
+            reason?: null | string;
         };
         MovieDetails: {
             /** Format: uuid */
@@ -814,6 +1093,24 @@ export interface components {
             /** Format: int64 */
             elapsedMilliseconds: number;
         };
+        /** @description Body of `POST /api/chat/conversations/{id}/messages`. */
+        SendMessageRequest: {
+            /** @description The user's message, 1–2000 characters. */
+            text: null | string;
+        };
+        SseItemOfAssistantEvent: {
+            data?: components["schemas"]["AssistantEvent"];
+            eventType?: null | string;
+            eventId?: null | string;
+            reconnectionInterval?: null | string;
+        };
+        /** @description Tokens of all model calls of a turn. */
+        TokenUsage: {
+            /** Format: int64 */
+            inputTokens: number;
+            /** Format: int64 */
+            outputTokens: number;
+        };
         /** @description Filters found by query understanding. Null or empty means "not mentioned". */
         UnderstoodFilters: {
             /** @description Genre slugs the movie should have (any of them). */
@@ -848,6 +1145,24 @@ export interface components {
             promptVersion?: null | string;
             /** @description Why the result is a fallback (validation or provider error), for debugging. */
             error?: null | string;
+        };
+        /** @description Token usage and estimated cost. */
+        UsageView: {
+            /**
+             * Format: int64
+             * @description Input (prompt) tokens.
+             */
+            inputTokens: number;
+            /**
+             * Format: int64
+             * @description Output (completion) tokens.
+             */
+            outputTokens: number;
+            /**
+             * Format: double
+             * @description Estimated cost in USD; 0 for models without a price.
+             */
+            estimatedCostUsd: number;
         };
     };
     responses: never;
@@ -1263,6 +1578,161 @@ export interface operations {
                 content: {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
+            };
+        };
+    };
+    ListConversations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationListItem"][];
+                };
+            };
+        };
+    };
+    CreateConversation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": null | components["schemas"]["CreateConversationRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationListItem"];
+                };
+            };
+        };
+    };
+    GetConversation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationView"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SendMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["SseItemOfAssistantEvent"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SaveMessageFeedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                messageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageFeedbackRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

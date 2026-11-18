@@ -1,0 +1,54 @@
+# Assistant API (I11, spec 04 "Assistant"). Run the AppHost (or the API) with a chat model: LM Studio, or
+# AI:ActiveChatProfile = openrouter with a key in user secrets. VS Code REST Client / Rider / Visual Studio keep the
+# owner cookie (fs_sid) between requests, so the conversation stays yours.
+# With curl: curl -kN -c jar.txt -b jar.txt ... --data-binary @message.json (a UTF-8 file for Cyrillic text).
+
+@api = https://localhost:7180
+
+### Start a conversation (body optional; locale = movie texts when a request has no Accept-Language)
+# @name conversation
+POST {{api}}/api/chat/conversations
+Content-Type: application/json
+Accept-Language: ru
+
+{ "locale": "ru" }
+
+### Send a message: the answer streams as server-sent events
+# message.started → tool.started → tool.completed → movies → message.delta… → message.completed (or error)
+POST {{api}}/api/chat/conversations/{{conversation.response.body.id}}/messages
+Content-Type: application/json
+Accept-Language: ru
+
+{ "text": "Посоветуй что-нибудь про космос" }
+
+### Continue the conversation (filters come from the text: no horror, at most $5)
+POST {{api}}/api/chat/conversations/{{conversation.response.body.id}}/messages
+Content-Type: application/json
+Accept-Language: ru
+
+{ "text": "А что-нибудь из этого без ужасов и подешевле, до 5 долларов?" }
+
+### Reload: user messages and answers with movie cards (current prices), usage and cost
+GET {{api}}/api/chat/conversations/{{conversation.response.body.id}}
+Accept-Language: ru
+
+### The owner's conversations
+GET {{api}}/api/chat/conversations
+
+### Swedish
+# @name svConversation
+POST {{api}}/api/chat/conversations
+Accept-Language: sv
+
+###
+POST {{api}}/api/chat/conversations/{{svConversation.response.body.id}}/messages
+Content-Type: application/json
+Accept-Language: sv
+
+{ "text": "Tipsa om en film om rymden" }
+
+### Rate an answer (messageId from message.started / message.completed)
+POST {{api}}/api/chat/messages/00000000-0000-0000-0000-000000000000/feedback
+Content-Type: application/json
+
+{ "rating": 1, "comment": "good picks" }

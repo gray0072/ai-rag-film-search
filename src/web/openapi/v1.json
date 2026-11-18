@@ -610,6 +610,203 @@
         }
       }
     },
+    "/api/chat/conversations": {
+      "post": {
+        "tags": [
+          "Assistant"
+        ],
+        "summary": "Starts a conversation with the assistant. The body is optional.",
+        "operationId": "CreateConversation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CreateConversationRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationListItem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Assistant"
+        ],
+        "summary": "The owner's conversations, most recently updated first (at most 50).",
+        "operationId": "ListConversations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConversationListItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/conversations/{id}": {
+      "get": {
+        "tags": [
+          "Assistant"
+        ],
+        "summary": "A conversation with its user messages and answers; movie cards with current prices in the Accept-Language locale.",
+        "operationId": "GetConversation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationView"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/chat/conversations/{id}/messages": {
+      "post": {
+        "tags": [
+          "Assistant"
+        ],
+        "summary": "Sends a message and streams the answer as server-sent events: message.started, message.delta, tool.started, tool.completed, movies, message.completed or error (spec 04).",
+        "operationId": "SendMessage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/SseItemOfAssistantEvent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/messages/{messageId}/feedback": {
+      "post": {
+        "tags": [
+          "Assistant"
+        ],
+        "summary": "Rates an answer with thumbs up (1) or down (-1); a new rating replaces the old one.",
+        "operationId": "SaveMessageFeedback",
+        "parameters": [
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageFeedbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/ingestion/seed": {
       "post": {
         "tags": [
@@ -923,6 +1120,256 @@
           }
         }
       },
+      "AssistantEvent": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/AssistantEventMessageStartedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantEventMessageDeltaEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantEventToolStartedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantEventToolCompletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantEventMoviesEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantEventCartUpdatedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantEventConfirmationRequiredEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantEventMessageCompletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AssistantEventErrorEvent"
+          }
+        ],
+        "description": "An event of an assistant turn. The JSON data carries the event name as `type` (a discriminated union in the OpenAPI document).",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "message.started": "#/components/schemas/AssistantEventMessageStartedEvent",
+            "message.delta": "#/components/schemas/AssistantEventMessageDeltaEvent",
+            "tool.started": "#/components/schemas/AssistantEventToolStartedEvent",
+            "tool.completed": "#/components/schemas/AssistantEventToolCompletedEvent",
+            "movies": "#/components/schemas/AssistantEventMoviesEvent",
+            "cart.updated": "#/components/schemas/AssistantEventCartUpdatedEvent",
+            "confirmation.required": "#/components/schemas/AssistantEventConfirmationRequiredEvent",
+            "message.completed": "#/components/schemas/AssistantEventMessageCompletedEvent",
+            "error": "#/components/schemas/AssistantEventErrorEvent"
+          }
+        }
+      },
+      "AssistantEventCartUpdatedEvent": {
+        "required": [
+          "cart"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "cart.updated"
+            ],
+            "type": "string"
+          },
+          "cart": {
+            "$ref": "#/components/schemas/CartView"
+          }
+        },
+        "description": "The cart changed through a tool (I12)."
+      },
+      "AssistantEventConfirmationRequiredEvent": {
+        "required": [
+          "confirmationId",
+          "kind",
+          "summary"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "confirmation.required"
+            ],
+            "type": "string"
+          },
+          "confirmationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ConfirmationSummary"
+          }
+        },
+        "description": "The assistant asks the user to confirm an action (checkout, I12). Nothing is paid until the user confirms."
+      },
+      "AssistantEventErrorEvent": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "error"
+            ],
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "description": "The turn failed; the stream ends. Code is one of AssistantErrorCodes."
+      },
+      "AssistantEventMessageCompletedEvent": {
+        "required": [
+          "messageId",
+          "usage",
+          "model",
+          "latencyMs"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "message.completed"
+            ],
+            "type": "string"
+          },
+          "messageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/TokenUsage"
+          },
+          "model": {
+            "type": "string"
+          },
+          "latencyMs": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "description": "The answer is complete and stored."
+      },
+      "AssistantEventMessageDeltaEvent": {
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "message.delta"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "description": "The next chunk of the answer text (markdown)."
+      },
+      "AssistantEventMessageStartedEvent": {
+        "required": [
+          "messageId"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "message.started"
+            ],
+            "type": "string"
+          },
+          "messageId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "description": "The answer was started; MessageId is the id of the stored answer (for feedback)."
+      },
+      "AssistantEventMoviesEvent": {
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "movies"
+            ],
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovieCard"
+            }
+          }
+        },
+        "description": "Movie cards to show next to the answer, built from tool results (catalog data), not from model text."
+      },
+      "AssistantEventToolCompletedEvent": {
+        "required": [
+          "callId",
+          "name",
+          "ok"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "tool.completed"
+            ],
+            "type": "string"
+          },
+          "callId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "description": "A tool call finished; Ok is false when the tool refused the arguments or failed."
+      },
+      "AssistantEventToolStartedEvent": {
+        "required": [
+          "callId",
+          "name",
+          "argsSummary"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "tool.started"
+            ],
+            "type": "string"
+          },
+          "callId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "argsSummary": {
+            "type": "string"
+          }
+        },
+        "description": "A tool call started; the UI shows e.g. \"Searching the catalog…\"."
+      },
       "CartItemSource": {
         "enum": [
           "user",
@@ -1084,6 +1531,134 @@
             "format": "date-time"
           }
         }
+      },
+      "ConfirmationSummary": {
+        "required": [
+          "items",
+          "totalMinor",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartLine"
+            }
+          },
+          "totalMinor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "description": "What the user confirms: the cart lines and the total computed by the server."
+      },
+      "ConversationListItem": {
+        "required": [
+          "id",
+          "title",
+          "locale",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Conversation id.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Beginning of the first user message; null before it."
+          },
+          "locale": {
+            "type": "string",
+            "description": "Locale given at creation."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation time.",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Time of the last message.",
+            "format": "date-time"
+          }
+        },
+        "description": "A conversation in the list."
+      },
+      "ConversationView": {
+        "required": [
+          "id",
+          "title",
+          "locale",
+          "createdAt",
+          "updatedAt",
+          "usage",
+          "messages"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Conversation id.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Beginning of the first user message."
+          },
+          "locale": {
+            "type": "string",
+            "description": "Locale given at creation."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation time.",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Time of the last message.",
+            "format": "date-time"
+          },
+          "usage": {
+            "description": "Tokens and estimated cost of the whole conversation (answers and summaries).",
+            "$ref": "#/components/schemas/UsageView"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageView"
+            },
+            "description": "Messages in order."
+          }
+        },
+        "description": "A conversation with its visible messages (user messages and answers; tool rounds are left out)."
+      },
+      "CreateConversationRequest": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Locale of movie texts when a message request has no Accept-Language header: en, ru or sv. Default: the request locale."
+          }
+        },
+        "description": "Body of `POST /api/chat/conversations`."
       },
       "DeleteEmbeddingsResponse": {
         "required": [
@@ -1250,6 +1825,28 @@
           "rental"
         ]
       },
+      "FeedbackView": {
+        "required": [
+          "rating",
+          "comment"
+        ],
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "integer",
+            "description": "1 (thumbs up) or -1 (thumbs down).",
+            "format": "int32"
+          },
+          "comment": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional comment."
+          }
+        },
+        "description": "A rating of an answer."
+      },
       "GenreItem": {
         "required": [
           "id",
@@ -1375,6 +1972,192 @@
             "format": "uuid"
           }
         }
+      },
+      "MessageFeedbackRequest": {
+        "required": [
+          "rating"
+        ],
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "1 (thumbs up) or -1 (thumbs down).",
+            "format": "int32"
+          },
+          "comment": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional comment, up to 1000 characters."
+          }
+        },
+        "description": "Body of `POST /api/chat/messages/{messageId}/feedback`."
+      },
+      "MessageRole": {
+        "enum": [
+          "user",
+          "assistant",
+          "tool",
+          "system"
+        ]
+      },
+      "MessageView": {
+        "required": [
+          "id",
+          "role",
+          "text",
+          "createdAt",
+          "movies",
+          "model",
+          "promptVersion",
+          "usage",
+          "latencyMs",
+          "feedback"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Message id (used for feedback).",
+            "format": "uuid"
+          },
+          "role": {
+            "description": "user or assistant.",
+            "$ref": "#/components/schemas/MessageRole"
+          },
+          "text": {
+            "type": "string",
+            "description": "Message text (assistant text is markdown)."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation time.",
+            "format": "date-time"
+          },
+          "movies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovieCard"
+            },
+            "description": "Movie cards of an answer, built from the catalog now (current prices)."
+          },
+          "model": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Model that wrote the answer."
+          },
+          "promptVersion": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "System prompt id of the answer."
+          },
+          "usage": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Tokens and estimated cost of the answer.",
+                "$ref": "#/components/schemas/UsageView"
+              }
+            ]
+          },
+          "latencyMs": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Time to the end of the answer.",
+            "format": "int32"
+          },
+          "feedback": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "The owner's rating of the answer.",
+                "$ref": "#/components/schemas/FeedbackView"
+              }
+            ]
+          }
+        },
+        "description": "A user message or an answer of the assistant."
+      },
+      "MovieCard": {
+        "required": [
+          "id",
+          "title",
+          "year",
+          "posterPath",
+          "genres",
+          "rating",
+          "offers"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Movie id.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title in the request locale."
+          },
+          "year": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Release year.",
+            "format": "int32"
+          },
+          "posterPath": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "TMDB poster path; the UI builds the image URL."
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Genre names in the request locale."
+          },
+          "rating": {
+            "type": "number",
+            "description": "Average user rating, 0–10.",
+            "format": "double"
+          },
+          "offers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfferItem"
+            },
+            "description": "Active offers with current prices."
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why the movie fits the request (reserved; not filled yet)."
+          }
+        },
+        "description": "A movie shown next to an assistant message. Built from the catalog (prices from the DB), never from model text (FR-AST-3)."
       },
       "MovieDetails": {
         "required": [
@@ -2289,6 +3072,69 @@
           }
         }
       },
+      "SendMessageRequest": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The user's message, 1–2000 characters."
+          }
+        },
+        "description": "Body of `POST /api/chat/conversations/{id}/messages`."
+      },
+      "SseItemOfAssistantEvent": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AssistantEvent"
+          },
+          "eventType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "eventId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reconnectionInterval": {
+            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "TokenUsage": {
+        "required": [
+          "inputTokens",
+          "outputTokens"
+        ],
+        "type": "object",
+        "properties": {
+          "inputTokens": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "outputTokens": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "description": "Tokens of all model calls of a turn."
+      },
       "UnderstoodFilters": {
         "type": "object",
         "properties": {
@@ -2391,6 +3237,32 @@
           }
         },
         "description": "Result of query understanding: the text to search for, the filters found in the query and the titles of movies the user wants something similar to."
+      },
+      "UsageView": {
+        "required": [
+          "inputTokens",
+          "outputTokens",
+          "estimatedCostUsd"
+        ],
+        "type": "object",
+        "properties": {
+          "inputTokens": {
+            "type": "integer",
+            "description": "Input (prompt) tokens.",
+            "format": "int64"
+          },
+          "outputTokens": {
+            "type": "integer",
+            "description": "Output (completion) tokens.",
+            "format": "int64"
+          },
+          "estimatedCostUsd": {
+            "type": "number",
+            "description": "Estimated cost in USD; 0 for models without a price.",
+            "format": "double"
+          }
+        },
+        "description": "Token usage and estimated cost."
       }
     }
   },
@@ -2412,6 +3284,9 @@
     },
     {
       "name": "Orders"
+    },
+    {
+      "name": "Assistant"
     },
     {
       "name": "Admin"

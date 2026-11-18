@@ -4,6 +4,7 @@ using FilmSearch.AI.Providers;
 using FilmSearch.Api.Localization;
 using FilmSearch.Api.Modules.Admin;
 using FilmSearch.Api.Modules.AppInfo;
+using FilmSearch.Api.Modules.Assistant;
 using FilmSearch.Api.Modules.Catalog;
 using FilmSearch.Api.Modules.Commerce;
 using FilmSearch.Api.Modules.Search;
@@ -38,6 +39,7 @@ builder.Services.AddAppInfoModule();
 builder.Services.AddCatalogModule(builder.Configuration);
 builder.Services.AddSearchModule(builder.Configuration);
 builder.AddCommerceModule();
+builder.AddAssistantModule();
 
 var app = builder.Build();
 
@@ -64,6 +66,7 @@ app.MapAppInfoEndpoints();
 app.MapCatalogEndpoints();
 app.MapSearchEndpoints();
 app.MapCommerceEndpoints();
+app.MapAssistantEndpoints();
 app.MapAdminEndpoints(app.Configuration);
 
 if (app.Configuration.GetValue<bool>(DatabaseSetup.MigrateOnStartupKey))

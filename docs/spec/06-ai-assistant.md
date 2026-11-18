@@ -58,13 +58,19 @@ if iterations exhausted: final call without tools, "summarize what you found"
 
 Context sent to the model each turn: system prompt + summary of older turns (when history > N tokens) + last K messages + tool results of the current turn. Large tool results are compacted before being added (only fields the model needs).
 
+Implementation (I11, `FilmSearch.AI/Assistant`):
+- `AgentLoop` streams each model call with the tool declarations (`AIFunctionFactory.CreateDeclaration`, JSON Schema generated from the C# argument record) and runs the calls itself. Unknown tools, unparsable or invalid arguments and tool exceptions become an `{ "error": … }` result the model can react to (`tool.completed` with `ok: false`); they never fail the turn. Text of several iterations is joined with a blank line. After `Assistant:MaxToolIterations` (6) calls with tools, one call without tools gets the note "answer now with what you found" (not stored).
+- `AssistantChat` (`IAssistantChat`) runs a turn as a plain async method that writes events to a channel; the endpoint's async iterator only reads it. Reason: inside an async iterator `Activity.Current` is reset after every `yield`, so the chat and tool spans would not nest under the turn span (`invoke_agent assistant` → `chat` / `execute_tool search_movies` / `chat`).
+- A conversation runs one turn at a time (in-process lock; a second request gets `error: conversationBusy`). A conversation over `Assistant:MaxConversationTokens` gets `error: budgetExceeded`. A profile with `SupportsTools: false` gets `error: toolsNotSupported`.
+- Usage and cost: tokens of all model calls of the turn are stored on the answer, cost = `AI:Pricing` of the profile's model; conversation totals also include summary calls and the tokens of failed turns.
+
 ## 3. Tools
 
 All tools are thin adapters over module services and run with the **current owner** from the request, never from tool arguments.
 
 | Tool | Arguments | Returns (to the model) | Side effects |
 |---|---|---|---|
-| `search_movies` | `query` (string), `filters` (genresInclude/Exclude, yearFrom/To, minRating, maxPrice, language), `limit` ≤ 10, `excludeMovieIds` | compact list: id, title, year, genres, rating, short overview (≤ 300 chars), prices | emits `movies` cards |
+| `search_movies` | `query` (string, required), `genresInclude` / `genresExclude` (slugs, `enum` of the catalog's genres in the schema), `yearFrom`, `yearTo`, `minRating`, `maxPrice` (USD, major units), `language` (ISO 639-1), `limit` ≤ 10 (default `Assistant:SearchResultLimit` = 6), `excludeMovieIds`. Filters are flat arguments, not a nested `filters` object: small models fill flat arguments more reliably. Hybrid search without query understanding (the model already extracts the filters). Unknown genres and invalid values are dropped with a note in the result | `{ movies: [{ id, title, year, genres, rating, overview (≤ 300 chars), offers: ["buy: 9.99 USD", "rent for 48 h: 3.99 USD"] }], notes? }` in the request locale | emits `movies` cards (each movie once per turn) |
 | `get_movie_details` | `movieId` | full details: overview, director, cast, runtime, offers | — |
 | `find_similar_movies` | `movieId`, `limit` | as search | emits `movies` |
 | `view_cart` | — | items, total | — |
@@ -74,7 +80,7 @@ All tools are thin adapters over module services and run with the **current owne
 
 ## 4. System prompt (outline)
 
-Versioned file `Prompts/assistant.system.v1.md`. Main points:
+Versioned file `Prompts/assistant-system.v1.md` (prompt names cannot contain dots: `PromptLibrary`). Main points:
 1. Role: a friendly movie store assistant for this catalog only.
 2. Recommend only movies returned by tools in this conversation. Never invent movies, prices or facts. If nothing fits, say so and suggest relaxing criteria.
 3. Ask at most one clarifying question when the request is too vague; otherwise search right away.
@@ -101,8 +107,12 @@ Versioned file `Prompts/assistant.system.v1.md`. Main points:
 ## 6. Conversation memory
 - Full history is stored in the DB.
 - Context window management: last K messages + rolling summary (generated when history exceeds a token threshold), stored on the conversation.
+  - I11: the window is the most recent whole turns with at most `Assistant:HistoryMaxMessages` (12) visible messages and `Assistant:HistoryTokenBudget` (3000, estimated as characters / 4) tokens; the last turn is always kept. Older turns are folded into `Conversation.Summary` by prompt `assistant-summary.v1` (temperature 0, ≤ `SummaryMaxOutputTokens`), together with the previous summary and the movies the tools found (with ids). A failed summary is retried on the next turn; the turn continues with the window only.
+  - The summary is appended to the system prompt as a marked data block (`<summary>…</summary>`), since some chat templates (Gemma) accept only one system message at the start.
+  - Earlier turns keep their tool calls; their tool results are cut to `{ movies: [{ id, title, year }] }` (enough to refer to "the second movie" later). Their tool-round text is dropped (it is part of the stored answer). A user message without an answer (failed turn) is left out, so user and assistant messages alternate.
 - Stretch: user preferences memory ("likes slow dramas, dislikes horror") extracted with structured output and added to the system prompt.
 
 ## 7. Streaming
 - Server: `IAsyncEnumerable` from `GetStreamingResponseAsync` → SSE writer. Client disconnect cancels the LLM call.
+  - I11: the SSE writer is ASP.NET Core's `TypedResults.ServerSentEvents` (.NET 10) over `SseItem<AssistantEvent>`; the event data is JSON with the configured API options and a `type` discriminator. Validation (400) and ownership (404) are checked before the stream starts. `HttpContext.RequestAborted` cancels the model call; the user message is stored before the model runs, the answer only when it is complete.
 - Client: `fetch` + `ReadableStream` parser (POST body is needed, so `EventSource` is not used).

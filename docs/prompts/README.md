@@ -61,3 +61,5 @@ Rules:
 | [S09](sessions/2026-11-17_S09_search-evaluation.md) | 2026-11-17 | I08 | Search evaluation harness |
 | [S10](sessions/2026-11-18_S10_cart-orders-fake-payment.md) | 2026-11-18 | I09 | Cart, orders, fake payment |
 | [S11](sessions/2026-11-18_S11_store-ui.md) | 2026-11-18 | I10 | Store UI: catalog, search, cart, checkout |
+| [S12](sessions/2026-11-18_S12_linear-history.md) | 2026-11-18 | — | Linear git history (merge commits removed) |
+| [S13](sessions/2026-11-18_S13_chat-foundation.md) | 2026-11-18 | I11 | Chat foundation: conversations, streaming, grounded answers |

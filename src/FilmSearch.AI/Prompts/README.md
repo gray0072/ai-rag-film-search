@@ -10,3 +10,5 @@ Prompt templates as versioned files: `<name>.vN.md`. A meaningful change creates
 | Prompt | Used by | Versions |
 |---|---|---|
 | `query-understanding` | `QueryUnderstandingService` (I07, spec 05 §5) | v1, v2 (current: bare titles and names are searches, not "similar to") |
+| `assistant-system` | `AssistantChat` (I11, spec 06 §4): system prompt of the assistant | v1 |
+| `assistant-summary` | `ConversationSummarizer` (I11, spec 06 §6): rolling summary of older turns | v1 |

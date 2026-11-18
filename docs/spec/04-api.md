@@ -47,16 +47,16 @@ Commerce errors are Problem Details with a camelCase `code` extension (`Commerce
 ## Assistant
 | Method | Path | Description |
 |---|---|---|
-| POST | `/api/chat/conversations` | Create a conversation. `{ locale? }` → `{ id }`. |
-| GET | `/api/chat/conversations` | Owner's conversations (list). |
-| GET | `/api/chat/conversations/{id}` | Messages (user and assistant, plus movie cards). |
-| POST | `/api/chat/conversations/{id}/messages` | `{ text }`. Response: `text/event-stream` (see below). |
+| POST | `/api/chat/conversations` | Create a conversation. Body optional: `{ locale? }` (`en`/`ru`/`sv`, default: the request locale; other values → 400) → 201 `{ id, title, locale, createdAt, updatedAt }`. |
+| GET | `/api/chat/conversations` | Owner's conversations, most recently updated first, at most 50: `[{ id, title, locale, createdAt, updatedAt }]`. |
+| GET | `/api/chat/conversations/{id}` | `{ id, title, locale, createdAt, updatedAt, usage: { inputTokens, outputTokens, estimatedCostUsd }, messages: [{ id, role: "user"\|"assistant", text, createdAt, movies: [MovieCard], model, promptVersion, usage, latencyMs, feedback: { rating, comment }? }] }`. Tool rounds are not listed. Cards are built from the catalog at read time (current prices). Another owner's conversation → 404. |
+| POST | `/api/chat/conversations/{id}/messages` | `{ text }` (1–2000 chars after trim; else 400). 404 for an unknown or foreign conversation. Response: `text/event-stream` (see below). Movie texts in tool results and cards follow `Accept-Language` when the request has it, otherwise the conversation's `locale`; the answer language follows the user's message (FR-AST-7). |
 | POST | `/api/chat/conversations/{id}/confirmations/{confirmationId}` | `{ approved: bool }`. The user's answer to a confirmation request (checkout). Returns `{ checkoutUrl }` when approved. |
-| POST | `/api/chat/messages/{messageId}/feedback` | `{ rating: 1\|-1, comment? }`. |
+| POST | `/api/chat/messages/{messageId}/feedback` | `{ rating: 1\|-1, comment? (≤ 1000) }` → 204; a new rating replaces the old one. 400 for another rating or a user message; 404 for an unknown or foreign message. |
 
 ### SSE events (`POST .../messages`)
 
-Each event: `event: <type>` and `data: <json>`.
+Each event: `event: <type>` and `data: <json>`. The data also carries `type` (the event name), so the OpenAPI document describes it as a discriminated union (`AssistantEvent`).
 
 | Event | Data | Meaning |
 |---|---|---|
@@ -68,9 +68,9 @@ Each event: `event: <type>` and `data: <json>`.
 | `cart.updated` | `{ cart }` | Cart changed through a tool. |
 | `confirmation.required` | `{ confirmationId, kind: "checkout", summary: { items, totalMinor, currency } }` | UI shows a confirmation button. |
 | `message.completed` | `{ messageId, usage: { inputTokens, outputTokens }, model, latencyMs }` | End of answer. |
-| `error` | `{ code, message }` | Error. The stream ends. |
+| `error` | `{ code, message }` | Error. The stream ends. Codes: `providerUnavailable`, `conversationBusy` (another answer of the conversation is running), `budgetExceeded` (token budget of the conversation, NFR-5), `toolsNotSupported`, `internalError`. |
 
-`MovieCard`: `{ id, title, year, posterUrl, genres, rating, offers: [{ type, priceMinor, currency }], reason? }`.
+`MovieCard`: `{ id, title, year, posterPath, genres: [name], rating, offers: [{ id, type, priceMinor, currency, rentalHours }], reason? }` (`posterPath` like the catalog: the UI builds the image URL; `reason` is reserved).
 
 ## Admin (role `admin`; before auth: Development only)
 | Method | Path | Description |
