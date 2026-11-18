@@ -184,6 +184,75 @@ public abstract class CommerceFixtureBase(PostgresFixture postgres, IReadOnlyDic
     };
 }
 
+/// <summary>
+/// Stripe as the active provider (I15): the real gateway and SDK against <see cref="FakeStripeApi"/>, webhooks signed
+/// with the test secret and sent straight to the endpoint. The expiry job does not run by itself.
+/// </summary>
+public sealed class StripeCommerceFixture(PostgresFixture postgres) : CommerceFixtureBase(postgres, new Dictionary<string, string?>
+{
+    ["Payments:Provider"] = "Stripe",
+    ["Stripe:SecretKey"] = "sk_test_integration",
+    ["Stripe:WebhookSecret"] = WebhookSecret,
+    ["Commerce:WebBaseUrl"] = "https://shop.example",
+    ["Commerce:ExpiryScanSeconds"] = "0",
+})
+{
+    public const string WebhookSecret = "whsec_integration";
+
+    /// <summary>Sends a Stripe event about a Checkout Session, signed like Stripe signs it.</summary>
+    public Task<HttpResponseMessage> PostStripeEventAsync(
+        string type,
+        string sessionId,
+        Guid orderId,
+        long amountMinor,
+        string paymentStatus = "paid",
+        string? eventId = null,
+        string currency = "usd")
+    {
+        var body = JsonSerializer.Serialize(new Dictionary<string, object?>
+        {
+            ["id"] = eventId ?? $"evt_test_{Guid.NewGuid():N}",
+            ["object"] = "event",
+            ["api_version"] = "2026-10-28.endive",
+            ["created"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            ["livemode"] = false,
+            ["pending_webhooks"] = 1,
+            ["type"] = type,
+            ["data"] = new Dictionary<string, object?>
+            {
+                ["object"] = new Dictionary<string, object?>
+                {
+                    ["id"] = sessionId,
+                    ["object"] = "checkout.session",
+                    ["amount_total"] = amountMinor,
+                    ["currency"] = currency,
+                    ["client_reference_id"] = orderId.ToString(),
+                    ["metadata"] = new Dictionary<string, string> { ["orderId"] = orderId.ToString() },
+                    ["mode"] = "payment",
+                    ["payment_status"] = paymentStatus,
+                    ["status"] = type == "checkout.session.expired" ? "expired" : "complete",
+                },
+            },
+        });
+        return PostSignedStripeAsync(body, WebhookSecret, DateTimeOffset.UtcNow);
+    }
+
+    public async Task<HttpResponseMessage> PostSignedStripeAsync(string body, string secret, DateTimeOffset signedAt)
+    {
+        var timestamp = signedAt.ToUnixTimeSeconds().ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var signature = Convert.ToHexStringLower(System.Security.Cryptography.HMACSHA256.HashData(
+            System.Text.Encoding.UTF8.GetBytes(secret),
+            System.Text.Encoding.UTF8.GetBytes($"{timestamp}.{body}")));
+        using var client = Factory.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost") });
+        using var request = new HttpRequestMessage(HttpMethod.Post, PaymentWebhookEndpoints.StripePath)
+        {
+            Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json"),
+        };
+        request.Headers.TryAddWithoutValidation("Stripe-Signature", $"t={timestamp},v1={signature}");
+        return await client.SendAsync(request);
+    }
+}
+
 /// <summary>Real clock, webhooks without delay.</summary>
 public sealed class CommerceApiFixture(PostgresFixture postgres) : CommerceFixtureBase(postgres);
 

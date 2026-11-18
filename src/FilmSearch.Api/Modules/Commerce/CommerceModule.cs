@@ -20,9 +20,15 @@ public static class CommerceModule
 
         // The fake provider (I09) runs inside the API and is meant for Development and tests only (ADR-0004).
         var provider = builder.Configuration.GetValue<PaymentProvider?>($"{PaymentOptions.SectionName}:{nameof(PaymentOptions.Provider)}") ?? PaymentProvider.Fake;
-        if (provider == PaymentProvider.Fake && builder.Environment.IsProduction() && !BuildTimeOpenApi.IsGeneratingDocument)
+        if (builder.Environment.IsProduction() && !BuildTimeOpenApi.IsGeneratingDocument)
         {
-            throw new InvalidOperationException("The Fake payment gateway must not run in Production. Set Payments:Provider to Stripe (I15).");
+            if (provider == PaymentProvider.Fake)
+            {
+                throw new InvalidOperationException("The Fake payment gateway must not run in Production. Set Payments:Provider to Stripe.");
+            }
+
+            // No fake page and no fake webhook endpoint in Production.
+            return builder;
         }
 
         builder.Services.AddOptions<FakePaymentOptions>()
@@ -79,7 +85,12 @@ public static class CommerceModule
             .WithName("GetLibrary")
             .WithSummary("Movies the owner bought or currently rents, one entry per movie. Titles in the Accept-Language locale.");
 
-        app.MapFakeCheckoutEndpoints();
+        if (app.ServiceProvider.GetRequiredService<IServiceProviderIsService>().IsService(typeof(FakePaymentGateway)))
+        {
+            app.MapFakeCheckoutEndpoints();
+        }
+
+        app.MapStripeWebhookEndpoint();
 
         return app;
     }

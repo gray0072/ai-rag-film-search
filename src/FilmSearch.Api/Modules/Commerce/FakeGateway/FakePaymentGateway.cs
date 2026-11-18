@@ -57,7 +57,7 @@ public sealed class FakePaymentGateway(FakeWebhookSigner signer, FakeWebhookDisp
         return Task.CompletedTask;
     }
 
-    public PaymentWebhookEvent ParseWebhook(PaymentWebhookRequest request)
+    public ParsedWebhook ParseWebhook(PaymentWebhookRequest request)
     {
         signer.Verify(request.Body, request.Headers.GetValueOrDefault(FakeWebhookSigner.HeaderName));
 
@@ -76,7 +76,7 @@ public sealed class FakePaymentGateway(FakeWebhookSigner signer, FakeWebhookDisp
             throw new FormatException("The webhook body is not a valid fake event.");
         }
 
-        return new PaymentWebhookEvent(
+        var webhookEvent = new PaymentWebhookEvent(
             payload.Id,
             FakeWebhookPayload.ParseType(payload.Type),
             payload.Data.SessionId,
@@ -84,6 +84,7 @@ public sealed class FakePaymentGateway(FakeWebhookSigner signer, FakeWebhookDisp
             payload.Data.AmountMinor,
             payload.Data.Currency,
             request.Body);
+        return ParsedWebhook.Of(webhookEvent, payload.Type);
     }
 
     /// <summary>The session as the hosted page shows it; an open session past its expiry time shows as expired.</summary>

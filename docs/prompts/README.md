@@ -66,3 +66,4 @@ Rules:
 | [S14](sessions/2026-11-18_S14_agent-tools.md) | 2026-11-18 | I12 | Agent: tools, cart, checkout confirmation |
 | [S15](sessions/2026-11-18_S15_chat-ui.md) | 2026-11-18 | I13 | Chat UI |
 | [S16](sessions/2026-11-18_S16_assistant-eval-guardrails.md) | 2026-11-18 | I14 | Assistant evaluation and guardrails |
+| [S17](sessions/2026-11-18_S17_stripe-test-mode.md) | 2026-11-18 | I15 | Stripe test mode |

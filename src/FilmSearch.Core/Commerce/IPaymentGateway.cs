@@ -14,10 +14,10 @@ public interface IPaymentGateway
     /// <summary>Closes an open session so it cannot be paid any more (a new attempt replaces it, or the order expired). No-op for a closed session.</summary>
     Task ExpireCheckoutSessionAsync(string sessionId, CancellationToken cancellationToken);
 
-    /// <summary>Verifies the signature of an incoming webhook and parses it.</summary>
+    /// <summary>Verifies the signature of an incoming webhook and parses it. A verified event the shop does not act on comes back without <see cref="ParsedWebhook.Event"/>.</summary>
     /// <exception cref="WebhookSignatureException">The signature is missing, invalid or too old.</exception>
     /// <exception cref="FormatException">The payload is not a valid event.</exception>
-    PaymentWebhookEvent ParseWebhook(PaymentWebhookRequest request);
+    ParsedWebhook ParseWebhook(PaymentWebhookRequest request);
 }
 
 /// <param name="OrderId">Order id; sent back in the webhook metadata.</param>
@@ -60,6 +60,23 @@ public sealed record PaymentWebhookEvent(
     long AmountMinor,
     string Currency,
     string PayloadJson);
+
+/// <summary>
+/// A verified webhook. <see cref="Event"/> is null for an event the shop does not act on: another event type (a provider
+/// sends many), or a completed checkout whose payment is still processing. Such events are acknowledged and not stored.
+/// </summary>
+/// <param name="ProviderEventId">Unique id of the event at the provider.</param>
+/// <param name="ProviderEventType">The provider's own event type, e.g. <c>checkout.session.completed</c>.</param>
+/// <param name="Event">The normalized event, or null when it is ignored.</param>
+/// <param name="IgnoredReason">Why the event is ignored.</param>
+public sealed record ParsedWebhook(string ProviderEventId, string ProviderEventType, PaymentWebhookEvent? Event, string? IgnoredReason = null)
+{
+    public static ParsedWebhook Of(PaymentWebhookEvent webhookEvent, string providerEventType) =>
+        new(webhookEvent.ProviderEventId, providerEventType, webhookEvent);
+
+    public static ParsedWebhook Ignored(string providerEventId, string providerEventType, string reason) =>
+        new(providerEventId, providerEventType, null, reason);
+}
 
 public sealed class WebhookSignatureException(string message) : Exception(message);
 

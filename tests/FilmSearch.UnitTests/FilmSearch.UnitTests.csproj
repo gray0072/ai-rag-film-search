@@ -17,6 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Real Stripe test mode events captured with the Stripe CLI (I15). -->
+    <None Include="Commerce\StripeEvents\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\FilmSearch.Api\FilmSearch.Api.csproj" />
     <ProjectReference Include="..\..\evals\FilmSearch.Evals\FilmSearch.Evals.csproj" />
   </ItemGroup>

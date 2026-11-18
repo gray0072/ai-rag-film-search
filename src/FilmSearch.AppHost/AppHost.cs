@@ -17,10 +17,13 @@ var api = builder.AddProject<Projects.FilmSearch_Api>("api")
 
 // React app (Vite dev server). `npm install` runs before the start; the API URL is injected
 // as service discovery variables and the Vite dev server proxies /api to it (src/web/vite.config.ts).
-builder.AddViteApp("web", "../web")
+var web = builder.AddViteApp("web", "../web")
     .WithNpm(install: true)
     .WithReference(api)
     .WaitFor(api)
     .WithExternalHttpEndpoints();
+
+// Stripe (I15) sends the browser back to absolute URLs: the API resolves its success / cancel paths against the web app.
+api.WithEnvironment("Commerce__WebBaseUrl", web.GetEndpoint("http"));
 
 await builder.Build().RunAsync();

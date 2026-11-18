@@ -38,7 +38,7 @@ Locale: from `Accept-Language` (`en`, `ru`, `sv`; `sv-SE` → `sv`; anything els
 | GET | `/api/orders` / `/api/orders/{id}` | Order history (newest first, at most 100) / details with status: `{ id, status, totalMinor, currency, createdAt, expiresAt, paidAt, source, items: [{ movieId, offerId, offerType, title, priceMinor, rentalHours }] }`. Another owner's order → 404. |
 | POST | `/api/orders/{id}/checkout` | Create a payment session. Response `{ orderId, checkoutUrl, expiresAt }`. Idempotent per order while the session is valid; after a failed payment it starts a new attempt and closes the old session. 409 `orderNotPayable` (paid, expired; past `expiresAt` the order is expired at once). |
 | GET | `/api/library` | Active entitlements of the owner, one per movie (owned wins over a rental), newest first: `[{ movieId, title, year, posterPath, type: "owned"\|"rental", validFrom, validUntil, orderId }]`. Ended rentals are not listed. |
-| POST | `/api/payments/webhooks/stripe` | Stripe webhooks (I15). Signature check, no auth. |
+| POST | `/api/payments/webhooks/stripe` | Stripe webhooks (I15). Header `Stripe-Signature` checked with the endpoint secret; 400 for a bad signature or body; events the shop does not act on → 200 `ignored`, not stored; `{ eventId, result }`. Not in the OpenAPI document. |
 | POST | `/api/payments/webhooks/fake` | Fake gateway webhooks. Signature header `Fake-Signature`; 400 for a bad signature or body; `{ eventId, result }`. Not in the OpenAPI document. |
 | GET | `/fake-checkout/{sessionId}` | Fake hosted payment page: "Pay" / "Decline" / "Cancel" buttons (`POST /fake-checkout/{sessionId}/pay` etc., redirects). Not in the OpenAPI document. The fake gateway is refused in Production. |
 

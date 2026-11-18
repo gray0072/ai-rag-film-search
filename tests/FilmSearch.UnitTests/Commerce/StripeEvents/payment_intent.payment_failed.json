@@ -1,0 +1,165 @@
+{
+  "id": "evt_3UdBcH20BbvaBZVk1qJBhS5B",
+  "object": "event",
+  "api_version": "2026-10-28.endive",
+  "created": 1795018909,
+  "data": {
+    "object": {
+      "id": "pi_3UdBcH20BbvaBZVk1A92PyTI",
+      "object": "payment_intent",
+      "allowed_payment_method_types": [
+        "card",
+        "link",
+        "amazon_pay"
+      ],
+      "amount": 1199,
+      "amount_capturable": 0,
+      "amount_details": {
+        "shipping": {
+          "amount": 0,
+          "from_postal_code": null,
+          "to_postal_code": null
+        },
+        "tax": {
+          "total_tax_amount": 0
+        },
+        "tip": {}
+      },
+      "amount_received": 0,
+      "application": null,
+      "application_fee_amount": null,
+      "automatic_payment_methods": null,
+      "canceled_at": null,
+      "cancellation_reason": null,
+      "capture_method": "automatic_async",
+      "client_secret": "pi_3UdBcH20BbvaBZVk1A92PyTI_secret_kYfAi9G4adR5keaWNDoEgmG9i",
+      "confirmation_method": "automatic",
+      "created": 1795018909,
+      "currency": "usd",
+      "customer": null,
+      "customer_account": null,
+      "description": null,
+      "excluded_payment_method_types": null,
+      "last_payment_error": {
+        "advice_code": "try_again_later",
+        "charge": "ch_3UdBcH20BbvaBZVk1NDlX49f",
+        "code": "card_declined",
+        "decline_code": "insufficient_funds",
+        "doc_url": "https://stripe.com/docs/error-codes/card-declined",
+        "message": "Your card has insufficient funds. Use a different payment method to complete this purchase.",
+        "network_advice_code": "02",
+        "network_decline_code": "51",
+        "payment_method": {
+          "id": "pm_1UdBcH20BbvaBZVkW6TYbA6L",
+          "object": "payment_method",
+          "allow_redisplay": "limited",
+          "billing_details": {
+            "address": {
+              "city": null,
+              "country": "SE",
+              "line1": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "email": "buyer@example.com",
+            "name": "Test Buyer",
+            "phone": null,
+            "tax_id": null
+          },
+          "card": {
+            "brand": "visa",
+            "checks": {
+              "address_line1_check": null,
+              "address_postal_code_check": null,
+              "cvc_check": "pass"
+            },
+            "country": "US",
+            "display_brand": "visa",
+            "exp_month": 12,
+            "exp_year": 2034,
+            "fingerprint": "YwoXrzXehU0hYQEy",
+            "funding": "credit",
+            "generated_from": null,
+            "last4": "9995",
+            "networks": {
+              "available": [
+                "visa"
+              ],
+              "preferred": null
+            },
+            "regulated_status": "unregulated",
+            "three_d_secure_usage": {
+              "supported": true
+            },
+            "wallet": null
+          },
+          "created": 1795018909,
+          "customer": null,
+          "customer_account": null,
+          "livemode": false,
+          "metadata": {},
+          "shared_payment_granted_token": null,
+          "type": "card"
+        },
+        "payment_method_type": "card",
+        "type": "card_error"
+      },
+      "latest_charge": "ch_3UdBcH20BbvaBZVk1NDlX49f",
+      "livemode": false,
+      "managed_payments": {
+        "enabled": false
+      },
+      "metadata": {
+        "orderId": "01a1ef76-cbbc-7895-8fd0-d43aefc70eaf"
+      },
+      "next_action": null,
+      "on_behalf_of": null,
+      "payment_details": {
+        "customer_reference": null,
+        "order_reference": "cs_test_a0f1fd4xEvZaFH4HFQkjakjPsvGjAuuewAHpcAUZUoFXvjtc2L1h4VUSTT"
+      },
+      "payment_method": null,
+      "payment_method_configuration_details": null,
+      "payment_method_options": {
+        "amazon_pay": {
+          "express_checkout_element_session_id": null
+        },
+        "card": {
+          "installments": null,
+          "mandate_options": null,
+          "network": null,
+          "request_three_d_secure": "automatic"
+        },
+        "link": {
+          "persistent_token": null
+        }
+      },
+      "payment_method_types": [
+        "card",
+        "link",
+        "amazon_pay"
+      ],
+      "payment_record": null,
+      "processing": null,
+      "receipt_email": null,
+      "review": null,
+      "setup_future_usage": null,
+      "shared_payment_granted_token": null,
+      "shipping": null,
+      "source": null,
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "requires_payment_method",
+      "transfer_data": null,
+      "transfer_group": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 0,
+  "request": {
+    "id": null,
+    "idempotency_key": "2c10d9ef-13d4-4b87-8b02-aac535d2c785"
+  },
+  "type": "payment_intent.payment_failed"
+}

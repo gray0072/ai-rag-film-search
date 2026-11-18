@@ -13,7 +13,7 @@ Stack: .NET 10, ASP.NET Core, EF Core, PostgreSQL + pgvector, .NET Aspire, Micro
 
 ## Status
 
-The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); hybrid search (keyword + semantic fused with RRF, the default mode) and LLM query understanding that turns free text into filters with structured output, retry and fallback (I07); cart, orders and a fake payment provider (I09) and the store UI (I10); the assistant chat API: conversations, answers streamed over SSE, an own agent loop with a `search_movies` tool so recommendations come only from the catalog, rolling summary, token usage and cost per message, feedback (I11); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
+The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); hybrid search (keyword + semantic fused with RRF, the default mode) and LLM query understanding that turns free text into filters with structured output, retry and fallback (I07); cart, orders and a fake payment provider (I09), the store UI (I10) and Stripe Checkout in test mode with signed webhooks (I15); the assistant chat API: conversations, answers streamed over SSE, an own agent loop with a `search_movies` tool so recommendations come only from the catalog, rolling summary, token usage and cost per message, feedback (I11); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
 
 ## Documentation
 
@@ -97,7 +97,29 @@ dotnet user-secrets set AI:ChatProfiles:openrouter:ApiKey <key> --project src/Fi
 dotnet user-secrets set AI:ActiveChatProfile openrouter --project src/FilmSearch.Api
 ```
 
-`/health` reports `Degraded` (not `Unhealthy`) when LM Studio is off: the store works without AI, and semantic search returns 503. To try another embedding model: reindex with its profile (`{ "profile": "nomic" }`), switch `AI:ActiveEmbeddingProfile`, then delete the old model's vectors ([spec 08 §4](docs/spec/08-data-ingestion.md#4-embeddings-pipeline)). To try chat, streaming, tools, JSON output and embeddings from the console, or to benchmark another model: [tools/ai-playground](tools/ai-playground/README.md). Stripe test keys (for I15) also live in the API user secrets: `Stripe:SecretKey`, `Stripe:PublishableKey`.
+`/health` reports `Degraded` (not `Unhealthy`) when LM Studio is off: the store works without AI, and semantic search returns 503. To try another embedding model: reindex with its profile (`{ "profile": "nomic" }`), switch `AI:ActiveEmbeddingProfile`, then delete the old model's vectors ([spec 08 §4](docs/spec/08-data-ingestion.md#4-embeddings-pipeline)). To try chat, streaming, tools, JSON output and embeddings from the console, or to benchmark another model: [tools/ai-playground](tools/ai-playground/README.md).
+
+### Payments: Stripe test mode
+
+By default checkout uses the fake payment page inside the API (`Payments:Provider = Fake`). To pay on a real Stripe Checkout page in test mode ([spec 07 §4](docs/spec/07-payments.md#4-stripe-test-mode-i15)):
+
+1. Create a Stripe account (a sandbox is enough) and copy the **test** secret key from Developers → API keys. Live keys are refused at startup: only `sk_test_…` is accepted.
+2. Install the Stripe CLI (`winget install Stripe.StripeCli`) and get the webhook signing secret of the CLI: `stripe listen --api-key sk_test_… --print-secret`.
+3. Put both in the API user secrets and switch the provider (keys never go to files in the repository):
+
+   ```bash
+   dotnet user-secrets set Stripe:SecretKey sk_test_... --project src/FilmSearch.Api
+   dotnet user-secrets set Stripe:WebhookSecret whsec_... --project src/FilmSearch.Api
+   dotnet user-secrets set Payments:Provider Stripe --project src/FilmSearch.Api
+   ```
+
+4. Run the AppHost and, in a second terminal, forward Stripe's events to the API:
+
+   ```bash
+   stripe listen --api-key sk_test_... --skip-verify      --events checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,checkout.session.expired      --forward-to https://localhost:7180/api/payments/webhooks/stripe
+   ```
+
+Test cards (any future date, any CVC): `4242 4242 4242 4242` succeeds, `4000 0000 0000 9995` is declined (the page shows the error, the order stays pending and you can try another card), `4000 0025 0000 3155` asks for 3-D Secure. `stripe events resend evt_…` replays an event: the order is not paid twice. Stripe sends the browser back to absolute URLs; the AppHost passes the web app's address to the API (`Commerce:WebBaseUrl`). To go back to the fake page: `dotnet user-secrets remove Payments:Provider --project src/FilmSearch.Api`.
 
 ### Evaluations
 

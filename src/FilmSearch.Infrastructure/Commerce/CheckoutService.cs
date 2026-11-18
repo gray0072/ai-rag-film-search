@@ -165,8 +165,8 @@ internal sealed partial class CheckoutService(
                     [.. order.Items.Select(i => new CheckoutLineItem(i.TitleSnapshot, i.PriceMinorSnapshot, order.Currency))],
                     order.TotalMinor,
                     order.Currency,
-                    options.Value.SuccessUrl.Replace("{orderId}", order.Id.ToString(), StringComparison.Ordinal),
-                    options.Value.CancelUrl.Replace("{orderId}", order.Id.ToString(), StringComparison.Ordinal),
+                    options.Value.ReturnUrl(options.Value.SuccessUrl, order.Id),
+                    options.Value.ReturnUrl(options.Value.CancelUrl, order.Id),
                     $"order:{order.Id}:attempt:{attempt}",
                     order.ExpiresAt),
                 ct);

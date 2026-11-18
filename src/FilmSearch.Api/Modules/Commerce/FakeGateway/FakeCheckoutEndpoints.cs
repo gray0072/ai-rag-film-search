@@ -67,30 +67,13 @@ public static class FakeCheckoutEndpoints
         return session is null ? TypedResults.NotFound() : TypedResults.Redirect(session.CancelUrl);
     }
 
-    /// <summary>Spec 07 §5: invalid signature or body → 400 and nothing stored; known event → 200; processing error → 500 (the exception handler), so the sender retries.</summary>
-    private static async Task<Results<Ok<WebhookAck>, ProblemHttpResult>> ReceiveWebhook(
+    private static Task<Results<Ok<WebhookAck>, ProblemHttpResult>> ReceiveWebhook(
         HttpRequest request,
         FakePaymentGateway gateway,
         IPaymentWebhookProcessor processor,
-        CancellationToken cancellationToken)
-    {
-        using var reader = new StreamReader(request.Body, Encoding.UTF8);
-        var body = await reader.ReadToEndAsync(cancellationToken);
-        var headers = request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString(), StringComparer.OrdinalIgnoreCase);
-
-        PaymentWebhookEvent webhookEvent;
-        try
-        {
-            webhookEvent = gateway.ParseWebhook(new PaymentWebhookRequest(body, headers));
-        }
-        catch (Exception ex) when (ex is WebhookSignatureException or FormatException)
-        {
-            return TypedResults.Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid webhook.", detail: ex.Message);
-        }
-
-        var result = await processor.ProcessAsync(gateway.Provider, webhookEvent, cancellationToken);
-        return TypedResults.Ok(new WebhookAck(webhookEvent.ProviderEventId, result));
-    }
+        ILoggerFactory loggers,
+        CancellationToken cancellationToken) =>
+        PaymentWebhookEndpoints.ReceiveAsync(request, gateway, processor, loggers, cancellationToken);
 
     private static string PagePath(string sessionId) => $"{FakePaymentGateway.CheckoutPath}/{Uri.EscapeDataString(sessionId)}";
 
@@ -176,7 +159,3 @@ public static class FakeCheckoutEndpoints
         Encoding.UTF8,
         statusCode);
 }
-
-/// <param name="EventId">The provider event id.</param>
-/// <param name="Result">What processing did with the event.</param>
-public sealed record WebhookAck(string EventId, WebhookProcessingResult Result);

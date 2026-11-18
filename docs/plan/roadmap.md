@@ -29,7 +29,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I07 | [Hybrid search and query understanding](iterations/I07-hybrid-query-understanding.md) | I04, I06 | 4 | 2 | done |
 | I08 | [Search evaluation harness](iterations/I08-search-evaluation.md) | I04, I06 (dataset: I03) | 4 | 1–2 | done |
 | I10 | [Store UI: catalog, search, cart, checkout](iterations/I10-store-ui.md) | I02, I04, I09 | 4 | 2 | done |
-| I15 | [Stripe test mode](iterations/I15-stripe-test-mode.md) | I09 | 4 | 1–2 | todo |
+| I15 | [Stripe test mode](iterations/I15-stripe-test-mode.md) | I09 | 4 | 1–2 | done |
 | I11 | [Chat foundation: conversations, streaming, grounded answers](iterations/I11-chat-foundation.md) | I05, I07 | 5 | 2 | done |
 | I16 | [TMDB sync and Worker](iterations/I16-tmdb-sync-worker.md) | I06 | 5 | 2 | todo |
 | I17 | [Authentication (Identity)](iterations/I17-authentication.md) | I09, I02 | 5 | 1–2 | todo |

@@ -1,6 +1,7 @@
 using FilmSearch.AI.Providers;
 using FilmSearch.Api.Modules.Admin;
 using FilmSearch.Api.Modules.Commerce.FakeGateway;
+using FilmSearch.Infrastructure.Commerce.StripeGateway;
 using FilmSearch.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -16,7 +17,8 @@ namespace FilmSearch.IntegrationTests.Infrastructure;
 /// are on; AI health checks are off; the seed file is not loaded on startup (tests that need the catalog use <see cref="CatalogApiFixture"/>).
 /// Every embedding profile is served by a <see cref="HashingEmbeddingGenerator"/> of the profile's dimension and every
 /// chat profile by <see cref="Chat"/> (a <see cref="ScriptedChatClient"/>), so no test calls a real model. <paramref name="settings"/> are extra configuration values.
-/// Fake payment webhooks go through the TestServer handler and are recorded in <see cref="Webhooks"/>; <paramref name="time"/> replaces the clock of the whole app.
+/// Fake payment webhooks go through the TestServer handler and are recorded in <see cref="Webhooks"/>; Stripe API calls
+/// (when a test configures Stripe) are answered by <see cref="StripeApi"/>; <paramref name="time"/> replaces the clock of the whole app.
 /// </summary>
 public sealed class FilmSearchApiFactory(
     PostgresFixture postgres,
@@ -27,6 +29,8 @@ public sealed class FilmSearchApiFactory(
     public ScriptedChatClient Chat { get; } = new();
 
     public WebhookDeliveryLog Webhooks { get; } = new();
+
+    public FakeStripeApi StripeApi { get; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -55,6 +59,10 @@ public sealed class FilmSearchApiFactory(
             // The lambda runs when the client is created, after the server has started.
             services.AddHttpClient(FakeWebhookDispatcher.HttpClientName)
                 .ConfigurePrimaryHttpMessageHandler(() => new WebhookDeliveryLog.Handler(Webhooks, Server.CreateHandler()));
+
+            // Never the real Stripe API from tests (AGENTS.md: no network).
+            services.AddHttpClient(StripePaymentGateway.HttpClientName)
+                .ConfigurePrimaryHttpMessageHandler(() => StripeApi);
 
             if (time is not null)
             {

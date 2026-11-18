@@ -29,6 +29,7 @@
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
     <!-- vector type, cosine distance and Npgsql type mapping for pgvector (ADR-0001, ADR-0008). -->
     <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />
+    <PackageVersion Include="Stripe.net" Version="53.1.0" />
   </ItemGroup>
   <ItemGroup Label="OpenTelemetry">
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.21.0" />
