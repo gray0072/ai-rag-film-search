@@ -333,6 +333,363 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                     b.ToTable("people", "catalog");
                 });
 
+            modelBuilder.Entity("FilmSearch.Core.Commerce.Cart", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_carts");
+
+                    b.HasIndex("OwnerId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_carts_owner_id");
+
+                    b.ToTable("carts", "commerce");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.CartItem", b =>
+                {
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cart_id");
+
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("movie_id");
+
+                    b.Property<DateTimeOffset>("AddedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("added_at");
+
+                    b.Property<string>("AddedBy")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("added_by");
+
+                    b.Property<Guid>("OfferId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("offer_id");
+
+                    b.Property<string>("OfferType")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("offer_type");
+
+                    b.HasKey("CartId", "MovieId")
+                        .HasName("pk_cart_items");
+
+                    b.HasIndex("MovieId")
+                        .HasDatabaseName("ix_cart_items_movie_id");
+
+                    b.HasIndex("OfferId")
+                        .HasDatabaseName("ix_cart_items_offer_id");
+
+                    b.ToTable("cart_items", "commerce");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.Entitlement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("movie_id");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("order_id");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_id");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("revoked_at");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("type");
+
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("valid_from");
+
+                    b.Property<DateTimeOffset?>("ValidUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("valid_until");
+
+                    b.HasKey("Id")
+                        .HasName("pk_entitlements");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_entitlements_order_id");
+
+                    b.HasIndex("OwnerId", "MovieId")
+                        .HasDatabaseName("ix_entitlements_owner_id_movie_id");
+
+                    b.ToTable("entitlements", "commerce");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("ConversationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("conversation_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("currency");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<string>("IdempotencyKey")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("idempotency_key");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_id");
+
+                    b.Property<DateTimeOffset?>("PaidAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("paid_at");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("source");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("status");
+
+                    b.Property<long>("TotalMinor")
+                        .HasColumnType("bigint")
+                        .HasColumnName("total_minor");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
+
+                    b.HasIndex("ExpiresAt")
+                        .HasDatabaseName("ix_orders_unpaid_expires_at")
+                        .HasFilter("status IN ('PendingPayment', 'Failed')");
+
+                    b.HasIndex("OwnerId", "CreatedAt")
+                        .HasDatabaseName("ix_orders_owner_id_created_at");
+
+                    b.HasIndex("OwnerId", "IdempotencyKey")
+                        .IsUnique()
+                        .HasDatabaseName("ix_orders_owner_id_idempotency_key");
+
+                    b.ToTable("orders", "commerce");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.OrderItem", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("order_id");
+
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("movie_id");
+
+                    b.Property<Guid>("OfferId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("offer_id");
+
+                    b.Property<string>("OfferType")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("offer_type");
+
+                    b.Property<long>("PriceMinorSnapshot")
+                        .HasColumnType("bigint")
+                        .HasColumnName("price_minor_snapshot");
+
+                    b.Property<int?>("RentalHours")
+                        .HasColumnType("integer")
+                        .HasColumnName("rental_hours");
+
+                    b.Property<string>("TitleSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("title_snapshot");
+
+                    b.HasKey("OrderId", "MovieId")
+                        .HasName("pk_order_items");
+
+                    b.ToTable("order_items", "commerce");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<long>("AmountMinor")
+                        .HasColumnType("bigint")
+                        .HasColumnName("amount_minor");
+
+                    b.Property<int>("Attempt")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempt");
+
+                    b.Property<string>("CheckoutUrl")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("checkout_url");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("currency");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("order_id");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("provider");
+
+                    b.Property<string>("ProviderPaymentIntentId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("provider_payment_intent_id");
+
+                    b.Property<string>("ProviderSessionId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("provider_session_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_payments");
+
+                    b.HasIndex("OrderId", "Attempt")
+                        .IsUnique()
+                        .HasDatabaseName("ix_payments_order_id_attempt");
+
+                    b.HasIndex("Provider", "ProviderSessionId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_payments_provider_provider_session_id");
+
+                    b.ToTable("payments", "commerce");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.PaymentEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("error");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("payload_json");
+
+                    b.Property<DateTimeOffset?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_at");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("provider");
+
+                    b.Property<string>("ProviderEventId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("provider_event_id");
+
+                    b.Property<DateTimeOffset>("ReceivedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("received_at");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("pk_payment_events");
+
+                    b.HasIndex("Provider", "ProviderEventId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_payment_events_provider_provider_event_id");
+
+                    b.ToTable("payment_events", "commerce");
+                });
+
             modelBuilder.Entity("FilmSearch.Infrastructure.Search.Keyword.MovieSearchDocument", b =>
                 {
                     b.Property<Guid>("MovieId")
@@ -563,6 +920,60 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_offers_movies_movie_id");
                 });
 
+            modelBuilder.Entity("FilmSearch.Core.Commerce.CartItem", b =>
+                {
+                    b.HasOne("FilmSearch.Core.Commerce.Cart", null)
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_items_carts_cart_id");
+
+                    b.HasOne("FilmSearch.Core.Catalog.Movie", null)
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_items_movies_movie_id");
+
+                    b.HasOne("FilmSearch.Core.Catalog.Offer", null)
+                        .WithMany()
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cart_items_offers_offer_id");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.Entitlement", b =>
+                {
+                    b.HasOne("FilmSearch.Core.Commerce.Order", null)
+                        .WithMany("Entitlements")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_entitlements_order_order_id");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.OrderItem", b =>
+                {
+                    b.HasOne("FilmSearch.Core.Commerce.Order", null)
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_order_items_orders_order_id");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.Payment", b =>
+                {
+                    b.HasOne("FilmSearch.Core.Commerce.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_payments_orders_order_id");
+                });
+
             modelBuilder.Entity("FilmSearch.Infrastructure.Search.Keyword.MovieSearchDocument", b =>
                 {
                     b.HasOne("FilmSearch.Core.Catalog.Movie", null)
@@ -607,6 +1018,18 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                     b.Navigation("Offers");
 
                     b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("FilmSearch.Core.Commerce.Order", b =>
+                {
+                    b.Navigation("Entitlements");
+
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

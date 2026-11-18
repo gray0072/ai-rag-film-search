@@ -25,7 +25,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I05 | [AI provider layer (LM Studio / OpenRouter)](iterations/I05-ai-providers.md) | I01 | 2 | 1–2 | done |
 | I04 | [Keyword search and filters](iterations/I04-keyword-search.md) | I03 | 3 | 1 | done |
 | I06 | [Embeddings and semantic search](iterations/I06-embeddings-semantic-search.md) | I03, I05 | 3 | 2 | done |
-| I09 | [Cart, orders, fake payment](iterations/I09-cart-orders-fake-payment.md) | I03 | 3 | 2 | todo |
+| I09 | [Cart, orders, fake payment](iterations/I09-cart-orders-fake-payment.md) | I03 | 3 | 2 | done |
 | I07 | [Hybrid search and query understanding](iterations/I07-hybrid-query-understanding.md) | I04, I06 | 4 | 2 | done |
 | I08 | [Search evaluation harness](iterations/I08-search-evaluation.md) | I04, I06 (dataset: I03) | 4 | 1–2 | done |
 | I10 | [Store UI: catalog, search, cart, checkout](iterations/I10-store-ui.md) | I02, I04, I09 | 4 | 2 | todo |

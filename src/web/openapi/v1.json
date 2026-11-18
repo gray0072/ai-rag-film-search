@@ -108,6 +108,30 @@
         }
       }
     },
+    "/api/library": {
+      "get": {
+        "tags": [
+          "Library"
+        ],
+        "summary": "Movies the owner bought or currently rents, one entry per movie. Titles in the Accept-Language locale.",
+        "operationId": "GetLibrary",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/info": {
       "get": {
         "tags": [
@@ -359,6 +383,269 @@
         }
       }
     },
+    "/api/cart": {
+      "get": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "The owner's cart with current prices from the catalog. Titles in the Accept-Language locale.",
+        "operationId": "GetCart",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cart/items": {
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Adds a movie's buy or rent offer; replaces another offer of the same movie.",
+        "operationId": "AddCartItem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCartItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartView"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cart/items/{movieId}": {
+      "delete": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Removes a movie from the cart.",
+        "operationId": "RemoveCartItem",
+        "parameters": [
+          {
+            "name": "movieId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Creates a pending order from the cart with a price snapshot. Requires the Idempotency-Key header; a repeated key returns the same order.",
+        "operationId": "CreateOrder",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderView"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "The owner's orders, newest first.",
+        "operationId": "ListOrders",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderView"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Order details with status. The success page polls it until the webhook marks the order paid.",
+        "operationId": "GetOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderView"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}/checkout": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Creates a payment session and returns the hosted page URL. Idempotent while the session is open; after a failed payment it starts a new attempt.",
+        "operationId": "StartCheckout",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutStart"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/ingestion/seed": {
       "post": {
         "tags": [
@@ -537,6 +824,34 @@
   },
   "components": {
     "schemas": {
+      "AddCartItemRequest": {
+        "required": [
+          "movieId",
+          "offerType"
+        ],
+        "type": "object",
+        "properties": {
+          "movieId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "offerType": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "`buy` or `rent`.",
+                "$ref": "#/components/schemas/OfferType"
+              }
+            ]
+          }
+        },
+        "description": "Body of `POST /api/cart/items`."
+      },
       "AdminAiChatRequest": {
         "required": [
           "message"
@@ -654,6 +969,133 @@
           }
         }
       },
+      "CartItemSource": {
+        "enum": [
+          "user",
+          "assistant"
+        ],
+        "description": "Who put a line into the cart."
+      },
+      "CartLine": {
+        "required": [
+          "movieId",
+          "title",
+          "year",
+          "posterPath",
+          "offerId",
+          "offerType",
+          "priceMinor",
+          "currency",
+          "rentalHours",
+          "addedBy",
+          "addedAt",
+          "available"
+        ],
+        "type": "object",
+        "properties": {
+          "movieId": {
+            "type": "string",
+            "description": "Movie id.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title in the request locale."
+          },
+          "year": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Release year.",
+            "format": "int32"
+          },
+          "posterPath": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "TMDB poster path."
+          },
+          "offerId": {
+            "type": "string",
+            "description": "The chosen offer.",
+            "format": "uuid"
+          },
+          "offerType": {
+            "description": "Buy or rent.",
+            "$ref": "#/components/schemas/OfferType"
+          },
+          "priceMinor": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Current price of the offer in minor units.",
+            "format": "int64"
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency."
+          },
+          "rentalHours": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Rental period in hours (rent only).",
+            "format": "int32"
+          },
+          "addedBy": {
+            "description": "Who added the line.",
+            "$ref": "#/components/schemas/CartItemSource"
+          },
+          "addedAt": {
+            "type": "string",
+            "description": "When the line was added or changed.",
+            "format": "date-time"
+          },
+          "available": {
+            "type": "boolean",
+            "description": "False when the offer is no longer sold; such lines are not in the total and block the order."
+          }
+        }
+      },
+      "CartView": {
+        "required": [
+          "items",
+          "totalMinor",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartLine"
+            },
+            "description": "Cart lines, oldest first."
+          },
+          "totalMinor": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Sum of the available lines in minor units.",
+            "format": "int64"
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency of the total."
+          }
+        }
+      },
       "CastItem": {
         "required": [
           "id",
@@ -674,6 +1116,30 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "CheckoutStart": {
+        "required": [
+          "orderId",
+          "checkoutUrl",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Order id.",
+            "format": "uuid"
+          },
+          "checkoutUrl": {
+            "type": "string",
+            "description": "Hosted payment page to redirect the browser to."
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "The session and the unpaid order expire at this time.",
+            "format": "date-time"
           }
         }
       },
@@ -852,6 +1318,12 @@
         },
         "description": "Number of stored vectors of one model and locale."
       },
+      "EntitlementType": {
+        "enum": [
+          "owned",
+          "rental"
+        ]
+      },
       "GenreItem": {
         "required": [
           "id",
@@ -920,6 +1392,69 @@
                 "type": "string"
               }
             }
+          }
+        }
+      },
+      "LibraryItem": {
+        "required": [
+          "movieId",
+          "title",
+          "year",
+          "posterPath",
+          "type",
+          "validFrom",
+          "validUntil",
+          "orderId"
+        ],
+        "type": "object",
+        "properties": {
+          "movieId": {
+            "type": "string",
+            "description": "Movie id.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title in the request locale."
+          },
+          "year": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Release year.",
+            "format": "int32"
+          },
+          "posterPath": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "TMDB poster path."
+          },
+          "type": {
+            "description": "Owned or rental.",
+            "$ref": "#/components/schemas/EntitlementType"
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Start of the entitlement.",
+            "format": "date-time"
+          },
+          "validUntil": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "End of a rental; null for owned movies.",
+            "format": "date-time"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "The order that granted it.",
+            "format": "uuid"
           }
         }
       },
@@ -1211,6 +1746,140 @@
           "rent"
         ]
       },
+      "OrderLine": {
+        "required": [
+          "movieId",
+          "offerId",
+          "offerType",
+          "title",
+          "priceMinor",
+          "rentalHours"
+        ],
+        "type": "object",
+        "properties": {
+          "movieId": {
+            "type": "string",
+            "description": "Movie id.",
+            "format": "uuid"
+          },
+          "offerId": {
+            "type": "string",
+            "description": "The offer that was ordered.",
+            "format": "uuid"
+          },
+          "offerType": {
+            "description": "Buy or rent.",
+            "$ref": "#/components/schemas/OfferType"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title when the order was created."
+          },
+          "priceMinor": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Price when the order was created, in minor units.",
+            "format": "int64"
+          },
+          "rentalHours": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Rental period in hours (rent only).",
+            "format": "int32"
+          }
+        }
+      },
+      "OrderSource": {
+        "enum": [
+          "web",
+          "assistant"
+        ],
+        "description": "Where an order was created."
+      },
+      "OrderStatus": {
+        "enum": [
+          "pendingPayment",
+          "paid",
+          "failed",
+          "expired",
+          "refunded"
+        ],
+        "description": "State of an order (spec 03 §2). Changes only through methods of Order."
+      },
+      "OrderView": {
+        "required": [
+          "id",
+          "status",
+          "totalMinor",
+          "currency",
+          "createdAt",
+          "expiresAt",
+          "paidAt",
+          "source",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Order id.",
+            "format": "uuid"
+          },
+          "status": {
+            "description": "Order status.",
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "totalMinor": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Total in minor units.",
+            "format": "int64"
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the order was created.",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "An unpaid order expires at this time.",
+            "format": "date-time"
+          },
+          "paidAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "When the payment was confirmed by the provider webhook.",
+            "format": "date-time"
+          },
+          "source": {
+            "description": "Where the order was created.",
+            "$ref": "#/components/schemas/OrderSource"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderLine"
+            },
+            "description": "Order lines with the price snapshot."
+          }
+        }
+      },
       "PagedResultOfMovieSummary": {
         "required": [
           "items",
@@ -1265,6 +1934,44 @@
           },
           "name": {
             "type": "string"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -1940,10 +2647,19 @@
       "name": "Search"
     },
     {
+      "name": "Library"
+    },
+    {
       "name": "AppInfo"
     },
     {
       "name": "Catalog"
+    },
+    {
+      "name": "Cart"
+    },
+    {
+      "name": "Orders"
     },
     {
       "name": "Admin"

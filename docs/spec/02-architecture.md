@@ -103,7 +103,7 @@ Project references: `Api → Core, Infrastructure, AI, ServiceDefaults`; `Worker
 | Catalog | Movies, genres, people, offers | `ICatalogReader` (get movies by ids, offers, prices) |
 | Search | Embeddings, search indexes, ranking | `IMovieSearch` (keyword / semantic / hybrid), `IQueryUnderstanding` |
 | Assistant | Conversations, messages, tool definitions, agent loop | Nothing (top-level consumer) |
-| Commerce | Carts, orders, payments, webhook events, entitlements | `ICartService`, `ICheckoutService` |
+| Commerce | Carts, orders, payments, webhook events, entitlements | `ICartService`, `ICheckoutService`, `ILibraryService`; `IPaymentGateway` for providers (the Fake gateway lives in the API host, Stripe in Infrastructure) |
 | Ingestion | Import jobs, source sync state | Writes to Catalog through `ICatalogWriter` |
 | Identity | Users, roles (ASP.NET Core Identity) | Current user accessor |
 

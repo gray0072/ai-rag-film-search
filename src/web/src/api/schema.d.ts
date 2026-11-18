@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/library": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Movies the owner bought or currently rents, one entry per movie. Titles in the Accept-Language locale. */
+        get: operations["GetLibrary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/info": {
         parameters: {
             query?: never;
@@ -100,6 +117,109 @@ export interface paths {
         get: operations["ListGenres"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The owner's cart with current prices from the catalog. Titles in the Accept-Language locale. */
+        get: operations["GetCart"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cart/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Adds a movie's buy or rent offer; replaces another offer of the same movie. */
+        post: operations["AddCartItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cart/items/{movieId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Removes a movie from the cart. */
+        delete: operations["RemoveCartItem"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The owner's orders, newest first. */
+        get: operations["ListOrders"];
+        put?: never;
+        /** Creates a pending order from the cart with a price snapshot. Requires the Idempotency-Key header; a repeated key returns the same order. */
+        post: operations["CreateOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Order details with status. The success page polls it until the webhook marks the order paid. */
+        get: operations["GetOrder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{id}/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Creates a payment session and returns the hosted page URL. Idempotent while the session is open; after a failed payment it starts a new attempt. */
+        post: operations["StartCheckout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -179,6 +299,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Body of `POST /api/cart/items`. */
+        AddCartItemRequest: {
+            /** Format: uuid */
+            movieId: null | string;
+            offerType: null | components["schemas"]["OfferType"];
+        };
         /** @description Body of `POST /api/admin/ai/chat`. */
         AdminAiChatRequest: {
             /** @description The user message. */
@@ -211,11 +337,85 @@ export interface components {
             name: string;
             version: string;
         };
+        /**
+         * @description Who put a line into the cart.
+         * @enum {unknown}
+         */
+        CartItemSource: "user" | "assistant";
+        CartLine: {
+            /**
+             * Format: uuid
+             * @description Movie id.
+             */
+            movieId: string;
+            /** @description Title in the request locale. */
+            title: string;
+            /**
+             * Format: int32
+             * @description Release year.
+             */
+            year: null | number | string;
+            /** @description TMDB poster path. */
+            posterPath: null | string;
+            /**
+             * Format: uuid
+             * @description The chosen offer.
+             */
+            offerId: string;
+            /** @description Buy or rent. */
+            offerType: components["schemas"]["OfferType"];
+            /**
+             * Format: int64
+             * @description Current price of the offer in minor units.
+             */
+            priceMinor: number | string;
+            /** @description ISO 4217 currency. */
+            currency: string;
+            /**
+             * Format: int32
+             * @description Rental period in hours (rent only).
+             */
+            rentalHours: null | number | string;
+            /** @description Who added the line. */
+            addedBy: components["schemas"]["CartItemSource"];
+            /**
+             * Format: date-time
+             * @description When the line was added or changed.
+             */
+            addedAt: string;
+            /** @description False when the offer is no longer sold; such lines are not in the total and block the order. */
+            available: boolean;
+        };
+        CartView: {
+            /** @description Cart lines, oldest first. */
+            items: components["schemas"]["CartLine"][];
+            /**
+             * Format: int64
+             * @description Sum of the available lines in minor units.
+             */
+            totalMinor: number | string;
+            /** @description ISO 4217 currency of the total. */
+            currency: string;
+        };
         CastItem: {
             /** Format: uuid */
             id: string;
             name: string;
             character: null | string;
+        };
+        CheckoutStart: {
+            /**
+             * Format: uuid
+             * @description Order id.
+             */
+            orderId: string;
+            /** @description Hosted payment page to redirect the browser to. */
+            checkoutUrl: string;
+            /**
+             * Format: date-time
+             * @description The session and the unpaid order expire at this time.
+             */
+            expiresAt: string;
         };
         DeleteEmbeddingsResponse: {
             model: string;
@@ -259,6 +459,8 @@ export interface components {
             /** Format: int32 */
             count: number | string;
         };
+        /** @enum {unknown} */
+        EntitlementType: "owned" | "rental";
         GenreItem: {
             /** Format: int32 */
             id: number | string;
@@ -275,6 +477,39 @@ export interface components {
             errors?: {
                 [key: string]: string[];
             };
+        };
+        LibraryItem: {
+            /**
+             * Format: uuid
+             * @description Movie id.
+             */
+            movieId: string;
+            /** @description Title in the request locale. */
+            title: string;
+            /**
+             * Format: int32
+             * @description Release year.
+             */
+            year: null | number | string;
+            /** @description TMDB poster path. */
+            posterPath: null | string;
+            /** @description Owned or rental. */
+            type: components["schemas"]["EntitlementType"];
+            /**
+             * Format: date-time
+             * @description Start of the entitlement.
+             */
+            validFrom: string;
+            /**
+             * Format: date-time
+             * @description End of a rental; null for owned movies.
+             */
+            validUntil: null | string;
+            /**
+             * Format: uuid
+             * @description The order that granted it.
+             */
+            orderId: string;
         };
         MovieDetails: {
             /** Format: uuid */
@@ -336,6 +571,77 @@ export interface components {
         };
         /** @enum {unknown} */
         OfferType: "buy" | "rent";
+        OrderLine: {
+            /**
+             * Format: uuid
+             * @description Movie id.
+             */
+            movieId: string;
+            /**
+             * Format: uuid
+             * @description The offer that was ordered.
+             */
+            offerId: string;
+            /** @description Buy or rent. */
+            offerType: components["schemas"]["OfferType"];
+            /** @description Title when the order was created. */
+            title: string;
+            /**
+             * Format: int64
+             * @description Price when the order was created, in minor units.
+             */
+            priceMinor: number | string;
+            /**
+             * Format: int32
+             * @description Rental period in hours (rent only).
+             */
+            rentalHours: null | number | string;
+        };
+        /**
+         * @description Where an order was created.
+         * @enum {unknown}
+         */
+        OrderSource: "web" | "assistant";
+        /**
+         * @description State of an order (spec 03 §2). Changes only through methods of Order.
+         * @enum {unknown}
+         */
+        OrderStatus: "pendingPayment" | "paid" | "failed" | "expired" | "refunded";
+        OrderView: {
+            /**
+             * Format: uuid
+             * @description Order id.
+             */
+            id: string;
+            /** @description Order status. */
+            status: components["schemas"]["OrderStatus"];
+            /**
+             * Format: int64
+             * @description Total in minor units.
+             */
+            totalMinor: number | string;
+            /** @description ISO 4217 currency. */
+            currency: string;
+            /**
+             * Format: date-time
+             * @description When the order was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description An unpaid order expires at this time.
+             */
+            expiresAt: string;
+            /**
+             * Format: date-time
+             * @description When the payment was confirmed by the provider webhook.
+             */
+            paidAt: null | string;
+            /** @description Where the order was created. */
+            source: components["schemas"]["OrderSource"];
+            /** @description Order lines with the price snapshot. */
+            items: components["schemas"]["OrderLine"][];
+        };
         PagedResultOfMovieSummary: {
             items: components["schemas"]["MovieSummary"][];
             /** Format: int32 */
@@ -349,6 +655,14 @@ export interface components {
             /** Format: uuid */
             id: string;
             name: string;
+        };
+        ProblemDetails: {
+            type?: null | string;
+            title?: null | string;
+            /** Format: int32 */
+            status?: null | number | string;
+            detail?: null | string;
+            instance?: null | string;
         };
         /**
          * @description Where an UnderstoodQuery came from.
@@ -617,6 +931,26 @@ export interface operations {
             };
         };
     };
+    GetLibrary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LibraryItem"][];
+                };
+            };
+        };
+    };
     GetAppInfo: {
         parameters: {
             query?: never;
@@ -715,6 +1049,219 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GenreItem"][];
+                };
+            };
+        };
+    };
+    GetCart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartView"];
+                };
+            };
+        };
+    };
+    AddCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddCartItemRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartView"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RemoveCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                movieId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartView"];
+                };
+            };
+        };
+    };
+    ListOrders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderView"][];
+                };
+            };
+        };
+    };
+    CreateOrder: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderView"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderView"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StartCheckout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckoutStart"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
         };

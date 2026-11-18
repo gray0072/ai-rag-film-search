@@ -30,6 +30,12 @@ export default defineConfig({
         // The API uses the ASP.NET Core development certificate, which Node does not trust.
         secure: false,
       },
+      // The fake payment page (I09) is served by the API; checkoutUrl is relative to the web app.
+      "/fake-checkout": {
+        target: apiUrl,
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   build: {

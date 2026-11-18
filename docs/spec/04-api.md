@@ -31,16 +31,18 @@ Locale: from `Accept-Language` (`en`, `ru`, `sv`; `sv-SE` → `sv`; anything els
 ## Commerce
 | Method | Path | Description |
 |---|---|---|
-| GET | `/api/cart` | Current cart with prices from the DB. |
-| POST | `/api/cart/items` | `{ movieId, offerType }`. Replaces another offer of the same movie. |
-| DELETE | `/api/cart/items/{movieId}` | Remove. |
-| POST | `/api/orders` | Create an order from the cart. Header `Idempotency-Key` required. |
-| GET | `/api/orders` / `/api/orders/{id}` | Order history / details with status. |
-| POST | `/api/orders/{id}/checkout` | Create a payment session. Response `{ checkoutUrl }`. Idempotent per order while the session is valid. |
-| GET | `/api/library` | Entitlements of the owner. |
-| POST | `/api/payments/webhooks/stripe` | Stripe webhooks. Signature check, no auth. |
-| POST | `/api/payments/webhooks/fake` | Fake gateway webhooks (Development only). |
-| GET | `/fake-checkout/{sessionId}` | Fake hosted payment page: "Pay" / "Decline" / "Cancel" buttons (Development only). |
+| GET | `/api/cart` | Current cart with prices from the DB: `{ items: [{ movieId, title, year, posterPath, offerId, offerType, priceMinor, currency, rentalHours, addedBy, addedAt, available }], totalMinor, currency }`. `available: false` = the offer is no longer sold (not in the total, blocks the order). |
+| POST | `/api/cart/items` | `{ movieId, offerType }`. Replaces another offer of the same movie. Response: the cart. 404 `movieNotFound`; 409 `offerNotAvailable`, `alreadyOwned`, `alreadyRented` (renting a rented movie; buying it is allowed). |
+| DELETE | `/api/cart/items/{movieId}` | Remove (no error when the movie is not in the cart). Response: the cart. |
+| POST | `/api/orders` | Create a `pendingPayment` order from the cart with a price snapshot. Header `Idempotency-Key` required (1–200 chars, e.g. a new UUID per checkout click; missing → 400). A repeated key returns the order created with it (201, header `Idempotent-Replayed: true`), whatever the cart holds now. 409 `cartEmpty`, `cartHasUnavailableItems`, `alreadyOwned`, `alreadyRented`. The cart is kept until the order is paid. |
+| GET | `/api/orders` / `/api/orders/{id}` | Order history (newest first, at most 100) / details with status: `{ id, status, totalMinor, currency, createdAt, expiresAt, paidAt, source, items: [{ movieId, offerId, offerType, title, priceMinor, rentalHours }] }`. Another owner's order → 404. |
+| POST | `/api/orders/{id}/checkout` | Create a payment session. Response `{ orderId, checkoutUrl, expiresAt }`. Idempotent per order while the session is valid; after a failed payment it starts a new attempt and closes the old session. 409 `orderNotPayable` (paid, expired; past `expiresAt` the order is expired at once). |
+| GET | `/api/library` | Active entitlements of the owner, one per movie (owned wins over a rental), newest first: `[{ movieId, title, year, posterPath, type: "owned"\|"rental", validFrom, validUntil, orderId }]`. Ended rentals are not listed. |
+| POST | `/api/payments/webhooks/stripe` | Stripe webhooks (I15). Signature check, no auth. |
+| POST | `/api/payments/webhooks/fake` | Fake gateway webhooks. Signature header `Fake-Signature`; 400 for a bad signature or body; `{ eventId, result }`. Not in the OpenAPI document. |
+| GET | `/fake-checkout/{sessionId}` | Fake hosted payment page: "Pay" / "Decline" / "Cancel" buttons (`POST /fake-checkout/{sessionId}/pay` etc., redirects). Not in the OpenAPI document. The fake gateway is refused in Production. |
+
+Commerce errors are Problem Details with a camelCase `code` extension (`CommerceError`), so the web app and the assistant can react without parsing text.
 
 ## Assistant
 | Method | Path | Description |

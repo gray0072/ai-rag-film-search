@@ -1,5 +1,6 @@
 using FilmSearch.AI.Providers;
 using FilmSearch.Api.Modules.Admin;
+using FilmSearch.Api.Modules.Commerce.FakeGateway;
 using FilmSearch.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,13 +16,17 @@ namespace FilmSearch.IntegrationTests.Infrastructure;
 /// are on; AI health checks are off; the seed file is not loaded on startup (tests that need the catalog use <see cref="CatalogApiFixture"/>).
 /// Every embedding profile is served by a <see cref="HashingEmbeddingGenerator"/> of the profile's dimension and every
 /// chat profile by <see cref="Chat"/> (a <see cref="ScriptedChatClient"/>), so no test calls a real model. <paramref name="settings"/> are extra configuration values.
+/// Fake payment webhooks go through the TestServer handler and are recorded in <see cref="Webhooks"/>; <paramref name="time"/> replaces the clock of the whole app.
 /// </summary>
 public sealed class FilmSearchApiFactory(
     PostgresFixture postgres,
     string? connectionString = null,
-    IReadOnlyDictionary<string, string?>? settings = null) : WebApplicationFactory<Program>
+    IReadOnlyDictionary<string, string?>? settings = null,
+    TimeProvider? time = null) : WebApplicationFactory<Program>
 {
     public ScriptedChatClient Chat { get; } = new();
+
+    public WebhookDeliveryLog Webhooks { get; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -31,6 +36,10 @@ public sealed class FilmSearchApiFactory(
         builder.UseSetting(AdminModule.EnabledKey, "true");
         // Tests never call a real model (AGENTS.md): no LM Studio health probe, AI clients are faked.
         builder.UseSetting("AI:HealthChecksEnabled", "false");
+        // The fake payment provider calls the TestServer (see below); no delay unless a test asks for one.
+        builder.UseSetting("Payments:Fake:WebhookBaseUrl", "http://localhost");
+        builder.UseSetting("Payments:Fake:WebhookDelayMinMs", "0");
+        builder.UseSetting("Payments:Fake:WebhookDelayMaxMs", "0");
         foreach (var (key, value) in settings ?? new Dictionary<string, string?>())
         {
             builder.UseSetting(key, value);
@@ -42,6 +51,15 @@ public sealed class FilmSearchApiFactory(
             services.AddKeyedSingleton<IEmbeddingGenerator<string, Embedding<float>>>(KeyedService.AnyKey, (sp, key) =>
                 new HashingEmbeddingGenerator(sp.GetRequiredService<IOptions<AiOptions>>().Value.GetEmbeddingProfile((string)key!).Dimensions));
             services.AddKeyedSingleton<IChatClient>(KeyedService.AnyKey, Chat);
+
+            // The lambda runs when the client is created, after the server has started.
+            services.AddHttpClient(FakeWebhookDispatcher.HttpClientName)
+                .ConfigurePrimaryHttpMessageHandler(() => new WebhookDeliveryLog.Handler(Webhooks, Server.CreateHandler()));
+
+            if (time is not null)
+            {
+                services.AddSingleton(time);
+            }
         });
     }
 }
