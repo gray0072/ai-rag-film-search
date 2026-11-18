@@ -39,14 +39,32 @@ const problemDetails: Middleware = {
   },
 };
 
+/** The first API call of the page load; settled when its response headers (and cookie) have arrived. */
+let firstCall: Promise<unknown> | undefined;
+
+/**
+ * The API gives a browser without the owner cookie (`fs_sid`, spec 04) a new owner on every request. The first page
+ * load sends several requests at once (cart, conversation list, …), each would get its own owner, and the last
+ * response would win: a conversation or cart line created meanwhile would belong to another owner (404).
+ * So the first call goes alone and the others wait for its response, which carries the cookie.
+ */
+function fetchWithOwner(request: Request): Promise<Response> {
+  if (firstCall === undefined) {
+    // Look up fetch on every call (not once at import), so tests can stub it.
+    const response = globalThis.fetch(request);
+    firstCall = response.catch(() => undefined);
+    return response;
+  }
+  return firstCall.then(() => globalThis.fetch(request));
+}
+
 /**
  * Typed fetch client generated from the OpenAPI document (`npm run gen:api`).
  * Paths already start with `/api`; in development the Vite dev server proxies them to the API.
  */
 export const apiClient = createFetchClient<paths>({
   baseUrl: window.location.origin,
-  // Look up fetch on every call (not once at import), so tests can stub it.
-  fetch: (request) => globalThis.fetch(request),
+  fetch: fetchWithOwner,
 });
 apiClient.use(acceptLanguage, problemDetails);
 

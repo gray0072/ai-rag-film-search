@@ -1,9 +1,10 @@
-import { Clapperboard, MessageCircle, Search, ShoppingCart } from "lucide-react";
+import { Clapperboard, Search, ShoppingCart } from "lucide-react";
 import { useState, type SubmitEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, NavLink, useNavigate, useSearchParams } from "react-router";
+import { Link, NavLink, useMatch, useNavigate, useSearchParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/features/cart/cart";
+import { ChatDrawer } from "@/features/chat/ChatDrawer";
 import { Input } from "@/components/ui/input";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
@@ -12,6 +13,8 @@ export function Header() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  // The chat page has the assistant already; elsewhere it opens in a drawer.
+  const onChatPage = useMatch("/chat/*") !== null;
 
   const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,13 +62,7 @@ export function Header() {
         </form>
 
         <div className="ml-auto flex items-center gap-1">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/chat">
-              <MessageCircle aria-hidden />
-              <span className="hidden sm:inline">{t("nav.chat")}</span>
-              <span className="sr-only sm:hidden">{t("nav.chat")}</span>
-            </Link>
-          </Button>
+          {!onChatPage && <ChatDrawer />}
           <LanguageSwitcher />
           <CartLink />
         </div>

@@ -19,3 +19,17 @@ export type SearchItem = Schemas["SearchItem"];
 export type SearchDebug = Schemas["SearchDebug"];
 export type UnderstoodQuery = Schemas["UnderstoodQuery"];
 export type SearchMode = NonNullable<Schemas["SearchMode"]>;
+export type ConversationListItem = Schemas["ConversationListItem"];
+export type ConversationView = Schemas["ConversationView"];
+export type MessageView = Schemas["MessageView"];
+export type AssistantMovie = Schemas["MovieCard"];
+export type ConfirmationView = Schemas["ConfirmationView"];
+export type ConfirmationSummary = Schemas["ConfirmationSummary"];
+
+/** The generated event types mark `type` optional; on the wire it is always set (the SSE event name). */
+type WithEventType<T> = T extends { type?: infer Name }
+  ? Omit<T, "type"> & { type: NonNullable<Name> }
+  : never;
+
+/** An event of an assistant answer (spec 04, SSE events), discriminated by `type`. */
+export type AssistantEvent = WithEventType<Schemas["AssistantEvent"]>;

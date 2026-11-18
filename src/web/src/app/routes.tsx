@@ -21,7 +21,7 @@ export const routes: RouteObject[] = [
       { path: "checkout/success", element: <CheckoutSuccessPage /> },
       { path: "checkout/cancel", element: <CheckoutCancelPage /> },
       { path: "library", element: <LibraryPage /> },
-      { path: "chat", element: <ChatPage /> },
+      { path: "chat/:id?", element: <ChatPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

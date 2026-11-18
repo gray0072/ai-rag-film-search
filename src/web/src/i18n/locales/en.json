@@ -58,9 +58,6 @@
     "apiVersion": "API {{version}}",
     "apiUnavailable": "API unavailable"
   },
-  "placeholder": {
-    "comingIn": "This page is a placeholder. It is built in iteration {{iteration}}."
-  },
   "catalog": {
     "title": "Catalog",
     "total": "Movies: {{total}}",
@@ -192,6 +189,74 @@
     "rental": "Rental",
     "until": "Until {{date}}"
   },
+  "chat": {
+    "title": "Assistant",
+    "description": "Ask the AI assistant to find movies, explain its picks and help you check out.",
+    "intro": "Tell me what you feel like watching: a mood, a story, movies you liked. I search the catalog, add movies to your cart and prepare the payment when you ask.",
+    "examples": {
+      "label": "Example questions",
+      "evening": "Want something for an evening with my wife, we liked Before Sunrise and La La Land.",
+      "timeTravel": "A time travel movie, but not an action movie.",
+      "cart": "What is in my cart?"
+    },
+    "messages": "Messages",
+    "you": "You",
+    "assistant": "Assistant",
+    "movies": "Movies from the catalog",
+    "inCart": "In your cart",
+    "placeholder": "Ask the assistant…",
+    "inputLabel": "Message to the assistant",
+    "send": "Send",
+    "stop": "Stop the answer",
+    "stopped": "Stopped. This answer is not saved.",
+    "typing": "The assistant is thinking…",
+    "conversations": "Conversations",
+    "newConversation": "New conversation",
+    "untitled": "New conversation",
+    "openFullPage": "Open the chat page",
+    "tools": {
+      "label": "Assistant steps",
+      "search_movies": "Searching the catalog…",
+      "get_movie_details": "Reading the movie details…",
+      "find_similar_movies": "Finding similar movies…",
+      "view_cart": "Checking your cart…",
+      "add_to_cart": "Adding to the cart…",
+      "remove_from_cart": "Removing from the cart…",
+      "request_checkout": "Preparing the order…",
+      "unknown": "Working…"
+    },
+    "confirmation": {
+      "title": "Your order",
+      "decline": "Not now",
+      "validUntil": "The button works until {{time}}.",
+      "approved": "You confirmed this order.",
+      "openPayment": "Open the payment page",
+      "paid": "This order is paid.",
+      "notPaid": "This order was not paid. Ask the assistant to prepare a new one.",
+      "declined": "You declined this order.",
+      "superseded": "A newer order summary replaced this one.",
+      "expired": "This order summary has expired. Ask the assistant again.",
+      "errors": {
+        "cartChanged": "Your cart has changed since the assistant prepared this order. Ask the assistant again.",
+        "expired": "This order summary has expired. Ask the assistant again.",
+        "notPending": "This order summary is no longer valid. Ask the assistant again.",
+        "notFound": "This order summary was not found."
+      }
+    },
+    "feedback": {
+      "up": "Good answer",
+      "down": "Bad answer",
+      "thanks": "Thank you for the feedback."
+    },
+    "errors": {
+      "providerUnavailable": "The AI model is not available right now. Please try again later.",
+      "conversationBusy": "The previous answer is still being written. Wait a moment and try again.",
+      "budgetExceeded": "This conversation is too long. Please start a new one.",
+      "toolsNotSupported": "The selected AI model cannot search the catalog, so the assistant is off.",
+      "internalError": "Something went wrong while writing the answer.",
+      "connectionLost": "The connection was lost before the answer was complete."
+    }
+  },
   "errors": {
     "commerce": {
       "movieNotFound": "This movie was not found.",
@@ -205,10 +270,6 @@
     }
   },
   "pages": {
-    "chat": {
-      "title": "Assistant",
-      "description": "Ask the AI assistant to find movies, explain its picks and help you check out."
-    },
     "notFound": {
       "title": "Page not found",
       "description": "The page you are looking for does not exist.",

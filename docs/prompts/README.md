@@ -64,3 +64,4 @@ Rules:
 | [S12](sessions/2026-11-18_S12_linear-history.md) | 2026-11-18 | — | Linear git history (merge commits removed) |
 | [S13](sessions/2026-11-18_S13_chat-foundation.md) | 2026-11-18 | I11 | Chat foundation: conversations, streaming, grounded answers |
 | [S14](sessions/2026-11-18_S14_agent-tools.md) | 2026-11-18 | I12 | Agent: tools, cart, checkout confirmation |
+| [S15](sessions/2026-11-18_S15_chat-ui.md) | 2026-11-18 | I13 | Chat UI |

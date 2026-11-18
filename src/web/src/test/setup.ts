@@ -19,6 +19,11 @@ if (!("ResizeObserver" in globalThis)) {
   globalThis.ResizeObserver = ResizeObserverStub;
 }
 
+// jsdom does not lay out, so it has no scrolling either; the chat scrolls to its last message.
+Element.prototype.scrollIntoView = () => {
+  // Nothing to scroll in jsdom.
+};
+
 afterEach(() => {
   cleanup();
 });
