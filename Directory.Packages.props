@@ -9,6 +9,8 @@
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.6.5" />
   </ItemGroup>
   <ItemGroup Label="ASP.NET Core and extensions">
+    <!-- I17, ADR-0010: users, roles and the EF Core stores in the shared AppDbContext (schema identity). -->
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.15" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
     <!-- Writes the OpenAPI document to src/web/openapi on build; the web app generates its types from it. -->
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.15" />

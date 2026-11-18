@@ -55,14 +55,27 @@ The API listens on `https://localhost:7180`:
 - `GET /api/movies`, `GET /api/movies/{id}`, `GET /api/genres`: catalog; texts follow `Accept-Language` (`en`, `ru`, `sv`)
 - `POST /api/search` with `{ "query": "nolan dream", "debug": true }`: keyword search (filters as in `GET /api/movies`); `"mode": "semantic"` searches by meaning (`{ "query": "a heist inside dreams", "mode": "semantic" }`, needs LM Studio)
 - `GET /api/movies/{id}/similar`: movies nearest to this one by embedding
-- `POST /api/admin/ingestion/seed`: reload the seed file (Development only, idempotent)
-- `GET /api/admin/embeddings`, `POST /api/admin/embeddings/reindex`, `DELETE /api/admin/embeddings?model=`: embedding index state, a reindex job for the Worker, deleting an old model's vectors (Development only)
-- `POST /api/admin/ingestion/tmdb` with `{ "list": "topRated", "pages": 50 }` or `{ "tmdbIds": [27205] }`: a TMDB import job for the Worker (needs a TMDB key, see below); `GET /api/admin/jobs`, `GET /api/admin/jobs/{id}`, `POST /api/admin/jobs/{id}/cancel`: background jobs with progress and counters (Development only)
-- `POST /api/admin/ai/chat` with `{ "message": "Hi", "profile": "local" }`: one call to a chat profile, with token usage (Development only); the call shows up as a GenAI trace in the dashboard
+- `POST /api/auth/register`, `POST /api/auth/login` with `{ "email", "password" }`, `POST /api/auth/logout`, `GET /api/auth/me`: accounts with an HttpOnly cookie; signing in moves the anonymous cart, orders and conversations to the account. The web app has `/login` and `/register`
+- Admin endpoints (role `admin`, see "Admin account" below):
+  - `POST /api/admin/ingestion/seed`: reload the seed file (idempotent)
+  - `GET /api/admin/embeddings`, `POST /api/admin/embeddings/reindex`, `DELETE /api/admin/embeddings?model=`: embedding index state, a reindex job for the Worker, deleting an old model's vectors
+  - `POST /api/admin/ingestion/tmdb` with `{ "list": "topRated", "pages": 50 }` or `{ "tmdbIds": [27205] }`: a TMDB import job for the Worker (needs a TMDB key, see below); `GET /api/admin/jobs`, `GET /api/admin/jobs/{id}`, `POST /api/admin/jobs/{id}/cancel`
+  - `POST /api/admin/ai/chat` with `{ "message": "Hi", "profile": "local" }`: one call to a chat profile, with token usage; the call shows up as a GenAI trace in the dashboard
 - `POST /api/chat/conversations`, then `POST /api/chat/conversations/{id}/messages` with `{ "text": "Recommend a space movie" }`: the assistant's answer as server-sent events (needs a chat model; examples in [Assistant.http](src/FilmSearch.Api/Assistant.http)); `GET /api/chat/conversations/{id}`: the history with movie cards
 - `GET /openapi/v1.json`: OpenAPI document (Development)
 
 On first start the API applies EF Core migrations and, if the catalog is empty, loads `data/seed/movies.seed.json` (Development only). Then it queues a reindex job that the Worker runs: it embeds every movie whose embedding text changed (about 30 s for the whole seed with LM Studio running; with LM Studio off the job fails, keyword search works, and the next start or `POST /api/admin/embeddings/reindex` catches up). The Worker (`src/FilmSearch.Worker`) runs every background job from the table `ingestion.jobs` and expires unpaid orders; it reads the API's appsettings files and user secrets. The Postgres container `filmsearch-postgres` is persistent: it keeps running after you stop the AppHost, and its data lives in the Docker volume `filmsearch-postgres-data`.
+
+### Admin account
+
+Admin endpoints need a signed-in user with the `admin` role. On startup the API creates the role and the account `Auth:Admin:Email` (`admin@filmsearch.local` in Development) with the password from the API user secrets:
+
+```bash
+dotnet user-secrets set Auth:Admin:Password "<a long password>" --project src/FilmSearch.Api
+dotnet user-secrets list --project src/FilmSearch.Api      # shows the current one
+```
+
+Without the password the API starts without an admin account (a warning in the log). Sign in as admin in the web app (`/login`) or with `POST /api/auth/login`; the cookie then works for the admin endpoints. An account that already exists with the admin email gets the role only if its password is the configured one.
 
 ### Build and test
 

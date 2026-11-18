@@ -21,7 +21,7 @@ public sealed class WorkerTests(PostgresFixture postgres)
     {
         var connectionString = await postgres.CreateDatabaseAsync("worker_import");
         await using var api = new FilmSearchApiFactory(postgres, connectionString);
-        using var client = api.CreateClient();
+        using var client = await api.CreateAdminClientAsync();
         await using var worker = await TestWorker.StartAsync(connectionString);
 
         var first = await RunImportAsync(client, new { list = "topRated", pages = 1 });
@@ -56,7 +56,7 @@ public sealed class WorkerTests(PostgresFixture postgres)
     {
         var connectionString = await postgres.CreateDatabaseAsync("worker_ids");
         await using var api = new FilmSearchApiFactory(postgres, connectionString);
-        using var client = api.CreateClient();
+        using var client = await api.CreateAdminClientAsync();
         await using var worker = await TestWorker.StartAsync(connectionString);
 
         var first = (await RunImportAsync(client, new { tmdbIds = new List<int> { 278, 550, 424242 } })).GetResult<TmdbImportResult>().ShouldNotBeNull();
@@ -77,7 +77,7 @@ public sealed class WorkerTests(PostgresFixture postgres)
     {
         // No worker: the job stays queued.
         await using var api = new FilmSearchApiFactory(postgres, await postgres.CreateDatabaseAsync("worker_conflict"));
-        using var client = api.CreateClient();
+        using var client = await api.CreateAdminClientAsync();
 
         using var first = await client.PostAsJsonAsync("/api/admin/ingestion/tmdb", new { tmdbIds = new List<int> { 278 } }, Ct);
         using var second = await client.PostAsJsonAsync("/api/admin/ingestion/tmdb", new { list = "popular", pages = 2 }, Ct);
@@ -104,7 +104,7 @@ public sealed class WorkerTests(PostgresFixture postgres)
     {
         var connectionString = await postgres.CreateDatabaseAsync("worker_nokey");
         await using var api = new FilmSearchApiFactory(postgres, connectionString);
-        using var client = api.CreateClient();
+        using var client = await api.CreateAdminClientAsync();
         await using var worker = await TestWorker.StartAsync(connectionString, settings: new Dictionary<string, string?> { ["Tmdb:ApiKey"] = "" });
 
         var job = await RunImportAsync(client, new { tmdbIds = new List<int> { 278 } });

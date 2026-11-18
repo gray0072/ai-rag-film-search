@@ -35,7 +35,7 @@ public sealed class CatalogApiFixture(PostgresFixture postgres) : IAsyncLifetime
             Seed = (await JsonSerializer.DeserializeAsync<SeedFile>(stream, Json))!;
         }
 
-        using var client = Factory.CreateClient();
+        using var client = await Factory.CreateAdminClientAsync();
         using var response = await client.PostAsync("/api/admin/ingestion/seed", content: null);
         response.EnsureSuccessStatusCode();
 

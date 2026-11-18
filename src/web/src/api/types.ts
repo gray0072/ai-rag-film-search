@@ -33,3 +33,4 @@ type WithEventType<T> = T extends { type?: infer Name }
 
 /** An event of an assistant answer (spec 04, SSE events), discriminated by `type`. */
 export type AssistantEvent = WithEventType<Schemas["AssistantEvent"]>;
+export type CurrentUser = Schemas["CurrentUser"];

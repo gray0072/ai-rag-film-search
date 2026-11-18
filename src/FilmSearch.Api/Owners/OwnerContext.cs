@@ -12,7 +12,10 @@ public sealed class OwnerContext : IOwnerContext
 
     public bool IsResolved => _ownerId.HasValue;
 
-    internal void Set(Guid ownerId)
+    /// <summary>The owner is the anonymous session id (<c>fs_sid</c>), not a signed-in user.</summary>
+    public bool IsAnonymous { get; private set; }
+
+    internal void Set(Guid ownerId, bool isAnonymous)
     {
         if (_ownerId.HasValue)
         {
@@ -20,5 +23,6 @@ public sealed class OwnerContext : IOwnerContext
         }
 
         _ownerId = ownerId;
+        IsAnonymous = isAnonymous;
     }
 }

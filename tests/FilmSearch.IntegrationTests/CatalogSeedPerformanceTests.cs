@@ -40,7 +40,7 @@ public sealed class CatalogSeedPerformanceTests(PostgresFixture postgres) : IAsy
     public async ValueTask InitializeAsync()
     {
         _factory = new FilmSearchApiFactory(postgres, await postgres.CreateDatabaseAsync("filmsearch_perf"));
-        using var client = _factory.CreateClient();
+        using var client = await _factory.CreateAdminClientAsync();
         (await client.PostAsync("/api/admin/ingestion/seed", content: null)).EnsureSuccessStatusCode();
     }
 

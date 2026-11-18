@@ -68,3 +68,4 @@ Rules:
 | [S16](sessions/2026-11-18_S16_assistant-eval-guardrails.md) | 2026-11-18 | I14 | Assistant evaluation and guardrails |
 | [S17](sessions/2026-11-18_S17_stripe-test-mode.md) | 2026-11-18 | I15 | Stripe test mode |
 | [S18](sessions/2026-11-18_S18_tmdb-sync-worker.md) | 2026-11-18 | I16 | TMDB sync and Worker |
+| [S19](sessions/2026-11-18_S19_authentication.md) | 2026-11-18 | I17 | Authentication (Identity) |

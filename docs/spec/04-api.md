@@ -2,7 +2,7 @@
 
 Base path: `/api`. JSON with camelCase; numbers are JSON numbers only (`"12"` in a body is a 400), so the OpenAPI document types them as plain `integer` / `number`. Errors: RFC 9457 Problem Details. The OpenAPI document is served at `/openapi/v1.json` in Development. Every API build also writes it to `src/web/openapi/v1.json` (committed), and the frontend generates its types from that file ([ADR-0007](../adr/0007-frontend-stack.md)).
 
-Owner identification: anonymous cookie `fs_sid` (HttpOnly, Secure, SameSite=Lax, 128 random bits as 32 hex chars, max-age 1 year; set on the first `/api` request) before auth; Identity cookie after I17. Every user-scoped endpoint resolves `OwnerId` from them. A request without the cookie gets a new owner, so parallel first requests would get different owners: the web client sends the first call of a page load alone and the others after its response (I13).
+Owner identification: the user id of a signed-in user (Identity cookie `fs_auth`, I17), otherwise the anonymous cookie `fs_sid` (HttpOnly, Secure, SameSite=Lax, 128 random bits as 32 hex chars, max-age 1 year; set on the first `/api` request of an anonymous visitor). Every user-scoped endpoint resolves `OwnerId` from them. Login and registration move the anonymous owner's data to the user (see "Auth"). A request without the cookie gets a new owner, so parallel first requests would get different owners: the web client sends the first call of a page load alone and the others after its response (I13).
 
 Locale: `Accept-Language` (`en`, `ru`, `sv`) selects translated titles and overviews; unknown locales fall back to `en`.
 
@@ -74,7 +74,19 @@ Each event: `event: <type>` and `data: <json>`. The data also carries `type` (th
 
 `Confirmation`: `{ id, messageId, kind: "checkout", status: "pending"|"approved"|"declined"|"superseded"|"expired", summary: { items, totalMinor, currency }, expiresAt, orderId? }`.
 
-## Admin (role `admin`; before auth: Development only)
+## Auth (I17, ADR-0010)
+Cookie authentication for the SPA: `fs_auth` (HttpOnly, Secure, SameSite=Lax, 14 days sliding). Endpoints that need a user or a role answer 401 / 403, never a redirect.
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/auth/register` | `{ email, password }` (email ≤ 256, password 8–128 chars, no composition rules). Creates the account and signs it in → 200 `CurrentUser`. 409 `emailTaken`; 400 Validation Problem (field `Email` or `Password`). |
+| POST | `/api/auth/login` | `{ email, password }` → 200 `CurrentUser` and the cookie. 401 Problem Details with `code` `invalidCredentials` (unknown email or wrong password, not told apart) or `lockedOut` (5 failures → 5 minutes). |
+| POST | `/api/auth/logout` | 204. Removes `fs_auth` and `fs_sid`: the next request is a new anonymous owner with an empty cart. |
+| GET | `/api/auth/me` | 200 `CurrentUser` = `{ authenticated, email?, roles: [] }`; anonymous: `{ authenticated: false, email: null, roles: [] }`. |
+
+Merge (FR-USR-2): when an anonymous request registers or logs in, the anonymous owner's data moves to the user in one transaction before the cookie is issued: orders, entitlements, conversations with their confirmations, and cart lines (for a movie in both carts the newer line wins; lines the account can no longer buy, i.e. an owned movie or a rent line of a rented one, are dropped). `fs_sid` is deleted. Logging in while signed in as another user moves nothing.
+
+## Admin (role `admin`; 401 without a user, 403 without the role)
 | Method | Path | Description |
 |---|---|---|
 | POST | `/api/admin/ingestion/seed` | Load the seed file (idempotent). |

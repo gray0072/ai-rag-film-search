@@ -220,7 +220,7 @@ public sealed class CatalogApiTests(CatalogApiFixture fixture) : IClassFixture<C
     [Fact]
     public async Task Loading_the_seed_again_changes_nothing()
     {
-        using var client = fixture.CreateClient();
+        using var client = await fixture.Factory.CreateAdminClientAsync();
 
         using var response = await client.PostAsync("/api/admin/ingestion/seed", content: null, Ct);
 

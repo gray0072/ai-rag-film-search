@@ -158,3 +158,15 @@ export function anOrder(overrides: Partial<Schemas["OrderView"]> = {}): Schemas[
     ...overrides,
   };
 }
+
+/** A signed-in user (`GET /api/auth/me`, I17). */
+export function aUser(overrides: Partial<Schemas["CurrentUser"]> = {}): Schemas["CurrentUser"] {
+  return { authenticated: true, email: "anna@example.com", roles: [], ...overrides };
+}
+
+/** `GET /api/auth/me` of a visitor who is not signed in. */
+export const anonymousUser: Schemas["CurrentUser"] = {
+  authenticated: false,
+  email: null,
+  roles: [],
+};

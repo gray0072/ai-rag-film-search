@@ -189,6 +189,36 @@
     "rental": "Hyrd",
     "until": "Till {{date}}"
   },
+  "auth": {
+    "email": "E-post",
+    "password": "Lösenord",
+    "passwordHint": "Minst {{min}} tecken. En lång fras är lätt att minnas och svår att gissa.",
+    "submitting": "Vänta…",
+    "logout": "Logga ut",
+    "menu": "Konto: {{email}}",
+    "login": {
+      "title": "Logga in",
+      "description": "Din kundvagn, dina köp och samtal från innan du loggade in flyttas till ditt konto.",
+      "submit": "Logga in",
+      "link": "Logga in",
+      "switchPrompt": "Inget konto än?",
+      "switchLink": "Logga in"
+    },
+    "register": {
+      "title": "Skapa konto",
+      "description": "Ha dina filmer på alla enheter. Din kundvagn, dina köp och samtal flyttas till det nya kontot.",
+      "submit": "Skapa konto",
+      "switchPrompt": "Har du redan ett konto?",
+      "switchLink": "Skapa konto"
+    },
+    "errors": {
+      "invalidCredentials": "Fel e-post eller lösenord.",
+      "lockedOut": "För många misslyckade försök. Försök igen om några minuter.",
+      "emailTaken": "Det finns redan ett konto med den här e-postadressen. Logga in i stället.",
+      "passwordTooShort": "Lösenordet måste ha minst {{min}} tecken.",
+      "invalidEmail": "Ange en giltig e-postadress."
+    }
+  },
   "chat": {
     "title": "Assistent",
     "description": "Be AI-assistenten hitta filmer, förklara sina val och hjälpa dig att betala.",

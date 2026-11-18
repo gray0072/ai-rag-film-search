@@ -25,7 +25,7 @@ public sealed class AdminAiApiTests(PostgresFixture postgres) : IAsyncLifetime
             builder.UseSetting("AI:ChatProfiles:fake:ApiKey", "unused");
             builder.ConfigureTestServices(services => services.AddKeyedSingleton<IChatClient>("fake", fake));
         });
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAdminClientAsync();
 
         var response = await client.PostAsJsonAsync("/api/admin/ai/chat", new { message = "Hi", profile = "fake" }, Ct);
 
@@ -41,7 +41,7 @@ public sealed class AdminAiApiTests(PostgresFixture postgres) : IAsyncLifetime
     [Fact]
     public async Task Unknown_profile_returns_validation_problem()
     {
-        using var client = _factory.CreateClient();
+        using var client = await _factory.CreateAdminClientAsync();
 
         var response = await client.PostAsJsonAsync("/api/admin/ai/chat", new { message = "Hi", profile = "nope" }, Ct);
 
@@ -52,7 +52,7 @@ public sealed class AdminAiApiTests(PostgresFixture postgres) : IAsyncLifetime
     [Fact]
     public async Task Empty_message_returns_validation_problem()
     {
-        using var client = _factory.CreateClient();
+        using var client = await _factory.CreateAdminClientAsync();
 
         var response = await client.PostAsJsonAsync("/api/admin/ai/chat", new { message = "" }, Ct);
 

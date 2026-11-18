@@ -73,7 +73,7 @@ Exact package versions are fixed in iteration I01 and recorded in `Directory.Pac
 │   ├── FilmSearch.AppHost/          # Aspire orchestration
 │   ├── FilmSearch.ServiceDefaults/  # OpenTelemetry, health checks, resilience defaults
 │   ├── FilmSearch.Api/              # HTTP host: endpoints per module, auth, SSE
-│   │   └── Modules/{Catalog,Search,Assistant,Commerce,Admin}/
+│   │   └── Modules/{Catalog,Search,Assistant,Commerce,Identity,Admin}/
 │   ├── FilmSearch.Worker/           # background jobs (from I16)
 │   ├── FilmSearch.Core/             # domain entities, module contracts, use cases
 │   │   └── {Catalog,Search,Assistant,Commerce,Ingestion}/

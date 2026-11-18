@@ -77,7 +77,7 @@ The assistant tables live in the `assistant` schema: `conversations`, `messages`
 Table `ingestion.jobs`; at most one queued or running job per kind (partial unique index). Queue rules: [spec 08 §3](08-data-ingestion.md#job-queue).
 
 ### Identity (from I17)
-ASP.NET Core Identity tables in schema `identity`. `OwnerId` in other modules becomes the user id after login. The anonymous id is migrated on login.
+ASP.NET Core Identity tables in schema `identity` (I17): `users` (`AppUser`: Identity columns with a uuid `Id` and `CreatedAt`; user name = email), `roles` (`admin`), `user_roles`, `user_claims`, `user_logins`, `user_tokens`, `role_claims`. `OwnerId` in other modules is the user id of a signed-in user. On login the anonymous id's rows are moved to the user by each module (`IOwnerMergeHandler`; Commerce: orders, entitlements, cart lines; Assistant: conversations, confirmations).
 
 ## 2. Order state machine
 

@@ -1,7 +1,8 @@
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import i18n from "@/i18n";
-import { aCart, mockApi } from "@/test/mockApi";
+import { aCart, anonymousUser, aUser, mockApi, requestsTo } from "@/test/mockApi";
 import { renderApp } from "@/test/renderApp";
 
 describe("LibraryPage", () => {
@@ -15,6 +16,7 @@ describe("LibraryPage", () => {
 
   it("lists owned movies and rentals with their end", async () => {
     mockApi({
+      "GET /api/auth/me": aUser(),
       "GET /api/cart": aCart(),
       "GET /api/library": [
         {
@@ -52,10 +54,37 @@ describe("LibraryPage", () => {
 
   it("shows the empty library in Swedish", async () => {
     await i18n.changeLanguage("sv");
-    mockApi({ "GET /api/cart": aCart(), "GET /api/library": [] });
+    mockApi({ "GET /api/auth/me": aUser(), "GET /api/cart": aCart(), "GET /api/library": [] });
     renderApp("/library");
 
     expect(await screen.findByText("Du har inga filmer än.")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "Mitt bibliotek" })).toBeInTheDocument();
+  });
+
+  it("sends anonymous visitors to the login page and back to the library after signing in", async () => {
+    let user = anonymousUser;
+    const fetchMock = mockApi({
+      "GET /api/auth/me": () => user,
+      "GET /api/cart": aCart(),
+      "GET /api/library": [],
+      "POST /api/auth/login": () => {
+        user = aUser();
+        return user;
+      },
+    });
+    const events = userEvent.setup();
+    const { router } = renderApp("/library");
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Sign in" })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/login");
+    expect(router.state.location.search).toBe("?returnUrl=%2Flibrary");
+    expect(requestsTo(fetchMock, "/api/library")).toHaveLength(0);
+
+    await events.type(screen.getByLabelText("Email"), "anna@example.com");
+    await events.type(screen.getByLabelText("Password"), "correct horse battery");
+    await events.click(screen.getByRole("button", { name: "Sign in" }));
+
+    expect(await screen.findByText("You have no movies yet.")).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/library");
   });
 });

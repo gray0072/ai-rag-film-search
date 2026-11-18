@@ -37,8 +37,9 @@ Never committed: `.env`, `appsettings.*.local.json`, user-secrets, keys of any k
 - [ ] Input limits: chat message ≤ 2000 chars, search query ≤ 300 chars.
 - [ ] Stripe webhook signature check; Fake webhook HMAC; Fake endpoints mapped only in Development.
 - [ ] Startup refuses live Stripe keys.
-- [ ] Admin endpoints require the admin role (Development-only before I17).
-- [ ] Owner check on every cart / order / conversation / confirmation access (no IDOR).
+- [x] Admin endpoints require the admin role (I17; Development-only before).
+- [x] Accounts (I17): passwords hashed by Identity (PBKDF2), at least 8 characters, lockout after 5 failures; auth cookie HttpOnly, Secure, SameSite=Lax (CSRF protection together with JSON-only bodies); the admin account comes from config with the password in user secrets.
+- [x] Owner check on every cart / order / conversation / confirmation access (no IDOR; tests between anonymous owners and between users).
 - [ ] SQL only through EF Core / parameterized queries (vector and FTS queries included).
 - [ ] Dependency scanning (Dependabot) and secret scanning on GitHub.
 - [ ] Prompt-injection cases in the adversarial evaluation set.

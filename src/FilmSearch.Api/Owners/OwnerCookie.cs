@@ -17,6 +17,12 @@ public static class OwnerCookie
     public static bool TryParse(string? value, out Guid id) =>
         Guid.TryParseExact(value, "N", out id) && id != Guid.Empty;
 
+    /// <summary>
+    /// Removes the cookie: after a login (its data now belongs to the user) and a logout (the next anonymous visit
+    /// starts with a new, empty owner).
+    /// </summary>
+    public static void Delete(HttpResponse response) => response.Cookies.Delete(Name, CreateOptions());
+
     public static CookieOptions CreateOptions() => new()
     {
         HttpOnly = true,

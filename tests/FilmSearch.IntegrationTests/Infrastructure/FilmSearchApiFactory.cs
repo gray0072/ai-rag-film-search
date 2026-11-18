@@ -1,5 +1,4 @@
 using FilmSearch.AI.Providers;
-using FilmSearch.Api.Modules.Admin;
 using FilmSearch.Api.Modules.Commerce.FakeGateway;
 using FilmSearch.Infrastructure.Commerce.StripeGateway;
 using FilmSearch.Infrastructure.Persistence;
@@ -13,8 +12,8 @@ using Microsoft.Extensions.Options;
 namespace FilmSearch.IntegrationTests.Infrastructure;
 
 /// <summary>
-/// The API in-process (TestServer) against the Testcontainers database. Migrations run on startup; admin endpoints
-/// are on; AI health checks are off; the seed file is not loaded on startup (tests that need the catalog use <see cref="CatalogApiFixture"/>).
+/// The API in-process (TestServer) against the Testcontainers database. Migrations run on startup; the admin account
+/// of <see cref="AuthTestExtensions"/> is seeded; AI health checks are off; the seed file is not loaded on startup (tests that need the catalog use <see cref="CatalogApiFixture"/>).
 /// Every embedding profile is served by a <see cref="HashingEmbeddingGenerator"/> of the profile's dimension and every
 /// chat profile by <see cref="Chat"/> (a <see cref="ScriptedChatClient"/>), so no test calls a real model. <paramref name="settings"/> are extra configuration values.
 /// Fake payment webhooks go through the TestServer handler and are recorded in <see cref="Webhooks"/>; Stripe API calls
@@ -37,7 +36,8 @@ public sealed class FilmSearchApiFactory(
         builder.UseEnvironment("Testing");
         builder.UseSetting($"ConnectionStrings:{DatabaseSetup.ConnectionName}", connectionString ?? postgres.ConnectionString);
         builder.UseSetting(DatabaseSetup.MigrateOnStartupKey, "true");
-        builder.UseSetting(AdminModule.EnabledKey, "true");
+        builder.UseSetting("Auth:Admin:Email", AuthTestExtensions.AdminEmail);
+        builder.UseSetting("Auth:Admin:Password", AuthTestExtensions.AdminPassword);
         // Tests never call a real model (AGENTS.md): no LM Studio health probe, AI clients are faked.
         builder.UseSetting("AI:HealthChecksEnabled", "false");
         // The fake payment provider calls the TestServer (see below); no delay unless a test asks for one.

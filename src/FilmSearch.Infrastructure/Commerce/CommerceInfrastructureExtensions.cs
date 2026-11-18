@@ -1,4 +1,5 @@
 using FilmSearch.Core.Commerce;
+using FilmSearch.Core.Owners;
 using FilmSearch.Infrastructure.Commerce.StripeGateway;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,7 @@ public static class CommerceInfrastructureExtensions
         services.AddScoped<ICartService, CartService>();
         services.AddScoped<ICheckoutService, CheckoutService>();
         services.AddScoped<ILibraryService, LibraryService>();
+        services.AddScoped<IOwnerMergeHandler, CommerceOwnerMergeHandler>();
         services.AddScoped<IPaymentWebhookProcessor, PaymentWebhookProcessor>();
         services.AddSingleton<PaymentGateways>();
 

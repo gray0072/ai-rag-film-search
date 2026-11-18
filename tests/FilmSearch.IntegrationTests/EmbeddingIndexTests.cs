@@ -128,7 +128,7 @@ public sealed class EmbeddingIndexTests(PostgresFixture postgres)
             new Dictionary<string, string?>(SecondProfile) { ["AI:ActiveEmbeddingProfile"] = "second" });
         (await SemanticSearchAsync(switched, "thieves enter dreams")).Items[0].Movie.Title.ShouldBe("Dream Thieves");
 
-        using var client = switched.CreateClient();
+        using var client = await switched.CreateAdminClientAsync();
         using var deleteOld = await client.DeleteAsync($"/api/admin/embeddings?model={LocalModel}", Ct);
         deleteOld.StatusCode.ShouldBe(HttpStatusCode.OK);
         (await deleteOld.Content.ReadFromJsonAsync<DeleteEmbeddingsResponse>(CatalogApiFixture.Json, Ct)).ShouldBe(new DeleteEmbeddingsResponse(LocalModel, 3));
@@ -142,7 +142,7 @@ public sealed class EmbeddingIndexTests(PostgresFixture postgres)
     public async Task Reindex_endpoint_queues_a_job_that_the_worker_runs()
     {
         await using var factory = await CreateCatalogAsync("emb_job");
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAdminClientAsync();
         await using var worker = await TestWorker.StartAsync(_connectionStrings[factory]);
 
         using var started = await client.PostAsJsonAsync("/api/admin/embeddings/reindex", new { onlyStale = true }, Ct);
@@ -167,7 +167,7 @@ public sealed class EmbeddingIndexTests(PostgresFixture postgres)
     public async Task Reindex_endpoint_validates_the_request(string body, string message)
     {
         await using var factory = new FilmSearchApiFactory(postgres);
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAdminClientAsync();
         using var content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
 
         using var response = await client.PostAsync("/api/admin/embeddings/reindex", content, Ct);
@@ -282,7 +282,7 @@ public sealed class EmbeddingIndexTests(PostgresFixture postgres)
 
     private static async Task<SearchResponse> SemanticSearchAsync(FilmSearchApiFactory factory, string query)
     {
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAdminClientAsync();
         using var response = await client.PostAsJsonAsync("/api/search", new { query, mode = "semantic" }, CatalogApiFixture.Json, Ct);
         if (!response.IsSuccessStatusCode)
         {

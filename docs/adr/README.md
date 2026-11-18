@@ -15,3 +15,4 @@ Template: [0000-template.md](0000-template.md).
 | [0007](0007-frontend-stack.md) | Frontend stack: npm, shadcn/ui + Tailwind, OpenAPI-generated client | Accepted |
 | [0008](0008-vector-storage-per-dimension.md) | Vector storage: one table, untyped vector column, partial HNSW index per dimension | Accepted |
 | [0009](0009-job-queue-in-postgresql.md) | Background jobs: a job table in PostgreSQL, claimed with SKIP LOCKED | Accepted |
+| [0010](0010-authentication-identity-cookie.md) | Authentication: ASP.NET Core Identity, own cookie endpoints, merge of anonymous data | Accepted |

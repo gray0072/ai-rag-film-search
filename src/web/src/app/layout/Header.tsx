@@ -7,6 +7,7 @@ import { useCart } from "@/features/cart/cart";
 import { ChatDrawer } from "@/features/chat/ChatDrawer";
 import { Input } from "@/components/ui/input";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { UserMenu } from "./UserMenu";
 
 export function Header() {
   const { t } = useTranslation();
@@ -65,6 +66,7 @@ export function Header() {
           {!onChatPage && <ChatDrawer />}
           <LanguageSwitcher />
           <CartLink />
+          <UserMenu />
         </div>
       </div>
     </header>
