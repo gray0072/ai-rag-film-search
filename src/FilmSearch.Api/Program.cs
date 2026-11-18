@@ -23,7 +23,12 @@ builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.AddValidation();
 builder.Services.ConfigureHttpJsonOptions(options =>
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    // Numbers are JSON numbers only (the web defaults also accept "12"): the OpenAPI document then types
+    // them as `integer` / `number`, not `integer | string`, and the generated TypeScript types are plain numbers.
+    options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+});
 builder.Services.AddOwnerContext();
 builder.Services.AddRequestLocales();
 builder.AddAiProviders();

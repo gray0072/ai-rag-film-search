@@ -1,6 +1,6 @@
 # 04 — API
 
-Base path: `/api`. JSON with camelCase. Errors: RFC 9457 Problem Details. The OpenAPI document is served at `/openapi/v1.json` in Development. Every API build also writes it to `src/web/openapi/v1.json` (committed), and the frontend generates its types from that file ([ADR-0007](../adr/0007-frontend-stack.md)).
+Base path: `/api`. JSON with camelCase; numbers are JSON numbers only (`"12"` in a body is a 400), so the OpenAPI document types them as plain `integer` / `number`. Errors: RFC 9457 Problem Details. The OpenAPI document is served at `/openapi/v1.json` in Development. Every API build also writes it to `src/web/openapi/v1.json` (committed), and the frontend generates its types from that file ([ADR-0007](../adr/0007-frontend-stack.md)).
 
 Owner identification: anonymous cookie `fs_sid` (HttpOnly, Secure, SameSite=Lax, 128 random bits as 32 hex chars, max-age 1 year; set on the first `/api` request) before auth; Identity cookie after I17. Every user-scoped endpoint resolves `OwnerId` from them.
 

@@ -60,3 +60,4 @@ Rules:
 | [S08](sessions/2026-11-17_S08_hybrid-query-understanding.md) | 2026-11-17 | I07 | Hybrid search and query understanding |
 | [S09](sessions/2026-11-17_S09_search-evaluation.md) | 2026-11-17 | I08 | Search evaluation harness |
 | [S10](sessions/2026-11-18_S10_cart-orders-fake-payment.md) | 2026-11-18 | I09 | Cart, orders, fake payment |
+| [S11](sessions/2026-11-18_S11_store-ui.md) | 2026-11-18 | I10 | Store UI: catalog, search, cart, checkout |

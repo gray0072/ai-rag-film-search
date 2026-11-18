@@ -2,23 +2,58 @@
   "app": {
     "name": "FilmSearch"
   },
+  "common": {
+    "loading": "Laddar…",
+    "errorTitle": "Något gick fel",
+    "errorGeneric": "Begäran misslyckades. Försök igen.",
+    "retry": "Försök igen"
+  },
   "nav": {
     "main": "Huvudnavigering",
     "catalog": "Katalog",
     "library": "Mitt bibliotek",
     "chat": "Assistent",
-    "cart": "Varukorg"
+    "cart": "Varukorg",
+    "cartWithItems": "Varukorg, artiklar: {{items}}"
   },
   "search": {
     "label": "Sök filmer",
     "placeholder": "Sök filmer, skådespelare, stämningar…",
-    "submit": "Sök"
+    "submit": "Sök",
+    "title": "Sök",
+    "enterQuery": "Skriv i sökrutan vad du vill se: en titel, en skådespelare eller en stämning, på svenska, engelska eller ryska.",
+    "resultsFor": "Resultat för ”{{query}}”",
+    "total": "Hittade filmer: {{total}}",
+    "searching": "Söker…",
+    "results": "Sökresultat",
+    "empty": "Inget hittades. Prova andra ord eller ta bort några filter.",
+    "degraded": "Semantisk sökning är inte tillgänglig just nu, så detta är bara resultat från nyckelord.",
+    "semanticUnavailable": "Semantisk sökning är inte tillgänglig just nu. Prova nyckelords- eller hybridläget.",
+    "understand": "Förstå frågan (AI)",
+    "understoodAs": "Söker efter ”{{query}}”.",
+    "understoodFallback": "Frågan kunde inte tolkas, så den söks som den är skriven.",
+    "similarTo": "Liknar: {{titles}}.",
+    "mode": {
+      "label": "Sökläge",
+      "hybrid": "Hybrid",
+      "keyword": "Nyckelord",
+      "semantic": "Semantisk"
+    },
+    "debug": {
+      "toggle": "Visa poäng",
+      "label": "Rankningspoäng",
+      "score": "poäng",
+      "keyword": "nyckelord",
+      "vector": "vektor",
+      "fused": "samlat"
+    }
   },
   "language": {
     "label": "Språk"
   },
   "footer": {
     "tmdbAttribution": "Denna produkt använder TMDB:s API men är inte godkänd eller certifierad av TMDB.",
+    "tmdbLink": "themoviedb.org",
     "apiLoading": "Ansluter till API:t…",
     "apiVersion": "API {{version}}",
     "apiUnavailable": "API:t är inte tillgängligt"
@@ -26,32 +61,150 @@
   "placeholder": {
     "comingIn": "Den här sidan är en platshållare. Den byggs i iteration {{iteration}}."
   },
-  "pages": {
-    "catalog": {
-      "title": "Katalog",
-      "description": "Bläddra bland filmer med filter för genre, år, betyg och pris."
-    },
-    "movie": {
-      "title": "Om filmen",
-      "description": "Film {{id}}: handling, skådespelare, erbjudanden och liknande filmer."
-    },
-    "search": {
-      "title": "Sök",
-      "description": "Nyckelords-, semantisk och hybridsökning i katalogen.",
-      "query": "Din sökning: ”{{query}}”"
-    },
-    "cart": {
-      "title": "Varukorg",
-      "description": "Filmer som du tänker köpa eller hyra."
-    },
-    "checkoutSuccess": {
+  "catalog": {
+    "title": "Katalog",
+    "total": "Filmer: {{total}}",
+    "empty": "Inga filmer matchar dessa filter.",
+    "results": "Filmer",
+    "sort": {
+      "label": "Sortera efter",
+      "popularity": "Popularitet",
+      "rating": "Betyg",
+      "year": "Nyast",
+      "title": "Titel"
+    }
+  },
+  "filters": {
+    "title": "Filter",
+    "genres": "Genrer",
+    "genresUnavailable": "Genrerna kunde inte laddas.",
+    "year": "År",
+    "from": "Från",
+    "to": "Till",
+    "minRating": "Betyg",
+    "any": "Alla",
+    "ratingAtLeast": "{{rating}} och högre",
+    "runtime": "Längd, minuter",
+    "language": "Originalspråk",
+    "priceMax": "Högsta pris, USD",
+    "offerType": "Erbjudande",
+    "apply": "Använd",
+    "reset": "Återställ",
+    "applied": "Valda filter",
+    "understood": "Hittat i din fråga",
+    "removeChip": "Ta bort filter: {{filter}}",
+    "chip": {
+      "excludeGenre": "Inte {{genre}}",
+      "yearFrom": "Från {{year}}",
+      "yearTo": "Till {{year}}",
+      "minRating": "Betyg {{rating}}+",
+      "runtimeMin": "Minst {{minutes}} min",
+      "runtimeMax": "Högst {{minutes}} min",
+      "priceMax": "Upp till {{price}}",
+      "language": "Språk: {{language}}"
+    }
+  },
+  "offer": {
+    "buy": "Köp",
+    "rent": "Hyr",
+    "priceFrom": "från {{price}}",
+    "buyFor": "Köp för {{price}}",
+    "rentFor": "Hyr i {{hours}} h, {{price}}",
+    "rentHours": "Hyr i {{hours}} h"
+  },
+  "movie": {
+    "posterAlt": "Affisch för {{title}}",
+    "noPoster": "Ingen affisch för {{title}}",
+    "ratingLabel": "Betyg {{rating}} av 10",
+    "rating": "{{rating}} / 10 ({{votes}} röster)",
+    "runtime": "{{minutes}} min",
+    "originalTitle": "Originaltitel: {{title}} ({{language}})",
+    "directors": "Regi",
+    "writers": "Manus",
+    "cast": "Medverkande",
+    "offers": "Titta",
+    "owned": "Filmen finns i ditt bibliotek.",
+    "rentedUntil": "Du hyr filmen till {{date}}.",
+    "noOffers": "Filmen säljs inte just nu.",
+    "inCart": "Filmen ligger i din varukorg.",
+    "goToCart": "Till varukorgen",
+    "similar": "Liknande filmer"
+  },
+  "pagination": {
+    "label": "Sidor",
+    "previous": "Föregående",
+    "next": "Nästa",
+    "status": "Sida {{page}} av {{pages}}"
+  },
+  "cart": {
+    "title": "Varukorg",
+    "empty": "Din varukorg är tom.",
+    "browse": "Bläddra i katalogen",
+    "items": "Artiklar i varukorgen",
+    "unavailableHint": "Vissa filmer säljs inte längre. Ta bort dem för att gå till kassan.",
+    "total": "Totalt:",
+    "checkout": "Gå till betalning",
+    "redirecting": "Öppnar betalningssidan…",
+    "fakePaymentNote": "Testbetalning: inga riktiga pengar dras.",
+    "addedByAssistant": "tillagd av assistenten",
+    "unavailable": "Säljs inte längre",
+    "remove": "Ta bort {{title}} från varukorgen"
+  },
+  "checkout": {
+    "title": "Betalning",
+    "orderNotFound": "Ordern hittades inte.",
+    "orderItems": "Orderns innehåll",
+    "backToCart": "Tillbaka till varukorgen",
+    "paid": {
       "title": "Tack!",
-      "description": "Din betalning bekräftas. Filmerna visas i ditt bibliotek så snart det är klart."
+      "description": "Betalningen är bekräftad. Dina filmer finns i ditt bibliotek.",
+      "toLibrary": "Till mitt bibliotek"
     },
-    "library": {
-      "title": "Mitt bibliotek",
-      "description": "Filmer som du har köpt eller hyrt."
+    "failed": {
+      "title": "Betalningen misslyckades",
+      "description": "Betalningen nekades. Du kan försöka igen; ordern sparas tills den löper ut.",
+      "retry": "Försök betala igen"
     },
+    "expired": {
+      "title": "Ordern har löpt ut",
+      "description": "Ordern betalades inte i tid. Din varukorg finns kvar: gå till kassan igen."
+    },
+    "refunded": {
+      "title": "Ordern har återbetalats"
+    },
+    "pending": {
+      "title": "Bekräftar betalningen…",
+      "description": "Vi väntar på att betalleverantören bekräftar betalningen. Det brukar ta några sekunder.",
+      "slow": "Det tar längre tid än vanligt. Du kan lämna sidan: filmerna dyker upp i ditt bibliotek så snart betalningen är bekräftad."
+    },
+    "cancelled": {
+      "title": "Betalningen avbröts",
+      "description": "Inga pengar drogs. Ordern sparas till {{date}}: du kan gå tillbaka till betalningen.",
+      "notPayable": "Inga pengar drogs. Ordern kan inte längre betalas; gå till kassan igen från varukorgen.",
+      "resume": "Tillbaka till betalningen"
+    }
+  },
+  "library": {
+    "title": "Mitt bibliotek",
+    "empty": "Du har inga filmer än.",
+    "items": "Dina filmer",
+    "owned": "Köpt",
+    "rental": "Hyrd",
+    "until": "Till {{date}}"
+  },
+  "errors": {
+    "commerce": {
+      "movieNotFound": "Filmen hittades inte.",
+      "offerNotAvailable": "Erbjudandet är inte längre tillgängligt.",
+      "alreadyOwned": "Du äger redan filmen.",
+      "alreadyRented": "Du hyr redan filmen.",
+      "cartEmpty": "Din varukorg är tom.",
+      "cartHasUnavailableItems": "Vissa filmer i varukorgen säljs inte längre. Ta bort dem först.",
+      "orderNotFound": "Ordern hittades inte.",
+      "orderNotPayable": "Ordern kan inte längre betalas. Gå till kassan igen från varukorgen."
+    }
+  },
+  "pages": {
     "chat": {
       "title": "Assistent",
       "description": "Be AI-assistenten hitta filmer, förklara sina val och hjälpa dig till kassan."

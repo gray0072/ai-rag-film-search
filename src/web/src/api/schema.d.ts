@@ -318,11 +318,11 @@ export interface components {
             model: string;
             text: string;
             /** Format: int64 */
-            inputTokens: number | string;
+            inputTokens: number;
             /** Format: int64 */
-            outputTokens: number | string;
+            outputTokens: number;
             /** Format: double */
-            estimatedCostUsd: null | number | string;
+            estimatedCostUsd: null | number;
         };
         /** @description Body of `POST /api/admin/embeddings/reindex`. */
         AdminReindexRequest: {
@@ -354,7 +354,7 @@ export interface components {
              * Format: int32
              * @description Release year.
              */
-            year: null | number | string;
+            year: null | number;
             /** @description TMDB poster path. */
             posterPath: null | string;
             /**
@@ -368,14 +368,14 @@ export interface components {
              * Format: int64
              * @description Current price of the offer in minor units.
              */
-            priceMinor: number | string;
+            priceMinor: number;
             /** @description ISO 4217 currency. */
             currency: string;
             /**
              * Format: int32
              * @description Rental period in hours (rent only).
              */
-            rentalHours: null | number | string;
+            rentalHours: null | number;
             /** @description Who added the line. */
             addedBy: components["schemas"]["CartItemSource"];
             /**
@@ -393,7 +393,7 @@ export interface components {
              * Format: int64
              * @description Sum of the available lines in minor units.
              */
-            totalMinor: number | string;
+            totalMinor: number;
             /** @description ISO 4217 currency of the total. */
             currency: string;
         };
@@ -420,14 +420,14 @@ export interface components {
         DeleteEmbeddingsResponse: {
             model: string;
             /** Format: int32 */
-            deleted: number | string;
+            deleted: number;
         };
         /** @description State of the embedding index: the active model and the stored vectors of every model. */
         EmbeddingIndexState: {
             activeProfile: string;
             activeModel: string;
             /** Format: int32 */
-            activeDimensions: number | string;
+            activeDimensions: number;
             sets: components["schemas"]["EmbeddingSetStats"][];
             job: null | components["schemas"]["EmbeddingJobStatus"];
         };
@@ -454,16 +454,16 @@ export interface components {
         EmbeddingSetStats: {
             model: string;
             /** Format: int32 */
-            dimensions: number | string;
+            dimensions: number;
             locale: string;
             /** Format: int32 */
-            count: number | string;
+            count: number;
         };
         /** @enum {unknown} */
         EntitlementType: "owned" | "rental";
         GenreItem: {
             /** Format: int32 */
-            id: number | string;
+            id: number;
             slug: string;
             name: string;
         };
@@ -471,7 +471,7 @@ export interface components {
             type?: null | string;
             title?: null | string;
             /** Format: int32 */
-            status?: null | number | string;
+            status?: null | number;
             detail?: null | string;
             instance?: null | string;
             errors?: {
@@ -490,7 +490,7 @@ export interface components {
              * Format: int32
              * @description Release year.
              */
-            year: null | number | string;
+            year: null | number;
             /** @description TMDB poster path. */
             posterPath: null | string;
             /** @description Owned or rental. */
@@ -515,7 +515,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: int32 */
-            tmdbId: null | number | string;
+            tmdbId: null | number;
             imdbId: null | string;
             title: string;
             originalTitle: string;
@@ -523,17 +523,17 @@ export interface components {
             /** Format: date */
             releaseDate: null | string;
             /** Format: int32 */
-            year: null | number | string;
+            year: null | number;
             /** Format: int32 */
-            runtimeMinutes: null | number | string;
+            runtimeMinutes: null | number;
             overview: null | string;
             tagline: null | string;
             posterPath: null | string;
             backdropPath: null | string;
             /** Format: double */
-            voteAverage: number | string;
+            voteAverage: number;
             /** Format: int32 */
-            voteCount: number | string;
+            voteCount: number;
             keywords: string[];
             genres: components["schemas"]["GenreItem"][];
             directors: components["schemas"]["PersonItem"][];
@@ -547,15 +547,15 @@ export interface components {
             title: string;
             originalTitle: string;
             /** Format: int32 */
-            year: null | number | string;
+            year: null | number;
             /** Format: int32 */
-            runtimeMinutes: null | number | string;
+            runtimeMinutes: null | number;
             overview: null | string;
             posterPath: null | string;
             /** Format: double */
-            voteAverage: number | string;
+            voteAverage: number;
             /** Format: int32 */
-            voteCount: number | string;
+            voteCount: number;
             genres: components["schemas"]["GenreItem"][];
             offers: components["schemas"]["OfferItem"][];
         };
@@ -564,10 +564,10 @@ export interface components {
             id: string;
             type: components["schemas"]["OfferType"];
             /** Format: int64 */
-            priceMinor: number | string;
+            priceMinor: number;
             currency: string;
             /** Format: int32 */
-            rentalHours: null | number | string;
+            rentalHours: null | number;
         };
         /** @enum {unknown} */
         OfferType: "buy" | "rent";
@@ -590,12 +590,12 @@ export interface components {
              * Format: int64
              * @description Price when the order was created, in minor units.
              */
-            priceMinor: number | string;
+            priceMinor: number;
             /**
              * Format: int32
              * @description Rental period in hours (rent only).
              */
-            rentalHours: null | number | string;
+            rentalHours: null | number;
         };
         /**
          * @description Where an order was created.
@@ -619,7 +619,7 @@ export interface components {
              * Format: int64
              * @description Total in minor units.
              */
-            totalMinor: number | string;
+            totalMinor: number;
             /** @description ISO 4217 currency. */
             currency: string;
             /**
@@ -645,11 +645,11 @@ export interface components {
         PagedResultOfMovieSummary: {
             items: components["schemas"]["MovieSummary"][];
             /** Format: int32 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            pageSize: number | string;
+            pageSize: number;
             /** Format: int32 */
-            total: number | string;
+            total: number;
         };
         PersonItem: {
             /** Format: uuid */
@@ -660,7 +660,7 @@ export interface components {
             type?: null | string;
             title?: null | string;
             /** Format: int32 */
-            status?: null | number | string;
+            status?: null | number;
             detail?: null | string;
             instance?: null | string;
         };
@@ -672,13 +672,13 @@ export interface components {
         /** @description Progress of a reindex: `Processed` of `Total` movie texts (movies × locales) checked so far. */
         ReindexProgress: {
             /** Format: int32 */
-            total: number | string;
+            total: number;
             /** Format: int32 */
-            processed: number | string;
+            processed: number;
             /** Format: int32 */
-            embedded: number | string;
+            embedded: number;
             /** Format: int32 */
-            unchanged: number | string;
+            unchanged: number;
         };
         /** @description What to (re)embed. `Profile`: embedding profile, the active one when null. `OnlyStale`: embed only movies whose text hash changed; false re-embeds everything. `Locales`: locales to keep vectors for, the configured ones when null; vectors of other locales of this model are deleted. */
         ReindexRequest: {
@@ -692,36 +692,36 @@ export interface components {
             profile: string;
             model: string;
             /** Format: int32 */
-            dimensions: number | string;
+            dimensions: number;
             locales: string[];
             /** Format: int32 */
-            movies: number | string;
+            movies: number;
             /** Format: int32 */
-            embedded: number | string;
+            embedded: number;
             /** Format: int32 */
-            unchanged: number | string;
+            unchanged: number;
             /** Format: int32 */
-            deleted: number | string;
+            deleted: number;
             /** Format: int64 */
-            elapsedMilliseconds: number | string;
+            elapsedMilliseconds: number;
         };
         /** @description Retrieval details of one item (spec 05 §4). Fields of retrievers that did not run are null. Ranks start at 1 and are positions in that retriever's list. */
         SearchDebug: {
             /** Format: int32 */
-            keywordRank?: null | number | string;
+            keywordRank?: null | number;
             /**
              * Format: double
              * @description `ts_rank_cd` over the best-matching text search config, normalized to 0–1.
              */
-            keywordScore?: null | number | string;
+            keywordScore?: null | number;
             /** @description `all`: every query term matched (`websearch_to_tsquery`). `any`: no movie matched all terms, so the query was relaxed to match any term. */
             keywordMatch?: null | string;
             /** Format: int32 */
-            vectorRank?: null | number | string;
+            vectorRank?: null | number;
             /** Format: double */
-            similarity?: null | number | string;
+            similarity?: null | number;
             /** Format: double */
-            fusedScore?: null | number | string;
+            fusedScore?: null | number;
         };
         /** @description Catalog filters in a JSON body (FR-SRCH-5). Same meaning and limits as the `GET /api/movies` query. */
         SearchFilters: {
@@ -730,22 +730,22 @@ export interface components {
             /** @description Genre slugs the movie must not have. */
             excludeGenres?: null | string[];
             /** Format: int32 */
-            yearFrom?: null | number | string;
+            yearFrom?: null | number;
             /** Format: int32 */
-            yearTo?: null | number | string;
+            yearTo?: null | number;
             /** Format: double */
-            minRating?: null | number | string;
+            minRating?: null | number;
             /** Format: int32 */
-            runtimeMin?: null | number | string;
+            runtimeMin?: null | number;
             /** Format: int32 */
-            runtimeMax?: null | number | string;
+            runtimeMax?: null | number;
             /** @description Original language, ISO 639-1 (e.g. `en`, `sv`). */
             language?: null | string;
             /**
              * Format: int64
              * @description Maximum price in minor units (cents).
              */
-            priceMax?: null | number | string;
+            priceMax?: null | number;
             offerType?: null | components["schemas"]["OfferType"];
         };
         SearchItem: {
@@ -755,7 +755,7 @@ export interface components {
              * Format: double
              * @description Score of the mode that produced the list: keyword rank score, similarity or fused score. Higher is better.
              */
-            score: number | string;
+            score: number;
             debug: null | components["schemas"]["SearchDebug"];
         };
         /** @enum {unknown} */
@@ -769,9 +769,9 @@ export interface components {
             /** @description Turn the free text into filters and a search text with the LLM first (FR-SRCH-4); explicit filters win over found ones. */
             understand?: boolean;
             /** Format: int32 */
-            page?: null | number | string;
+            page?: null | number;
             /** Format: int32 */
-            pageSize?: null | number | string;
+            pageSize?: null | number;
             /** @description Include per-item retrieval scores (`debug`). */
             debug?: boolean;
         };
@@ -784,17 +784,17 @@ export interface components {
              * Format: int32
              * @description Page number, starting at 1.
              */
-            page: number | string;
+            page: number;
             /**
              * Format: int32
              * @description Items per page.
              */
-            pageSize: number | string;
+            pageSize: number;
             /**
              * Format: int32
              * @description Number of matching movies (keyword), or length of the result list (semantic: at most 100; hybrid: union of the fused candidate lists).
              */
-            total: number | string;
+            total: number;
             understoodQuery?: null | components["schemas"]["UnderstoodQuery"];
             /**
              * @description Hybrid search returned keyword results only because the query could not be embedded.
@@ -804,15 +804,15 @@ export interface components {
         };
         SeedResult: {
             /** Format: int32 */
-            genres: number | string;
+            genres: number;
             /** Format: int32 */
-            created: number | string;
+            created: number;
             /** Format: int32 */
-            updated: number | string;
+            updated: number;
             /** Format: int32 */
-            unchanged: number | string;
+            unchanged: number;
             /** Format: int64 */
-            elapsedMilliseconds: number | string;
+            elapsedMilliseconds: number;
         };
         /** @description Filters found by query understanding. Null or empty means "not mentioned". */
         UnderstoodFilters: {
@@ -821,16 +821,16 @@ export interface components {
             /** @description Genre slugs the movie must not have. */
             genresExclude?: string[];
             /** Format: int32 */
-            yearFrom?: null | number | string;
+            yearFrom?: null | number;
             /** Format: int32 */
-            yearTo?: null | number | string;
+            yearTo?: null | number;
             /** Format: double */
-            minRating?: null | number | string;
+            minRating?: null | number;
             /**
              * Format: int64
              * @description Maximum price in minor units (cents).
              */
-            maxPriceMinor?: null | number | string;
+            maxPriceMinor?: null | number;
             /** @description Original language, ISO 639-1. */
             language?: null | string;
         };
@@ -894,7 +894,7 @@ export interface operations {
     GetSimilarMovies: {
         parameters: {
             query?: {
-                limit?: number | string;
+                limit?: number;
             };
             header?: never;
             path: {
@@ -974,17 +974,17 @@ export interface operations {
     ListMovies: {
         parameters: {
             query?: {
-                page?: number | string;
-                pageSize?: number | string;
+                page?: number;
+                pageSize?: number;
                 sort?: string;
                 genres?: string;
-                yearFrom?: number | string;
-                yearTo?: number | string;
-                minRating?: number | string;
-                runtimeMin?: number | string;
-                runtimeMax?: number | string;
+                yearFrom?: number;
+                yearTo?: number;
+                minRating?: number;
+                runtimeMin?: number;
+                runtimeMax?: number;
                 language?: string;
-                priceMax?: number | string;
+                priceMax?: number;
                 offerType?: string;
             };
             header?: never;

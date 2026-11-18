@@ -1,6 +1,7 @@
 import type { RouteObject } from "react-router";
 import { CartPage } from "@/pages/CartPage";
 import { CatalogPage } from "@/pages/CatalogPage";
+import { CheckoutCancelPage } from "@/pages/CheckoutCancelPage";
 import { ChatPage } from "@/pages/ChatPage";
 import { CheckoutSuccessPage } from "@/pages/CheckoutSuccessPage";
 import { LibraryPage } from "@/pages/LibraryPage";
@@ -18,6 +19,7 @@ export const routes: RouteObject[] = [
       { path: "search", element: <SearchPage /> },
       { path: "cart", element: <CartPage /> },
       { path: "checkout/success", element: <CheckoutSuccessPage /> },
+      { path: "checkout/cancel", element: <CheckoutCancelPage /> },
       { path: "library", element: <LibraryPage /> },
       { path: "chat", element: <ChatPage /> },
       { path: "*", element: <NotFoundPage /> },

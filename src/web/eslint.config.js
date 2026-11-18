@@ -31,6 +31,26 @@ export default defineConfig([
     },
   },
   {
+    // NFR-10: no hard-coded user-facing text. Letters in JSX text or in the text attributes below must
+    // come from the i18n resources (t("…")). Punctuation and separators (" · ", "(", "#") are allowed.
+    files: ["src/**/*.tsx"],
+    ignores: ["src/**/*.test.tsx", "src/test/**", "src/components/ui/**"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXText[value=/\\p{L}/u]",
+          message: "User-facing text goes to the i18n resources (en, ru, sv): use t().",
+        },
+        {
+          selector:
+            "JSXAttribute[name.name=/^(alt|title|placeholder|aria-label|aria-description)$/] > Literal[value=/\\p{L}/u]",
+          message: "User-facing text goes to the i18n resources (en, ru, sv): use t().",
+        },
+      ],
+    },
+  },
+  {
     // shadcn/ui components export variants next to the component (e.g. buttonVariants).
     files: ["src/components/ui/**/*.tsx"],
     rules: {

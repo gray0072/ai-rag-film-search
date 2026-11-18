@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -12,11 +13,18 @@ const apiUrl =
   process.env.services__api__http__0 ??
   "https://localhost:7180";
 
+// On Windows the working directory may have a lower-case drive letter (`d:\…`: the VS Code terminal,
+// a process started by Aspire). Vite canonicalizes its root to `D:\…` but not the alias, so modules
+// imported through "@/…" were served from `/@fs/d:/…` with a second copy of React ("Invalid hook call").
+// The real path (canonical casing) for both keeps a single module graph.
+const webRoot = fs.realpathSync.native(import.meta.dirname);
+
 export default defineConfig({
+  root: webRoot,
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "./src"),
+      "@": path.join(webRoot, "src"),
     },
   },
   server: {

@@ -3,6 +3,7 @@ import { useState, type SubmitEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, useNavigate, useSearchParams } from "react-router";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/features/cart/cart";
 import { Input } from "@/components/ui/input";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
@@ -66,13 +67,35 @@ export function Header() {
             </Link>
           </Button>
           <LanguageSwitcher />
-          <Button asChild variant="ghost" size="icon">
-            <Link to="/cart" aria-label={t("nav.cart")}>
-              <ShoppingCart aria-hidden />
-            </Link>
-          </Button>
+          <CartLink />
         </div>
       </div>
     </header>
+  );
+}
+
+/** The cart icon with the number of lines; the count is part of the link name for screen readers. */
+function CartLink() {
+  const { t } = useTranslation();
+  const cart = useCart();
+  const count = cart.data?.items.length ?? 0;
+
+  return (
+    <Button asChild variant="ghost" size="icon" className="relative">
+      <Link
+        to="/cart"
+        aria-label={count > 0 ? t("nav.cartWithItems", { items: count }) : t("nav.cart")}
+      >
+        <ShoppingCart aria-hidden />
+        {count > 0 && (
+          <span
+            aria-hidden
+            className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground"
+          >
+            {count}
+          </span>
+        )}
+      </Link>
+    </Button>
   );
 }

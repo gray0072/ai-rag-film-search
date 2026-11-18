@@ -56,9 +56,10 @@ describe("AppLayout", () => {
 
     // Server data is refetched in the new language.
     await waitFor(() => {
-      const languages = fetchMock.mock.calls.map(([request]) =>
-        request.headers.get("Accept-Language"),
-      );
+      const languages = fetchMock.mock.calls
+        .map(([request]) => request)
+        .filter((request) => new URL(request.url).pathname === "/api/info")
+        .map((request) => request.headers.get("Accept-Language"));
       expect(languages).toEqual(["en", "ru"]);
     });
   });
@@ -82,7 +83,9 @@ describe("AppLayout", () => {
 
     expect(router.state.location.pathname).toBe("/search");
     expect(router.state.location.search).toBe("?q=space+opera");
-    expect(screen.getByText("Your query: “space opera”")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Results for “space opera”" }),
+    ).toBeInTheDocument();
   });
 
   it("shows the not found page for an unknown route", () => {

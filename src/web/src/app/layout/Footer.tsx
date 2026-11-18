@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { api } from "@/api/client";
+import { tmdbSiteUrl } from "@/lib/tmdb";
 
 export function Footer() {
   const { t } = useTranslation();
@@ -7,8 +8,18 @@ export function Footer() {
   return (
     <footer className="border-t text-sm text-muted-foreground">
       <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* TMDB attribution (required by the TMDB terms); the TMDB logo is added with real data in I10. */}
-        <p>{t("footer.tmdbAttribution")}</p>
+        {/* TMDB attribution, required by the TMDB API terms for an app that shows TMDB data. */}
+        <p>
+          {t("footer.tmdbAttribution")}{" "}
+          <a
+            href={tmdbSiteUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium underline underline-offset-4"
+          >
+            {t("footer.tmdbLink")}
+          </a>
+        </p>
         <ApiStatus />
       </div>
     </footer>

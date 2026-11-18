@@ -17,7 +17,7 @@ public sealed class CommerceOptions
     public string SuccessUrl { get; set; } = "/checkout/success?orderId={orderId}";
 
     /// <summary>Where the provider sends the browser when the user cancels.</summary>
-    public string CancelUrl { get; set; } = "/cart";
+    public string CancelUrl { get; set; } = "/checkout/cancel?orderId={orderId}";
 
     public TimeSpan PaymentTimeout => TimeSpan.FromMinutes(PaymentTimeoutMinutes);
 }

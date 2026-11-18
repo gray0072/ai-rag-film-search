@@ -200,7 +200,7 @@ public sealed class CommerceApiTests(CommerceApiFixture fixture) : IClassFixture
     }
 
     [Fact]
-    public async Task Cancel_returns_to_the_cart_and_leaves_the_order_pending()
+    public async Task Cancel_returns_to_the_cancel_page_and_leaves_the_order_pending()
     {
         using var client = fixture.CreateClient();
         await AddToCartAsync(client, MovieOne, OfferType.Rent);
@@ -209,7 +209,7 @@ public sealed class CommerceApiTests(CommerceApiFixture fixture) : IClassFixture
 
         using var cancelled = await PressAsync(client, checkout.CheckoutUrl, "cancel");
 
-        cancelled.Headers.Location!.ToString().ShouldBe("/cart");
+        cancelled.Headers.Location!.ToString().ShouldBe($"/checkout/cancel?orderId={order.Id}");
         (await GetOrderAsync(client, order.Id)).Status.ShouldBe(OrderStatus.PendingPayment);
         (await client.GetFromJsonAsync<CartView>("/api/cart", Json, Ct))!.Items.ShouldHaveSingleItem();
     }

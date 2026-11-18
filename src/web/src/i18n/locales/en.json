@@ -2,23 +2,58 @@
   "app": {
     "name": "FilmSearch"
   },
+  "common": {
+    "loading": "Loading…",
+    "errorTitle": "Something went wrong",
+    "errorGeneric": "The request failed. Please try again.",
+    "retry": "Try again"
+  },
   "nav": {
     "main": "Main navigation",
     "catalog": "Catalog",
     "library": "My library",
     "chat": "Assistant",
-    "cart": "Cart"
+    "cart": "Cart",
+    "cartWithItems": "Cart, items: {{items}}"
   },
   "search": {
     "label": "Search movies",
     "placeholder": "Search movies, actors, moods…",
-    "submit": "Search"
+    "submit": "Search",
+    "title": "Search",
+    "enterQuery": "Type what you want to watch in the search box: a title, an actor or a mood, in English, Russian or Swedish.",
+    "resultsFor": "Results for “{{query}}”",
+    "total": "Movies found: {{total}}",
+    "searching": "Searching…",
+    "results": "Search results",
+    "empty": "Nothing found. Try other words or remove some filters.",
+    "degraded": "Semantic search is unavailable right now, so these are keyword results only.",
+    "semanticUnavailable": "Semantic search is unavailable right now. Try the keyword or hybrid mode.",
+    "understand": "Understand the query (AI)",
+    "understoodAs": "Searching for “{{query}}”.",
+    "understoodFallback": "The query could not be analyzed, so it is searched as typed.",
+    "similarTo": "Similar to: {{titles}}.",
+    "mode": {
+      "label": "Search mode",
+      "hybrid": "Hybrid",
+      "keyword": "Keyword",
+      "semantic": "Semantic"
+    },
+    "debug": {
+      "toggle": "Show scores",
+      "label": "Ranking scores",
+      "score": "score",
+      "keyword": "keyword",
+      "vector": "vector",
+      "fused": "fused"
+    }
   },
   "language": {
     "label": "Language"
   },
   "footer": {
     "tmdbAttribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "tmdbLink": "themoviedb.org",
     "apiLoading": "Connecting to the API…",
     "apiVersion": "API {{version}}",
     "apiUnavailable": "API unavailable"
@@ -26,32 +61,150 @@
   "placeholder": {
     "comingIn": "This page is a placeholder. It is built in iteration {{iteration}}."
   },
-  "pages": {
-    "catalog": {
-      "title": "Catalog",
-      "description": "Browse movies with filters by genre, year, rating and price."
-    },
-    "movie": {
-      "title": "Movie details",
-      "description": "Movie {{id}}: overview, cast, offers and similar movies."
-    },
-    "search": {
-      "title": "Search",
-      "description": "Keyword, semantic and hybrid search over the catalog.",
-      "query": "Your query: “{{query}}”"
-    },
-    "cart": {
-      "title": "Cart",
-      "description": "Movies you are about to buy or rent."
-    },
-    "checkoutSuccess": {
+  "catalog": {
+    "title": "Catalog",
+    "total": "Movies: {{total}}",
+    "empty": "No movies match these filters.",
+    "results": "Movies",
+    "sort": {
+      "label": "Sort by",
+      "popularity": "Popularity",
+      "rating": "Rating",
+      "year": "Newest",
+      "title": "Title"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "genres": "Genres",
+    "genresUnavailable": "Genres could not be loaded.",
+    "year": "Year",
+    "from": "From",
+    "to": "To",
+    "minRating": "Rating",
+    "any": "Any",
+    "ratingAtLeast": "{{rating}} and higher",
+    "runtime": "Runtime, minutes",
+    "language": "Original language",
+    "priceMax": "Max price, USD",
+    "offerType": "Offer",
+    "apply": "Apply",
+    "reset": "Reset",
+    "applied": "Applied filters",
+    "understood": "Found in your query",
+    "removeChip": "Remove filter: {{filter}}",
+    "chip": {
+      "excludeGenre": "Not {{genre}}",
+      "yearFrom": "From {{year}}",
+      "yearTo": "Until {{year}}",
+      "minRating": "Rating {{rating}}+",
+      "runtimeMin": "At least {{minutes}} min",
+      "runtimeMax": "At most {{minutes}} min",
+      "priceMax": "Up to {{price}}",
+      "language": "Language: {{language}}"
+    }
+  },
+  "offer": {
+    "buy": "Buy",
+    "rent": "Rent",
+    "priceFrom": "from {{price}}",
+    "buyFor": "Buy for {{price}}",
+    "rentFor": "Rent for {{hours}} h, {{price}}",
+    "rentHours": "Rent for {{hours}} h"
+  },
+  "movie": {
+    "posterAlt": "Poster of {{title}}",
+    "noPoster": "No poster for {{title}}",
+    "ratingLabel": "Rating {{rating}} of 10",
+    "rating": "{{rating}} / 10 ({{votes}} votes)",
+    "runtime": "{{minutes}} min",
+    "originalTitle": "Original title: {{title}} ({{language}})",
+    "directors": "Director",
+    "writers": "Writers",
+    "cast": "Cast",
+    "offers": "Watch",
+    "owned": "This movie is in your library.",
+    "rentedUntil": "You are renting this movie until {{date}}.",
+    "noOffers": "This movie is not for sale right now.",
+    "inCart": "This movie is in your cart.",
+    "goToCart": "Go to cart",
+    "similar": "Similar movies"
+  },
+  "pagination": {
+    "label": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "status": "Page {{page}} of {{pages}}"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty.",
+    "browse": "Browse the catalog",
+    "items": "Cart items",
+    "unavailableHint": "Some movies are no longer sold. Remove them to check out.",
+    "total": "Total:",
+    "checkout": "Go to payment",
+    "redirecting": "Opening the payment page…",
+    "fakePaymentNote": "Test payment: no real money is charged.",
+    "addedByAssistant": "added by the assistant",
+    "unavailable": "No longer sold",
+    "remove": "Remove {{title}} from the cart"
+  },
+  "checkout": {
+    "title": "Payment",
+    "orderNotFound": "This order was not found.",
+    "orderItems": "Order items",
+    "backToCart": "Back to cart",
+    "paid": {
       "title": "Thank you!",
-      "description": "Your payment is being confirmed. The movies appear in your library as soon as it is done."
+      "description": "The payment is confirmed. Your movies are in your library.",
+      "toLibrary": "Go to my library"
     },
-    "library": {
-      "title": "My library",
-      "description": "Movies you bought or rented."
+    "failed": {
+      "title": "The payment failed",
+      "description": "The payment was declined. You can try again; the order is kept until it expires.",
+      "retry": "Try to pay again"
     },
+    "expired": {
+      "title": "The order has expired",
+      "description": "The order was not paid in time. Your cart is still there: check out again."
+    },
+    "refunded": {
+      "title": "The order was refunded"
+    },
+    "pending": {
+      "title": "Confirming the payment…",
+      "description": "We are waiting for the payment provider to confirm the payment. This usually takes a few seconds.",
+      "slow": "This takes longer than usual. You can leave this page: the movies appear in your library as soon as the payment is confirmed."
+    },
+    "cancelled": {
+      "title": "Payment cancelled",
+      "description": "No money was charged. Your order is kept until {{date}}: you can return to the payment.",
+      "notPayable": "No money was charged. This order can no longer be paid; check out again from the cart.",
+      "resume": "Return to payment"
+    }
+  },
+  "library": {
+    "title": "My library",
+    "empty": "You have no movies yet.",
+    "items": "Your movies",
+    "owned": "Owned",
+    "rental": "Rental",
+    "until": "Until {{date}}"
+  },
+  "errors": {
+    "commerce": {
+      "movieNotFound": "This movie was not found.",
+      "offerNotAvailable": "This offer is no longer available.",
+      "alreadyOwned": "You already own this movie.",
+      "alreadyRented": "You are already renting this movie.",
+      "cartEmpty": "Your cart is empty.",
+      "cartHasUnavailableItems": "Some movies in your cart are no longer sold. Remove them first.",
+      "orderNotFound": "This order was not found.",
+      "orderNotPayable": "This order can no longer be paid. Check out again from the cart."
+    }
+  },
+  "pages": {
     "chat": {
       "title": "Assistant",
       "description": "Ask the AI assistant to find movies, explain its picks and help you check out."
