@@ -4,8 +4,8 @@ using FilmSearch.Core.Commerce;
 namespace FilmSearch.Core.Assistant;
 
 // Server-sent events of POST /api/chat/conversations/{id}/messages (spec 04 "SSE events"). Every event is written as
-// `event: <Type>` and `data: <json of the record>`. All types are defined now; cart.updated and
-// confirmation.required are used by the agent tools of I12.
+// `event: <Type>` and `data: <json of the record>`. cart.updated and confirmation.required come from the cart and
+// checkout tools (I12).
 
 /// <summary>An event of an assistant turn. The JSON data carries the event name as <c>type</c> (a discriminated union in the OpenAPI document).</summary>
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
@@ -75,8 +75,8 @@ public sealed record CartUpdatedEvent(CartView Cart) : AssistantEvent
     protected override string GetEventType() => Name;
 }
 
-/// <summary>The assistant asks the user to confirm an action (checkout, I12). Nothing is paid until the user confirms.</summary>
-public sealed record ConfirmationRequiredEvent(Guid ConfirmationId, string Kind, ConfirmationSummary Summary) : AssistantEvent
+/// <summary>The assistant asks the user to confirm an action (checkout, I12). Nothing is paid until the user confirms through the confirmations endpoint before <paramref name="ExpiresAt"/>.</summary>
+public sealed record ConfirmationRequiredEvent(Guid ConfirmationId, string Kind, ConfirmationSummary Summary, DateTimeOffset ExpiresAt) : AssistantEvent
 {
     public const string Name = "confirmation.required";
 

@@ -59,7 +59,8 @@ internal sealed class TurnState
 /// The agent loop (spec 06 §2, ADR-0006): stream a model answer with the tools; if it asks for tools, run them, append the
 /// results and ask again; stop when the model answers without tool calls. After <c>maxToolIterations</c> calls with tools,
 /// one last call without tools makes the model answer with what it found. Text is streamed as it comes; tool calls and
-/// their results become events and messages of the turn.
+/// their results become events (<c>tool.*</c>, <c>movies</c>, and the tool's own: <c>cart.updated</c>,
+/// <c>confirmation.required</c>) and messages of the turn.
 /// </summary>
 internal sealed partial class AgentLoop(
     IChatClient chat,
@@ -131,6 +132,8 @@ internal sealed partial class AgentLoop(
             messages.Add(round);
             state.ToolRounds.Add(round);
 
+            // Several calls in one response (parallel tool calls) run one after another, in the model's order: tools
+            // share the request's DbContext, and "add_to_cart, then request_checkout" must see the added line.
             foreach (var call in calls)
             {
                 emit(new ToolStartedEvent(call.CallId, call.Name, SummarizeArguments(call.Arguments)));
@@ -141,6 +144,11 @@ internal sealed partial class AgentLoop(
                 if (cards.Count > 0)
                 {
                     emit(new MoviesEvent(cards));
+                }
+
+                foreach (var item in outcome.Events)
+                {
+                    emit(item);
                 }
 
                 var result = new ChatMessage(ChatRole.Tool, [new FunctionResultContent(call.CallId, outcome.Result)]);

@@ -70,7 +70,7 @@ public sealed class SearchMoviesToolTests
         var item = json.RootElement.GetProperty("movies")[0];
         item.GetProperty("id").GetGuid().ShouldBe(movie.Id);
         item.GetProperty("rating").GetDecimal().ShouldBe(7.8m);
-        item.GetProperty("overview").GetString()!.Length.ShouldBeLessThanOrEqualTo(SearchMoviesTool.MaxOverviewLength);
+        item.GetProperty("overview").GetString()!.Length.ShouldBeLessThanOrEqualTo(ToolResults.MaxOverviewLength);
         item.GetProperty("overview").GetString()!.ShouldEndWith("…");
         item.GetProperty("offers").EnumerateArray().Select(o => o.GetString()).ShouldBe(["buy: 9.99 USD", "rent for 48 h: 3.99 USD"]);
         json.RootElement.TryGetProperty("notes", out _).ShouldBeFalse();
@@ -99,7 +99,7 @@ public sealed class SearchMoviesToolTests
     [Fact]
     public void Offer_prices_are_formatted_from_minor_units()
     {
-        SearchMoviesTool.FormatOffer(new OfferItem(Guid.Empty, OfferType.Buy, 1299, "USD", null)).ShouldBe("buy: 12.99 USD");
-        SearchMoviesTool.FormatOffer(new OfferItem(Guid.Empty, OfferType.Rent, 300, "USD", 72)).ShouldBe("rent for 72 h: 3.00 USD");
+        ToolResults.FormatOffer(new OfferItem(Guid.Empty, OfferType.Buy, 1299, "USD", null)).ShouldBe("buy: 12.99 USD");
+        ToolResults.FormatOffer(new OfferItem(Guid.Empty, OfferType.Rent, 300, "USD", 72)).ShouldBe("rent for 72 h: 3.00 USD");
     }
 }

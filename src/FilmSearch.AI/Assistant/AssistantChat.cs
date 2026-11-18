@@ -27,19 +27,20 @@ internal sealed class ConversationTurnLocks
 /// <summary>
 /// One assistant turn (spec 06): stores the user message, builds the context (system prompt, rolling summary, recent
 /// turns), runs <see cref="AgentLoop"/> with the tools, and stores the tool rounds and the answer with usage, cost, model,
-/// prompt version and movie cards. Failures end the stream with an <see cref="ErrorEvent"/>; tokens spent until then are
-/// still added to the conversation (NFR-5).
+/// prompt version and movie cards; then runs the grounding post-check. Failures end the stream with an
+/// <see cref="ErrorEvent"/>; tokens spent until then are still added to the conversation (NFR-5).
 /// </summary>
 internal sealed partial class AssistantChat(
     IConversationStore store,
     IChatClient chat,
-    SearchMoviesTool searchMovies,
+    IEnumerable<AssistantTool> tools,
     ConversationSummarizer summarizer,
     PromptLibrary prompts,
     ConversationTurnLocks locks,
     TimeProvider time,
     IOptions<AssistantOptions> options,
     IOptions<AiOptions> aiOptions,
+    AssistantMetrics metrics,
     ILogger<AssistantChat> logger) : IAssistantChat
 {
     public const string PromptName = "assistant-system";
@@ -180,17 +181,17 @@ internal sealed partial class AssistantChat(
             .. ConversationHistory.ToChatMessages(window),
             new(ChatRole.User, turn.Text),
         ];
-        AssistantTool[] tools = [searchMovies];
+        var toolList = tools.ToList();
         var declarations = new List<AITool>();
-        foreach (var tool in tools)
+        foreach (var tool in toolList)
         {
             declarations.Add(await tool.GetDeclarationAsync(cancellationToken));
         }
 
-        var loop = new AgentLoop(chat, tools, declarations, settings.MaxToolIterations, logger);
+        var loop = new AgentLoop(chat, toolList, declarations, settings.MaxToolIterations, logger);
         try
         {
-            await loop.RunAsync(messages, new ToolContext(conversation.Id, turn.Locale), turn.State, emit, cancellationToken);
+            await loop.RunAsync(messages, new ToolContext(conversation.Id, turn.Locale, answerId), turn.State, emit, cancellationToken);
         }
         catch (Exception ex) when (ex is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
         {
@@ -230,12 +231,37 @@ internal sealed partial class AssistantChat(
         await store.SaveChangesAsync(CancellationToken.None);
         turn.Saved = true;
 
+        var grounding = CheckGrounding(state, stored, messages[0].Text, turn.Text);
+        metrics.RecordGrounding(grounding, prompt.Id);
+        if (grounding.Unknown.Count > 0)
+        {
+            LogUngrounded(logger, conversation.Id, answerId, string.Join(" | ", grounding.Unknown));
+        }
+
+        activity?.SetTag("filmsearch.assistant.grounding.titles", grounding.Titles.Count);
+        activity?.SetTag("filmsearch.assistant.grounding.unknown", grounding.Unknown.Count);
         activity?.SetTag("filmsearch.assistant.model_calls", state.ModelCalls);
         activity?.SetTag("filmsearch.assistant.tool_calls", state.ToolRounds.Count(m => m.Role == ChatRole.Tool));
         activity?.SetTag("filmsearch.assistant.iteration_limit_hit", state.IterationLimitHit);
         LogAnswered(logger, conversation.Id, prompt.Id, model, state.ModelCalls, state.InputTokens, state.OutputTokens, latencyMs);
 
         emit(new MessageCompletedEvent(answerId, new TokenUsage(state.InputTokens, state.OutputTokens), model, latencyMs));
+    }
+
+    /// <summary>
+    /// Titles in the answer vs what the model was given: tool results of this turn and of the unsummarized history, the
+    /// system prompt with the rolling summary (it lists the movies of older turns; the prompt names UI labels such as the
+    /// payment button) and the user's messages.
+    /// </summary>
+    private static GroundingResult CheckGrounding(TurnState state, IReadOnlyList<ConversationMessage> history, string systemPrompt, string userText)
+    {
+        var references = history
+            .Where(m => m.Role is MessageRole.Tool or MessageRole.User)
+            .Select(m => m.Content)
+            .Concat(state.ToolRounds.SelectMany(m => m.Contents.OfType<FunctionResultContent>()).Select(r => r.Result as string ?? r.Result?.ToString() ?? ""))
+            .Append(systemPrompt)
+            .Append(userText);
+        return GroundingCheck.Check(state.Text.ToString(), references);
     }
 
     /// <summary>The rendered prompt, plus the rolling summary as a marked data block (it comes from user text, so rule 7 of the prompt applies).</summary>
@@ -312,6 +338,9 @@ internal sealed partial class AssistantChat(
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Conversation {ConversationId}: answered with prompt {PromptId}, model {Model}, {ModelCalls} model call(s), {InputTokens} input / {OutputTokens} output tokens, {LatencyMs} ms")]
     private static partial void LogAnswered(ILogger logger, Guid conversationId, string promptId, string model, int modelCalls, long inputTokens, long outputTokens, int latencyMs);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Conversation {ConversationId}: answer {MessageId} names movies that no tool returned: {Titles}")]
+    private static partial void LogUngrounded(ILogger logger, Guid conversationId, Guid messageId, string titles);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Conversation {ConversationId}: the client disconnected; the turn was cancelled")]
     private static partial void LogCancelled(ILogger logger, Guid conversationId);

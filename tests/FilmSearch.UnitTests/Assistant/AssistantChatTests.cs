@@ -82,8 +82,7 @@ public sealed class AssistantChatTests
 
         await _harness.SendAsync(conversation, "hello");
 
-        var tool = _harness.Chat.StreamRequests.Single().Options!.Tools!.OfType<AIFunctionDeclaration>().Single();
-        tool.Name.ShouldBe("search_movies");
+        var tool = _harness.Chat.StreamRequests.Single().Options!.Tools!.OfType<AIFunctionDeclaration>().Single(t => t.Name == "search_movies");
         var schema = tool.JsonSchema;
         schema.GetProperty("required").EnumerateArray().Select(e => e.GetString()).ShouldBe(["query"]);
         schema.GetProperty("properties").GetProperty("genresExclude").GetProperty("items").GetProperty("enum")

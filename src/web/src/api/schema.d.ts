@@ -270,8 +270,25 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Sends a message and streams the answer as server-sent events: message.started, message.delta, tool.started, tool.completed, movies, message.completed or error (spec 04). */
+        /** Sends a message and streams the answer as server-sent events: message.started, message.delta, tool.started, tool.completed, movies, cart.updated, confirmation.required, message.completed or error (spec 04). */
         post: operations["SendMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/chat/conversations/{id}/confirmations/{confirmationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The user's answer to a confirmation.required event. Approved: creates the order from the unchanged cart and the payment session and returns checkoutUrl; the model alone can never do this. */
+        post: operations["AnswerConfirmation"];
         delete?: never;
         options?: never;
         head?: never;
@@ -414,7 +431,7 @@ export interface components {
             type?: "cart.updated";
             cart: components["schemas"]["CartView"];
         };
-        /** @description The assistant asks the user to confirm an action (checkout, I12). Nothing is paid until the user confirms. */
+        /** @description The assistant asks the user to confirm an action (checkout, I12). Nothing is paid until the user confirms through the confirmations endpoint before ExpiresAt. */
         AssistantEventConfirmationRequiredEvent: {
             /** @enum {string} */
             type?: "confirmation.required";
@@ -422,6 +439,8 @@ export interface components {
             confirmationId: string;
             kind: string;
             summary: components["schemas"]["ConfirmationSummary"];
+            /** Format: date-time */
+            expiresAt: string;
         };
         /** @description The turn failed; the stream ends. Code is one of AssistantErrorCodes. */
         AssistantEventErrorEvent: {
@@ -556,12 +575,68 @@ export interface components {
              */
             expiresAt: string;
         };
+        /** @description Body of `POST /api/chat/conversations/{id}/confirmations/{confirmationId}`. */
+        ConfirmationAnswerRequest: {
+            /** @description true: go to payment; false: decline. */
+            approved: null | boolean;
+        };
+        /** @description Result of the user's answer to a confirmation. */
+        ConfirmationResult: {
+            /** @description approved or declined. */
+            status: components["schemas"]["ConfirmationStatus"];
+            /**
+             * Format: uuid
+             * @description The order created on approval.
+             */
+            orderId: null | string;
+            /** @description Hosted payment page to redirect the browser to (approved only). */
+            checkoutUrl: null | string;
+            /**
+             * Format: date-time
+             * @description The payment session and the unpaid order expire at this time (approved only).
+             */
+            expiresAt: null | string;
+        };
+        /**
+         * @description State of a confirmation. ConfirmationStatus.Expired is never stored: a pending confirmation past its expiry time is shown as expired.
+         * @enum {unknown}
+         */
+        ConfirmationStatus: "pending" | "approved" | "declined" | "superseded" | "expired";
         /** @description What the user confirms: the cart lines and the total computed by the server. */
         ConfirmationSummary: {
             items: components["schemas"]["CartLine"][];
             /** Format: int64 */
             totalMinor: number;
             currency: string;
+        };
+        /** @description A confirmation the assistant asked for. */
+        ConfirmationView: {
+            /**
+             * Format: uuid
+             * @description Confirmation id.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description The answer the confirmation belongs to.
+             */
+            messageId: string;
+            /** @description What is confirmed: checkout. */
+            kind: string;
+            /** @description pending, approved, declined, superseded (a newer one was requested) or expired. */
+            status: components["schemas"]["ConfirmationStatus"];
+            /** @description What the user confirms: cart lines and the total computed by the server. */
+            summary: components["schemas"]["ConfirmationSummary"];
+            /**
+             * Format: date-time
+             * @description The user can confirm until this time.
+             */
+            expiresAt: string;
+            /**
+             * Format: uuid
+             * @description The order created on approval.
+             */
+            orderId: null | string;
         };
         /** @description A conversation in the list. */
         ConversationListItem: {
@@ -761,6 +836,7 @@ export interface components {
              */
             latencyMs: null | number;
             feedback: null | components["schemas"]["FeedbackView"];
+            confirmation?: null | components["schemas"]["ConfirmationView"];
         };
         /** @description A movie shown next to an assistant message. Built from the catalog (prices from the DB), never from model text (FR-AST-3). */
         MovieCard: {
@@ -1693,6 +1769,51 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AnswerConfirmation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                confirmationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmationAnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfirmationResult"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
             };
         };
     };

@@ -1,9 +1,11 @@
+using System.Diagnostics.Metrics;
 using FilmSearch.AI.Assistant;
 using FilmSearch.AI.Assistant.Tools;
 using FilmSearch.AI.Prompts;
 using FilmSearch.AI.Providers;
 using FilmSearch.Core.Assistant;
 using FilmSearch.Core.Catalog;
+using FilmSearch.Core.Commerce;
 using FilmSearch.Core.Search;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,7 +14,7 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace FilmSearch.UnitTests.Assistant;
 
-/// <summary>Builds <see cref="AssistantChat"/> with fakes: a scripted model, an in-memory store, a fixed search result.</summary>
+/// <summary>Builds <see cref="AssistantChat"/> with fakes: a scripted model, an in-memory store, a fixed search result, an in-memory cart and confirmations.</summary>
 internal sealed class AssistantHarness
 {
     public const string Model = "test-model";
@@ -22,6 +24,14 @@ internal sealed class AssistantHarness
     public InMemoryConversationStore Store { get; } = new();
 
     public FakeMovieSearch Search { get; } = new();
+
+    public GenreCatalog Catalog { get; } = new();
+
+    public FakeCartService Cart { get; } = new();
+
+    public FakeCheckoutConfirmations Confirmations { get; }
+
+    public AssistantMetrics Metrics { get; } = new(new TestMeterFactory());
 
     public FakeTimeProvider Time { get; } = new(new DateTimeOffset(2026, 11, 18, 12, 0, 0, TimeSpan.Zero));
 
@@ -36,20 +46,38 @@ internal sealed class AssistantHarness
         Pricing = new(StringComparer.OrdinalIgnoreCase) { [Model] = new ModelPricing { InputPerMTokUsd = 1, OutputPerMTokUsd = 10 } },
     };
 
+    public AssistantHarness() => Confirmations = new FakeCheckoutConfirmations(Cart, Time);
+
+    /// <summary>All tools, in the order of the DI registration.</summary>
+    public IReadOnlyList<AssistantTool> CreateTools()
+    {
+        var options = Microsoft.Extensions.Options.Options.Create(Options);
+        return
+        [
+            new SearchMoviesTool(Search, Catalog, new MemoryCache(new MemoryCacheOptions()), options),
+            new GetMovieDetailsTool(Catalog),
+            new FindSimilarMoviesTool(Search, options),
+            new ViewCartTool(Cart),
+            new AddToCartTool(Cart),
+            new RemoveFromCartTool(Cart),
+            new RequestCheckoutTool(Confirmations, options),
+        ];
+    }
+
     public AssistantChat Create()
     {
         var options = Microsoft.Extensions.Options.Options.Create(Options);
-        var tool = new SearchMoviesTool(Search, new GenreCatalog(), new MemoryCache(new MemoryCacheOptions()), options);
         return new AssistantChat(
             Store,
             Chat,
-            tool,
+            CreateTools(),
             new ConversationSummarizer(new PromptLibrary(), options, NullLogger<ConversationSummarizer>.Instance),
             new PromptLibrary(),
             Locks,
             Time,
             options,
             Microsoft.Extensions.Options.Options.Create(Ai),
+            Metrics,
             NullLogger<AssistantChat>.Instance);
     }
 
@@ -194,13 +222,20 @@ internal sealed class FakeMovieSearch : IMovieSearch
         return Task.FromResult(new SearchResult(items, query.Page, query.PageSize, Results.Count));
     }
 
+    /// <summary>Neighbours by movie id for <see cref="FindSimilarAsync"/>; an unknown id is "not found".</summary>
+    public Dictionary<Guid, List<MovieSummary>> Similar { get; } = [];
+
     public Task<IReadOnlyList<SearchItem>?> FindSimilarAsync(Guid movieId, MovieFilter filter, string locale, int limit, CancellationToken cancellationToken) =>
-        throw new NotSupportedException();
+        Task.FromResult<IReadOnlyList<SearchItem>?>(Similar.TryGetValue(movieId, out var movies)
+            ? [.. movies.Take(limit).Select((m, i) => new SearchItem(m, 0.9 - (i * 0.1), null))]
+            : null);
 }
 
-/// <summary>A catalog that only knows three genres.</summary>
+/// <summary>A catalog that knows three genres and the movies of <see cref="Details"/>.</summary>
 internal sealed class GenreCatalog : ICatalogReader
 {
+    public Dictionary<Guid, MovieDetails> Details { get; } = [];
+
     public Task<IReadOnlyList<GenreItem>> ListGenresAsync(string locale, CancellationToken cancellationToken) =>
         Task.FromResult<IReadOnlyList<GenreItem>>([new(1, "science-fiction", "Science Fiction"), new(2, "horror", "Horror"), new(3, "comedy", "Comedy")]);
 
@@ -208,11 +243,108 @@ internal sealed class GenreCatalog : ICatalogReader
 
     public Task<IReadOnlyList<MovieSummary>> GetMoviesAsync(IReadOnlyList<Guid> ids, string locale, CancellationToken cancellationToken) => throw new NotSupportedException();
 
-    public Task<MovieDetails?> GetMovieAsync(Guid id, string locale, CancellationToken cancellationToken) => throw new NotSupportedException();
+    public Task<MovieDetails?> GetMovieAsync(Guid id, string locale, CancellationToken cancellationToken) => Task.FromResult(Details.GetValueOrDefault(id));
 
     public Task<IReadOnlyList<MovieDetails>> GetMovieDetailsAsync(IReadOnlyList<Guid> ids, string locale, CancellationToken cancellationToken) => throw new NotSupportedException();
 
     public Task<IReadOnlyList<Guid>> GetMovieIdsAsync(CancellationToken cancellationToken) => throw new NotSupportedException();
 
     public Task<bool> HasMoviesAsync(CancellationToken cancellationToken) => throw new NotSupportedException();
+}
+
+/// <summary>
+/// The cart of one owner in memory, with the rules of the real service that the tools must handle: unknown movie,
+/// missing offer, already owned; one line per movie.
+/// </summary>
+internal sealed class FakeCartService : ICartService
+{
+    public Dictionary<Guid, MovieSummary> Movies { get; } = [];
+
+    public HashSet<Guid> Owned { get; } = [];
+
+    public List<(MovieSummary Movie, OfferItem Offer, CartItemSource AddedBy)> Lines { get; } = [];
+
+    public void Know(params MovieSummary[] movies)
+    {
+        foreach (var movie in movies)
+        {
+            Movies[movie.Id] = movie;
+        }
+    }
+
+    public Task<CartView> GetAsync(string locale, CancellationToken cancellationToken) => Task.FromResult(View());
+
+    public Task<CartView> AddItemAsync(Guid movieId, OfferType offerType, CartItemSource addedBy, string locale, CancellationToken cancellationToken)
+    {
+        var movie = Movies.GetValueOrDefault(movieId) ?? throw new CommerceException(CommerceError.MovieNotFound, $"Movie {movieId} was not found.");
+        var offer = movie.Offers.FirstOrDefault(o => o.Type == offerType)
+            ?? throw new CommerceException(CommerceError.OfferNotAvailable, $"'{movie.Title}' cannot be {(offerType == OfferType.Rent ? "rented" : "bought")} now.");
+        if (Owned.Contains(movieId))
+        {
+            throw new CommerceException(CommerceError.AlreadyOwned, $"'{movie.Title}' is already in your library.");
+        }
+
+        Lines.RemoveAll(l => l.Movie.Id == movieId);
+        Lines.Add((movie, offer, addedBy));
+        return Task.FromResult(View());
+    }
+
+    public Task<CartView> RemoveItemAsync(Guid movieId, string locale, CancellationToken cancellationToken)
+    {
+        Lines.RemoveAll(l => l.Movie.Id == movieId);
+        return Task.FromResult(View());
+    }
+
+    public CartView View() => new(
+        [.. Lines.Select(l => new CartLine(
+            l.Movie.Id, l.Movie.Title, l.Movie.Year, l.Movie.PosterPath, l.Offer.Id, l.Offer.Type, l.Offer.PriceMinor, l.Offer.Currency, l.Offer.RentalHours, l.AddedBy, DateTimeOffset.UnixEpoch, true))],
+        Lines.Sum(l => l.Offer.PriceMinor),
+        "USD");
+}
+
+/// <summary>Confirmations in memory. <see cref="ResolveAsync"/> is not callable here: tools must never resolve a confirmation.</summary>
+internal sealed class FakeCheckoutConfirmations(FakeCartService cart, TimeProvider time) : ICheckoutConfirmations
+{
+    public List<(Guid ConversationId, Guid MessageId, TimeSpan ValidFor, ConfirmationView View)> Requests { get; } = [];
+
+    public Task<ConfirmationView> RequestAsync(Guid conversationId, Guid messageId, TimeSpan validFor, string locale, CancellationToken cancellationToken)
+    {
+        var view = cart.View();
+        if (view.Items.Count == 0)
+        {
+            throw new CommerceException(CommerceError.CartEmpty, "The cart is empty.");
+        }
+
+        var confirmation = new ConfirmationView(
+            Guid.CreateVersion7(), messageId, ConfirmationKinds.Checkout, ConfirmationStatus.Pending,
+            new ConfirmationSummary(view.Items, view.TotalMinor, view.Currency), time.GetUtcNow() + validFor, null);
+        Requests.Add((conversationId, messageId, validFor, confirmation));
+        return Task.FromResult(confirmation);
+    }
+
+    public Task<ConfirmationResult> ResolveAsync(Guid conversationId, Guid confirmationId, bool approved, string locale, CancellationToken cancellationToken) =>
+        throw new InvalidOperationException("A tool tried to resolve a confirmation: only the user's click may do that.");
+
+    public Task<IReadOnlyList<ConfirmationView>> ListAsync(Guid conversationId, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<ConfirmationView>>([.. Requests.Where(r => r.ConversationId == conversationId).Select(r => r.View)]);
+}
+
+internal sealed class TestMeterFactory : IMeterFactory
+{
+    private readonly List<Meter> _meters = [];
+
+    public Meter Create(MeterOptions options)
+    {
+        var meter = new Meter(options);
+        _meters.Add(meter);
+        return meter;
+    }
+
+    public void Dispose()
+    {
+        foreach (var meter in _meters)
+        {
+            meter.Dispose();
+        }
+    }
 }

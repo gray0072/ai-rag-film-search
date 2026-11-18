@@ -709,7 +709,7 @@
         "tags": [
           "Assistant"
         ],
-        "summary": "Sends a message and streams the answer as server-sent events: message.started, message.delta, tool.started, tool.completed, movies, message.completed or error (spec 04).",
+        "summary": "Sends a message and streams the answer as server-sent events: message.started, message.delta, tool.started, tool.completed, movies, cart.updated, confirmation.required, message.completed or error (spec 04).",
         "operationId": "SendMessage",
         "parameters": [
           {
@@ -748,6 +748,77 @@
           },
           "400": {
             "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/conversations/{id}/confirmations/{confirmationId}": {
+      "post": {
+        "tags": [
+          "Assistant"
+        ],
+        "summary": "The user's answer to a confirmation.required event. Approved: creates the order from the unchanged cart and the payment session and returns checkoutUrl; the model alone can never do this.",
+        "operationId": "AnswerConfirmation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "confirmationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmationAnswerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmationResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -1191,7 +1262,8 @@
         "required": [
           "confirmationId",
           "kind",
-          "summary"
+          "summary",
+          "expiresAt"
         ],
         "properties": {
           "type": {
@@ -1209,9 +1281,13 @@
           },
           "summary": {
             "$ref": "#/components/schemas/ConfirmationSummary"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
-        "description": "The assistant asks the user to confirm an action (checkout, I12). Nothing is paid until the user confirms."
+        "description": "The assistant asks the user to confirm an action (checkout, I12). Nothing is paid until the user confirms through the confirmations endpoint before ExpiresAt."
       },
       "AssistantEventErrorEvent": {
         "required": [
@@ -1532,6 +1608,71 @@
           }
         }
       },
+      "ConfirmationAnswerRequest": {
+        "required": [
+          "approved"
+        ],
+        "type": "object",
+        "properties": {
+          "approved": {
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "true: go to payment; false: decline."
+          }
+        },
+        "description": "Body of `POST /api/chat/conversations/{id}/confirmations/{confirmationId}`."
+      },
+      "ConfirmationResult": {
+        "required": [
+          "status",
+          "orderId",
+          "checkoutUrl",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "approved or declined.",
+            "$ref": "#/components/schemas/ConfirmationStatus"
+          },
+          "orderId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The order created on approval.",
+            "format": "uuid"
+          },
+          "checkoutUrl": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Hosted payment page to redirect the browser to (approved only)."
+          },
+          "expiresAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The payment session and the unpaid order expire at this time (approved only).",
+            "format": "date-time"
+          }
+        },
+        "description": "Result of the user's answer to a confirmation."
+      },
+      "ConfirmationStatus": {
+        "enum": [
+          "pending",
+          "approved",
+          "declined",
+          "superseded",
+          "expired"
+        ],
+        "description": "State of a confirmation. ConfirmationStatus.Expired is never stored: a pending confirmation past its expiry time is shown as expired."
+      },
       "ConfirmationSummary": {
         "required": [
           "items",
@@ -1555,6 +1696,56 @@
           }
         },
         "description": "What the user confirms: the cart lines and the total computed by the server."
+      },
+      "ConfirmationView": {
+        "required": [
+          "id",
+          "messageId",
+          "kind",
+          "status",
+          "summary",
+          "expiresAt",
+          "orderId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Confirmation id.",
+            "format": "uuid"
+          },
+          "messageId": {
+            "type": "string",
+            "description": "The answer the confirmation belongs to.",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "description": "What is confirmed: checkout."
+          },
+          "status": {
+            "description": "pending, approved, declined, superseded (a newer one was requested) or expired.",
+            "$ref": "#/components/schemas/ConfirmationStatus"
+          },
+          "summary": {
+            "description": "What the user confirms: cart lines and the total computed by the server.",
+            "$ref": "#/components/schemas/ConfirmationSummary"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "The user can confirm until this time.",
+            "format": "date-time"
+          },
+          "orderId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The order created on approval.",
+            "format": "uuid"
+          }
+        },
+        "description": "A confirmation the assistant asked for."
       },
       "ConversationListItem": {
         "required": [
@@ -2088,6 +2279,17 @@
               {
                 "description": "The owner's rating of the answer.",
                 "$ref": "#/components/schemas/FeedbackView"
+              }
+            ]
+          },
+          "confirmation": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "The latest confirmation the answer asked for (checkout button), with its current status.",
+                "$ref": "#/components/schemas/ConfirmationView"
               }
             ]
           }

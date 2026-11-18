@@ -52,3 +52,29 @@ POST {{api}}/api/chat/messages/00000000-0000-0000-0000-000000000000/feedback
 Content-Type: application/json
 
 { "rating": 1, "comment": "good picks" }
+
+### Scenario 3 (I12): recommend, then "take the second one, buy it" → add_to_cart + request_checkout
+# @name buyConversation
+POST {{api}}/api/chat/conversations
+Accept-Language: en
+
+###
+POST {{api}}/api/chat/conversations/{{buyConversation.response.body.id}}/messages
+Content-Type: application/json
+
+{ "text": "Want something for an evening with my wife, we liked Before Sunrise and La La Land." }
+
+###
+POST {{api}}/api/chat/conversations/{{buyConversation.response.body.id}}/messages
+Content-Type: application/json
+
+{ "text": "Take the second one, buy it." }
+
+### The cart has the movie (addedBy: assistant); no order exists yet
+GET {{api}}/api/orders
+
+### The user's click: confirmationId from the confirmation.required event → { status, orderId, checkoutUrl }
+POST {{api}}/api/chat/conversations/{{buyConversation.response.body.id}}/confirmations/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{ "approved": true }

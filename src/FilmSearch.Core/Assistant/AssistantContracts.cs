@@ -141,6 +141,7 @@ public sealed record ConversationView(
 /// <param name="Usage">Tokens and estimated cost of the answer.</param>
 /// <param name="LatencyMs">Time to the end of the answer.</param>
 /// <param name="Feedback">The owner's rating of the answer.</param>
+/// <param name="Confirmation">The latest confirmation the answer asked for (checkout button), with its current status.</param>
 public sealed record MessageView(
     Guid Id,
     MessageRole Role,
@@ -151,7 +152,8 @@ public sealed record MessageView(
     string? PromptVersion,
     UsageView? Usage,
     int? LatencyMs,
-    FeedbackView? Feedback);
+    FeedbackView? Feedback,
+    ConfirmationView? Confirmation = null);
 
 /// <summary>Token usage and estimated cost.</summary>
 /// <param name="InputTokens">Input (prompt) tokens.</param>

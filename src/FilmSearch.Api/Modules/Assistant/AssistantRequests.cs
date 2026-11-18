@@ -32,3 +32,11 @@ public sealed class MessageFeedbackRequest
     [StringLength(AssistantLimits.MaxFeedbackCommentLength)]
     public string? Comment { get; init; }
 }
+
+/// <summary>Body of <c>POST /api/chat/conversations/{id}/confirmations/{confirmationId}</c>.</summary>
+public sealed class ConfirmationAnswerRequest
+{
+    /// <summary>true: go to payment; false: decline.</summary>
+    [Required]
+    public bool? Approved { get; init; }
+}

@@ -23,6 +23,9 @@ public sealed class AssistantOptions
     /// <summary>Movies <c>search_movies</c> returns when the model does not set a limit (at most 10).</summary>
     public int SearchResultLimit { get; set; } = 6;
 
+    /// <summary>Minutes the user has to press the checkout button of a <c>request_checkout</c> confirmation.</summary>
+    public int ConfirmationTtlMinutes { get; set; } = 15;
+
     /// <summary>Output tokens of the rolling summary.</summary>
     public int SummaryMaxOutputTokens { get; set; } = 400;
 

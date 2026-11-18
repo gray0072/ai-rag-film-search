@@ -49,9 +49,9 @@ Commerce errors are Problem Details with a camelCase `code` extension (`Commerce
 |---|---|---|
 | POST | `/api/chat/conversations` | Create a conversation. Body optional: `{ locale? }` (`en`/`ru`/`sv`, default: the request locale; other values → 400) → 201 `{ id, title, locale, createdAt, updatedAt }`. |
 | GET | `/api/chat/conversations` | Owner's conversations, most recently updated first, at most 50: `[{ id, title, locale, createdAt, updatedAt }]`. |
-| GET | `/api/chat/conversations/{id}` | `{ id, title, locale, createdAt, updatedAt, usage: { inputTokens, outputTokens, estimatedCostUsd }, messages: [{ id, role: "user"\|"assistant", text, createdAt, movies: [MovieCard], model, promptVersion, usage, latencyMs, feedback: { rating, comment }? }] }`. Tool rounds are not listed. Cards are built from the catalog at read time (current prices). Another owner's conversation → 404. |
+| GET | `/api/chat/conversations/{id}` | `{ id, title, locale, createdAt, updatedAt, usage: { inputTokens, outputTokens, estimatedCostUsd }, messages: [{ id, role: "user"\|"assistant", text, createdAt, movies: [MovieCard], model, promptVersion, usage, latencyMs, feedback: { rating, comment }?, confirmation: Confirmation? }] }`; `confirmation` is the latest confirmation the answer asked for, with its current status (the UI shows the button or its final state after a reload). Tool rounds are not listed. Cards are built from the catalog at read time (current prices). Another owner's conversation → 404. |
 | POST | `/api/chat/conversations/{id}/messages` | `{ text }` (1–2000 chars after trim; else 400). 404 for an unknown or foreign conversation. Response: `text/event-stream` (see below). Movie texts in tool results and cards follow `Accept-Language` when the request has it, otherwise the conversation's `locale`; the answer language follows the user's message (FR-AST-7). |
-| POST | `/api/chat/conversations/{id}/confirmations/{confirmationId}` | `{ approved: bool }`. The user's answer to a confirmation request (checkout). Returns `{ checkoutUrl }` when approved. |
+| POST | `/api/chat/conversations/{id}/confirmations/{confirmationId}` | `{ approved: bool }` (I12). The user's answer to a `confirmation.required` event; the only way an assistant checkout creates an order (FR-AST-6). Approved: checks owner, state, expiry and that the cart fingerprint is unchanged, creates the order (source `assistant`, idempotency key of the confirmation) and the payment session → 200 `{ status: "approved", orderId, checkoutUrl, expiresAt }`; approving again returns the same session. Declined → 200 `{ status: "declined" }` (repeatable). 404 for an unknown or foreign conversation / confirmation (`confirmationNotFound`); 409 Problem Details with `code`: `cartChanged`, `confirmationExpired`, `confirmationNotPending` (declined, or superseded by a newer request), or a commerce code (`alreadyOwned`, `cartEmpty`, …). |
 | POST | `/api/chat/messages/{messageId}/feedback` | `{ rating: 1\|-1, comment? (≤ 1000) }` → 204; a new rating replaces the old one. 400 for another rating or a user message; 404 for an unknown or foreign message. |
 
 ### SSE events (`POST .../messages`)
@@ -66,11 +66,13 @@ Each event: `event: <type>` and `data: <json>`. The data also carries `type` (th
 | `tool.completed` | `{ callId, name, ok }` | Tool call finished. |
 | `movies` | `{ items: [MovieCard] }` | Movie cards to show next to the message. Built from tool results, not from LLM text. |
 | `cart.updated` | `{ cart }` | Cart changed through a tool. |
-| `confirmation.required` | `{ confirmationId, kind: "checkout", summary: { items, totalMinor, currency } }` | UI shows a confirmation button. |
+| `confirmation.required` | `{ confirmationId, kind: "checkout", summary: { items: [CartLine], totalMinor, currency }, expiresAt }` | UI shows the order and a **Go to payment** button; the click calls the confirmations endpoint before `expiresAt` (`Assistant:ConfirmationTtlMinutes`, 15). |
 | `message.completed` | `{ messageId, usage: { inputTokens, outputTokens }, model, latencyMs }` | End of answer. |
 | `error` | `{ code, message }` | Error. The stream ends. Codes: `providerUnavailable`, `conversationBusy` (another answer of the conversation is running), `budgetExceeded` (token budget of the conversation, NFR-5), `toolsNotSupported`, `internalError`. |
 
 `MovieCard`: `{ id, title, year, posterPath, genres: [name], rating, offers: [{ id, type, priceMinor, currency, rentalHours }], reason? }` (`posterPath` like the catalog: the UI builds the image URL; `reason` is reserved).
+
+`Confirmation`: `{ id, messageId, kind: "checkout", status: "pending"|"approved"|"declined"|"superseded"|"expired", summary: { items, totalMinor, currency }, expiresAt, orderId? }`.
 
 ## Admin (role `admin`; before auth: Development only)
 | Method | Path | Description |

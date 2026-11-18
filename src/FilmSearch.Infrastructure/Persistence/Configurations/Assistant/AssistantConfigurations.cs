@@ -68,3 +68,26 @@ internal sealed class MessageFeedbackConfiguration : IEntityTypeConfiguration<Me
         builder.Property(f => f.Comment).HasMaxLength(AssistantLimits.MaxFeedbackCommentLength);
     }
 }
+
+internal sealed class CheckoutConfirmationConfiguration : IEntityTypeConfiguration<CheckoutConfirmation>
+{
+    public void Configure(EntityTypeBuilder<CheckoutConfirmation> builder)
+    {
+        builder.ToTable("confirmations", AssistantSchema.Name);
+        builder.HasKey(c => c.Id);
+        builder.Property(c => c.Id).ValueGeneratedNever();
+        builder.Property(c => c.Kind).HasMaxLength(32);
+        builder.Property(c => c.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(c => c.CartHash).HasMaxLength(64);
+        builder.Property(c => c.SummaryJson).HasColumnType("jsonb");
+
+        // The confirmations of a conversation (history view, superseding older pending ones). No foreign key to the
+        // order: orders belong to the Commerce module.
+        builder.HasIndex(c => new { c.ConversationId, c.CreatedAt });
+
+        builder.HasOne<Conversation>()
+            .WithMany()
+            .HasForeignKey(c => c.ConversationId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}

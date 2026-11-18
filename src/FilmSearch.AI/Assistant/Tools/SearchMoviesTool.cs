@@ -1,6 +1,4 @@
 using System.ComponentModel;
-using System.Globalization;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using FilmSearch.Core.Assistant;
 using FilmSearch.Core.Catalog;
@@ -52,7 +50,6 @@ internal sealed class SearchMoviesTool(
 
     public const int MaxLimit = 10;
     public const int MaxQueryLength = 500;
-    public const int MaxOverviewLength = 300;
 
     private static readonly TimeSpan GenreCacheTime = TimeSpan.FromMinutes(10);
 
@@ -121,42 +118,11 @@ internal sealed class SearchMoviesTool(
 
         var payload = new
         {
-            movies = movies.Select(Compact),
+            movies = movies.Select(ToolResults.Movie),
             notes = notes.Count > 0 ? notes : null,
         };
 
-        return new ToolOutcome(JsonSerializer.Serialize(payload, ToolJson.Options), true, [.. movies.Select(MovieCard.From)]);
-    }
-
-    /// <summary>Only what the model needs to choose and explain; the overview is cut to keep the context small.</summary>
-    private static object Compact(MovieSummary movie) => new
-    {
-        id = movie.Id,
-        title = movie.Title,
-        year = movie.Year,
-        genres = movie.Genres.Select(g => g.Name),
-        rating = Math.Round(movie.VoteAverage, 1),
-        overview = Shorten(movie.Overview),
-        offers = movie.Offers.Select(FormatOffer),
-    };
-
-    internal static string FormatOffer(OfferItem offer)
-    {
-        var price = (offer.PriceMinor / 100m).ToString("0.00", CultureInfo.InvariantCulture);
-        return offer.Type == OfferType.Rent && offer.RentalHours is { } hours
-            ? $"rent for {hours.ToString(CultureInfo.InvariantCulture)} h: {price} {offer.Currency}"
-            : $"{offer.Type.ToString().ToLowerInvariant()}: {price} {offer.Currency}";
-    }
-
-    internal static string? Shorten(string? text)
-    {
-        if (string.IsNullOrWhiteSpace(text) || text.Length <= MaxOverviewLength)
-        {
-            return text;
-        }
-
-        var cut = text.LastIndexOf(' ', MaxOverviewLength - 1);
-        return string.Concat(text.AsSpan(0, cut > MaxOverviewLength / 2 ? cut : MaxOverviewLength - 1), "…");
+        return ToolOutcome.Success(payload, [.. movies.Select(MovieCard.From)]);
     }
 
     private static List<string> KnownGenres(IReadOnlyList<string>? requested, IReadOnlySet<string> known, List<string> notes)
