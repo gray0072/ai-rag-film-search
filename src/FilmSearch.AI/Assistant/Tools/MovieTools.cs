@@ -40,7 +40,7 @@ internal sealed class GetMovieDetailsTool(ICatalogReader catalog) : AssistantToo
     {
         if (arguments.MovieId == Guid.Empty)
         {
-            return ToolOutcome.Error("`movieId` is required: a movie id (uuid) from a tool result.");
+            return ToolOutcome.Error($"`movieId` is required: {MovieIdHint}.");
         }
 
         var movie = await catalog.GetMovieAsync(arguments.MovieId, context.Locale, cancellationToken);
@@ -91,7 +91,7 @@ internal sealed class FindSimilarMoviesTool(IMovieSearch search, IOptions<Assist
     {
         if (arguments.MovieId == Guid.Empty)
         {
-            return ToolOutcome.Error("`movieId` is required: a movie id (uuid) from a tool result.");
+            return ToolOutcome.Error($"`movieId` is required: {MovieIdHint}.");
         }
 
         var limit = Math.Clamp(arguments.Limit ?? options.Value.SearchResultLimit, 1, SearchMoviesTool.MaxLimit);

@@ -13,11 +13,16 @@ internal static class ToolResults
 {
     public const int MaxOverviewLength = 300;
 
-    /// <summary>A movie in a list (search, similar): the overview is cut to keep the context small.</summary>
+    /// <summary>
+    /// A movie in a list (search, similar): the overview is cut to keep the context small. The original title is added when
+    /// it differs: the model may use a well-known original title («Иван Васильевич меняет профессию», "Viskningar och
+    /// rop"), and the grounding check then finds it in the tool result (I14).
+    /// </summary>
     public static object Movie(MovieSummary movie) => new
     {
         id = movie.Id,
         title = movie.Title,
+        originalTitle = movie.OriginalTitle != movie.Title ? movie.OriginalTitle : null,
         year = movie.Year,
         genres = movie.Genres.Select(g => g.Name),
         rating = Math.Round(movie.VoteAverage, 1),

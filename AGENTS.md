@@ -126,13 +126,15 @@ dotnet run --project tools/ai-playground -- bench-chat --chat-model <id> --reaso
 dotnet run --project tools/ai-playground -- bench-embed --embedding-model <id> --query-prefix "..." --document-prefix "..."
 ```
 
-Evaluations (I08; Docker + LM Studio, a fresh pgvector container per run, see [evals/README.md](evals/README.md)):
+Evaluations (I08, I14; Docker + LM Studio, a fresh pgvector container per run, see [evals/README.md](evals/README.md)):
 
 ```bash
 dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name>                      # keyword, semantic, hybrid, hybrid+qu
 dotnet run --project evals/FilmSearch.Evals -- --suite search --label <name> --modes hybrid --set Search:Hybrid:RrfK=40
 dotnet run --project evals/FilmSearch.Evals -- --suite qu --label <name>                          # query understanding, --repeat 3
 dotnet run --project evals/FilmSearch.Evals -- --suite validate                                    # datasets vs seed (also a unit test)
+dotnet run --project evals/FilmSearch.Evals -- --suite assistant --label <name> --parallel 4 --judge-profile openrouter --judge-model openai/gpt-6-luna    # I14 scenarios
+dotnet run --project evals/FilmSearch.Evals -- --suite adversarial --label <name> --parallel 4 --judge-profile openrouter --judge-model openai/gpt-6-luna  # I14 adversarial
 ```
 
 Notes:
@@ -150,6 +152,7 @@ Notes:
 - `vite.config.ts` takes `root` and the `@` alias from `fs.realpathSync.native`: with a lower-case drive letter in the working directory Vite otherwise served `@/…` modules from `/@fs/d:/…` with a second copy of React (blank page, "Invalid hook call").
 - Assistant (I11) integration tests script streaming model calls with `Factory.Chat.ScriptStream(lastUserMessage, call1Contents, call2Contents…)`: one content array per model call of the turn (e.g. a `FunctionCallContent` for `search_movies`, then `TextContent` chunks); use a unique message text per test. SSE bodies are parsed with `AssistantApiTests.ParseEvents`. Unit tests of the agent loop use `AssistantHarness` (scripted model, in-memory store, fake search). Manual requests: `src/FilmSearch.Api/Assistant.http`.
 - Assistant tools (I12): unit tests build every tool with fakes (`AssistantHarness.CreateTools()`: in-memory cart, confirmations whose `ResolveAsync` throws). Integration tests of the sales flow (`AssistantCheckoutApiTests`) use a commerce fixture of their own and script the model's `add_to_cart` / `request_checkout` calls with `Chat.ScriptStream`; an order may exist only after `POST .../confirmations/{id}`.
+- Assistant evaluations (I14): `--suite assistant` / `--suite adversarial` play the cases through `IAssistantChat` with an `EvalOwnerContext` per case run (see evals/README.md). LM Studio shares one KV cache of the loaded context length between its parallel slots: with `--parallel 4` load the chat model with `lms load google/gemma-4-e4b -c 32768 --parallel 4 -y`, otherwise turns fail with "Context size has been exceeded" (`answered` check, error `providerUnavailable`). Do not build the solution while a run is going: the runner's DLLs are locked.
 - Testing Cyrillic or Swedish queries with `curl -d "..."` from Git Bash on Windows mangles the text; send a UTF-8 file (`--data-binary @query.json`) or use a script.
 - The AppHost Postgres container is named `filmsearch-postgres`, uses `ContainerLifetime.Persistent` and the named volume `filmsearch-postgres-data`: it keeps running after the AppHost stops. Its password is stored in the AppHost user secrets. To reset the DB: `docker rm -f filmsearch-postgres` and `docker volume rm filmsearch-postgres-data`.
 

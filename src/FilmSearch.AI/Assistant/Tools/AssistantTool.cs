@@ -103,7 +103,14 @@ internal abstract class AssistantTool<TArgs> : AssistantTool
     private static IEnumerable<string> RequiredProperties() =>
         BaseSchema.Value["required"] is JsonArray required ? required.Select(r => r!.GetValue<string>()) : [];
 
-    /// <summary>": one of buy, rent" for enums, ": a movie id (uuid) from a tool result" for ids.</summary>
+    /// <summary>
+    /// What a movie id argument must be. Small models pass a title or an IMDb id and then ask the user for "the id"
+    /// (I14 evaluation): the hint names the way to get one.
+    /// </summary>
+    internal const string MovieIdHint =
+        "a movie id (uuid) from a tool result. If you only know the title, call search_movies with the title first (for a movie in the cart: view_cart). Never ask the user for an id";
+
+    /// <summary>": one of buy, rent" for enums, <see cref="MovieIdHint"/> for ids.</summary>
     private static string Hint(string property)
     {
         if (BaseSchema.Value["properties"]?[property] is not JsonObject schema)
@@ -116,7 +123,7 @@ internal abstract class AssistantTool<TArgs> : AssistantTool
             return $": one of {string.Join(", ", values.Where(v => v is not null).Select(v => v!.ToString()))}";
         }
 
-        return schema["format"]?.GetValue<string>() == "uuid" ? ": a movie id (uuid) from a tool result" : "";
+        return schema["format"]?.GetValue<string>() == "uuid" ? ": " + MovieIdHint : "";
     }
 
     private static JsonObject CreateBaseSchema()

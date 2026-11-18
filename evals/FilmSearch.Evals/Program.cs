@@ -2,9 +2,15 @@ using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FilmSearch.AI.Assistant;
+using FilmSearch.AI.Providers;
+using FilmSearch.Evals.Assistant;
 using FilmSearch.Evals.Datasets;
 using FilmSearch.Evals.Reports;
 using FilmSearch.Evals.Suites;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace FilmSearch.Evals;
 
@@ -22,6 +28,10 @@ internal static class Program
 
     public static async Task<int> Main(string[] args)
     {
+        // Reports are committed: numbers look the same on every machine (1.5, not 1,5).
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
         if (args.Length == 0 || args[0] is "-h" or "--help" or "help")
         {
             Console.WriteLine(EvalOptions.Usage);
@@ -53,6 +63,7 @@ internal static class Program
         {
             EvalOptions.ValidateSuite => Validate(root, seed),
             EvalOptions.QuSuite => await RunQuAsync(options, root, seed, cts.Token),
+            EvalOptions.AssistantSuite or EvalOptions.AdversarialSuite => await RunAssistantAsync(options, root, seed, cts.Token),
             _ => await RunSearchAsync(options, root, seed, cts.Token),
         };
     }
@@ -61,7 +72,13 @@ internal static class Program
     {
         var search = DatasetLoader.Load<SearchCase>(Path.Combine(RepositoryPaths.Datasets(root), DatasetLoader.SearchFileName));
         var qu = DatasetLoader.Load<QuCase>(Path.Combine(RepositoryPaths.Datasets(root), DatasetLoader.QuFileName));
-        var errors = DatasetLoader.ValidateSearch(search.Cases, seed).Concat(DatasetLoader.ValidateQu(qu.Cases, seed)).ToList();
+        var scenarios = DatasetLoader.Load<AssistantCase>(Path.Combine(RepositoryPaths.Datasets(root), DatasetLoader.AssistantScenariosFileName));
+        var adversarial = DatasetLoader.Load<AssistantCase>(Path.Combine(RepositoryPaths.Datasets(root), DatasetLoader.AssistantAdversarialFileName));
+        var errors = DatasetLoader.ValidateSearch(search.Cases, seed)
+            .Concat(DatasetLoader.ValidateQu(qu.Cases, seed))
+            .Concat(DatasetLoader.ValidateAssistant(scenarios.Cases, seed, DatasetLoader.MinScenarioCases).Select(e => $"{DatasetLoader.AssistantScenariosFileName}: {e}"))
+            .Concat(DatasetLoader.ValidateAssistant(adversarial.Cases, seed, DatasetLoader.MinAdversarialCases).Select(e => $"{DatasetLoader.AssistantAdversarialFileName}: {e}"))
+            .ToList();
         foreach (var error in errors)
         {
             Console.Error.WriteLine(error);
@@ -69,6 +86,8 @@ internal static class Program
 
         Console.WriteLine($"{DatasetLoader.SearchFileName}: {search.Cases.Count} cases, version {search.Version}");
         Console.WriteLine($"{DatasetLoader.QuFileName}: {qu.Cases.Count} cases, version {qu.Version}");
+        Console.WriteLine($"{DatasetLoader.AssistantScenariosFileName}: {scenarios.Cases.Count} cases, version {scenarios.Version}");
+        Console.WriteLine($"{DatasetLoader.AssistantAdversarialFileName}: {adversarial.Cases.Count} cases, version {adversarial.Version}");
         Console.WriteLine(errors.Count == 0 ? "Datasets are valid." : $"{errors.Count} problem(s).");
         return errors.Count == 0 ? 0 : 1;
     }
@@ -118,6 +137,73 @@ internal static class Program
         header.Prompts = [.. results.SelectMany(r => r.Runs).Select(r => r.Understood.PromptVersion).OfType<string>().Distinct().Order()];
 
         await WriteReportAsync(options, root, header, QuReport.ToMarkdown(header, results), QuReport.ToJson(header, results), ct);
+        return 0;
+    }
+
+    private static async Task<int> RunAssistantAsync(EvalOptions options, string root, SeedCatalog seed, CancellationToken ct)
+    {
+        var adversarial = options.Suite == EvalOptions.AdversarialSuite;
+        var fileName = adversarial ? DatasetLoader.AssistantAdversarialFileName : DatasetLoader.AssistantScenariosFileName;
+        var minCases = adversarial ? DatasetLoader.MinAdversarialCases : DatasetLoader.MinScenarioCases;
+        var dataset = LoadValid<AssistantCase>(options, root, fileName, cases => DatasetLoader.ValidateAssistant(cases, seed, minCases));
+        if (dataset is null)
+        {
+            return 1;
+        }
+
+        var cases = dataset.Cases.Where(c => options.IncludesCase(c.Id)).ToList();
+        if (cases.Count == 0)
+        {
+            await Console.Error.WriteLineAsync($"No case matches --cases {string.Join(",", options.Cases)}.");
+            return 2;
+        }
+
+        // search_movies runs the hybrid search: the catalog and its vectors are needed.
+        await using var environment = await EvalEnvironment.StartAsync(options, root, ct);
+        await environment.PrepareCatalogAsync(ct);
+        await environment.PrepareEmbeddingsAsync(ct);
+        var tmdbIds = await environment.GetTmdbIdsAsync(ct);
+        var services = environment.Services;
+
+        AssistantJudge? judge = null;
+        if (!options.NoJudge)
+        {
+            judge = new AssistantJudge(services.GetRequiredKeyedService<IChatClient>(environment.JudgeProfile));
+        }
+
+        var header = RunHeader.Create(
+            options, environment, root, dataset.Path, dataset.Version, cases.Count, seed.GeneratedAt,
+            usesEmbeddings: true,
+            usesChat: true);
+        var ai = services.GetRequiredService<IOptions<AiOptions>>().Value;
+        var assistant = services.GetRequiredService<IOptions<AssistantOptions>>().Value;
+        header.AssistantParameters = new Dictionary<string, string>
+        {
+            ["Assistant:MaxToolIterations"] = assistant.MaxToolIterations.ToString(CultureInfo.InvariantCulture),
+            ["Assistant:SearchResultLimit"] = assistant.SearchResultLimit.ToString(CultureInfo.InvariantCulture),
+            ["Assistant:HistoryMaxMessages"] = assistant.HistoryMaxMessages.ToString(CultureInfo.InvariantCulture),
+            ["Assistant:HistoryTokenBudget"] = assistant.HistoryTokenBudget.ToString(CultureInfo.InvariantCulture),
+        };
+        if (judge is not null)
+        {
+            var judgeModel = ai.GetChatProfile(environment.JudgeProfile).Model;
+            header.Judge = $"profile `{environment.JudgeProfile}`: {judgeModel}; prompt `{judge.PromptId}`";
+        }
+
+        var results = await new AssistantSuite(services, tmdbIds, seed, judge, options.Parallel).RunAsync(cases, options.Repeat, ct);
+
+        // The prompt version is stored with every answer; the report names what actually ran.
+        await using (var scope = services.CreateAsyncScope())
+        {
+            var prompts = scope.ServiceProvider.GetRequiredService<FilmSearch.AI.Prompts.PromptLibrary>();
+            header.Prompts = [prompts.Get(AssistantChat.PromptName, assistant.PromptVersion).Id];
+        }
+
+        var turns = results.SelectMany(r => r.Runs).SelectMany(r => r.Turns).ToList();
+        var model = ai.GetChatProfile(ai.ActiveChatProfile).Model;
+        var cost = ai.FindPricing(model)?.Estimate(turns.Sum(t => t.InputTokens), turns.Sum(t => t.OutputTokens));
+
+        await WriteReportAsync(options, root, header, AssistantReport.ToMarkdown(header, results, cost), AssistantReport.ToJson(header, results), ct);
         return 0;
     }
 

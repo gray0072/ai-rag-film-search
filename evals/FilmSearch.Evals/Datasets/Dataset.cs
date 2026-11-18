@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using FilmSearch.Core.Assistant;
 using FilmSearch.Core.Ingestion;
 using FilmSearch.Core.Localization;
 
@@ -14,6 +16,13 @@ public static class DatasetLoader
 {
     public const string SearchFileName = "search.golden.jsonl";
     public const string QuFileName = "qu.golden.jsonl";
+    public const string AssistantScenariosFileName = "assistant.scenarios.jsonl";
+    public const string AssistantAdversarialFileName = "assistant.adversarial.jsonl";
+
+    /// <summary>Spec 09 §2: 25–40 scenarios, 15–25 adversarial cases; every locale is covered.</summary>
+    public const int MinScenarioCases = 25;
+    public const int MinAdversarialCases = 15;
+    public const int MinAssistantCasesPerLocale = 4;
 
     /// <summary>Spec 09 §2: at least this many search queries per language.</summary>
     public const int MinSearchCasesPerLocale = 25;
@@ -226,6 +235,150 @@ public static class DatasetLoader
             if (c.Tags.Count == 0)
             {
                 Error("tags are empty.");
+            }
+        }
+
+        return errors;
+    }
+
+    /// <summary>Problems of an assistant dataset (scenarios or adversarial), one line each; empty when it is valid.</summary>
+    public static IReadOnlyList<string> ValidateAssistant(IReadOnlyList<AssistantCase> cases, SeedCatalog seed, int minCases)
+    {
+        var errors = new List<string>();
+        foreach (var duplicate in cases.GroupBy(c => c.Id).Where(g => g.Count() > 1))
+        {
+            errors.Add($"{duplicate.Key}: duplicate id.");
+        }
+
+        foreach (var c in cases)
+        {
+            void Error(string message) => errors.Add($"{c.Id}: {message}");
+
+            if (string.IsNullOrWhiteSpace(c.Id))
+            {
+                errors.Add("A case has no id.");
+            }
+
+            if (!Locales.All.Contains(c.Locale))
+            {
+                Error($"locale '{c.Locale}' is not one of {string.Join(", ", Locales.All)}.");
+            }
+
+            if (c.Tags.Count == 0)
+            {
+                Error("tags are empty.");
+            }
+
+            foreach (var tag in c.Tags.Where(t => !AssistantTags.All.Contains(t)))
+            {
+                Error($"unknown tag '{tag}'.");
+            }
+
+            if (c.Turns.Count == 0)
+            {
+                Error("turns are empty.");
+            }
+
+            foreach (var line in c.Setup?.Cart ?? [])
+            {
+                if (!seed.Movies.ContainsKey(line.TmdbId))
+                {
+                    Error($"setup cart movie {line.TmdbId} is not in the seed.");
+                }
+
+                if (line.Offer is not ("buy" or "rent"))
+                {
+                    Error($"setup cart offer '{line.Offer}' is not buy or rent.");
+                }
+            }
+
+            if (c.Setup?.StoppedMessages?.Any(m => string.IsNullOrWhiteSpace(m) || m.Length > AssistantLimits.MaxMessageLength) == true)
+            {
+                Error($"setup stopped messages must be 1–{AssistantLimits.MaxMessageLength} characters.");
+            }
+
+            for (var i = 0; i < c.Turns.Count; i++)
+            {
+                var turn = c.Turns[i];
+                var number = i + 1;
+                void TurnError(string message) => Error($"turn {number}: {message}");
+
+                if (string.IsNullOrWhiteSpace(turn.User) || turn.User.Length > AssistantLimits.MaxMessageLength)
+                {
+                    TurnError($"user text must be 1–{AssistantLimits.MaxMessageLength} characters (the API limit).");
+                }
+
+                if (turn.Expect is not { } e)
+                {
+                    continue;
+                }
+
+                foreach (var tool in e.ToolsCalled.Concat(e.ToolsNotCalled).Where(t => t != AssistantToolNames.Any && !AssistantToolNames.All.Contains(t)))
+                {
+                    TurnError($"unknown tool '{tool}'.");
+                }
+
+                if (e.ToolsCalled.Intersect(e.ToolsNotCalled).Any() || (e.ToolsCalled.Count > 0 && e.ToolsNotCalled.Contains(AssistantToolNames.Any)))
+                {
+                    TurnError("a tool is both required and forbidden.");
+                }
+
+                var movies = e.MoviesAnyOf.Concat(e.Cart?.Contains ?? []).Concat(e.Cart?.NotContains ?? []);
+                foreach (var id in movies.Where(id => !seed.Movies.ContainsKey(id)))
+                {
+                    TurnError($"movie {id} is not in the seed.");
+                }
+
+                foreach (var genre in e.CardsExcludeGenres.Where(g => !seed.GenreSlugs.Contains(g)))
+                {
+                    TurnError($"genre '{genre}' is not a genre slug of the seed.");
+                }
+
+                if (e.MinCards > e.MaxCards)
+                {
+                    TurnError("minCards is greater than maxCards.");
+                }
+
+                if (e.CardsYearFrom > e.CardsYearTo)
+                {
+                    TurnError("cardsYearFrom is after cardsYearTo.");
+                }
+
+                if (e.Cart?.Offer is { } offer && offer is not ("buy" or "rent"))
+                {
+                    TurnError($"cart offer '{offer}' is not buy or rent.");
+                }
+
+                if (e.Language is { } language && language != "any" && !Locales.All.Contains(language))
+                {
+                    TurnError($"language '{language}' is not one of {string.Join(", ", Locales.All)} or any.");
+                }
+
+                foreach (var pattern in e.AnswerMatches.Concat(e.AnswerNotMatches))
+                {
+                    try
+                    {
+                        _ = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        TurnError($"pattern '{pattern}' is not a valid regular expression: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+        if (cases.Count < minCases)
+        {
+            errors.Add($"Only {cases.Count} cases; at least {minCases} are needed (spec 09 §2).");
+        }
+
+        foreach (var locale in Locales.All)
+        {
+            var count = cases.Count(c => c.Locale == locale);
+            if (count < MinAssistantCasesPerLocale)
+            {
+                errors.Add($"Only {count} cases in '{locale}'; at least {MinAssistantCasesPerLocale} are needed.");
             }
         }
 

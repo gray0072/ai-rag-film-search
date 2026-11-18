@@ -179,8 +179,8 @@ internal sealed partial class AssistantChat(
         [
             new(ChatRole.System, SystemPrompt(prompt, conversation.Summary, now)),
             .. ConversationHistory.ToChatMessages(window),
-            new(ChatRole.User, turn.Text),
         ];
+        ConversationHistory.AddUserMessage(messages, turn.Text);
         var toolList = tools.ToList();
         var declarations = new List<AITool>();
         foreach (var tool in toolList)

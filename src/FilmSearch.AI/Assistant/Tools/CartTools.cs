@@ -54,7 +54,7 @@ internal sealed class AddToCartTool(ICartService carts) : AssistantTool<AddToCar
     {
         if (arguments.MovieId == Guid.Empty)
         {
-            return ToolOutcome.Error("`movieId` is required: a movie id (uuid) from a tool result.");
+            return ToolOutcome.Error($"`movieId` is required: {MovieIdHint}.");
         }
 
         CartView cart;

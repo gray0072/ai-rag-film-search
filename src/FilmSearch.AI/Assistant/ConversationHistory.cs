@@ -51,19 +51,22 @@ internal static class ConversationHistory
         return (messages.Take(cut).ToList(), messages.Skip(cut).ToList());
     }
 
-    /// <summary>Stored messages of earlier turns as chat messages for the model.</summary>
+    /// <summary>
+    /// Stored messages of earlier turns as chat messages for the model. A user message without an answer (the user
+    /// pressed Stop, or the turn failed) is joined with the next user message: some chat templates (Gemma) require
+    /// user and assistant messages to alternate, and dropping it lost the context ("Recommend three thrillers…" →
+    /// Stop → "Just one, please." became a request without a topic; I14 case <c>en-real-just-one-after-stop</c>).
+    /// Add the new message of the turn with <see cref="AddUserMessage"/>, so it is joined the same way.
+    /// </summary>
     public static List<ChatMessage> ToChatMessages(IReadOnlyList<ConversationMessage> messages)
     {
         var result = new List<ChatMessage>(messages.Count);
-        for (var i = 0; i < messages.Count; i++)
+        foreach (var message in messages)
         {
-            var message = messages[i];
             switch (message.Role)
             {
-                // A user message without an answer (the turn failed or was cancelled) is left out: some chat templates
-                // (Gemma) require user and assistant messages to alternate.
-                case MessageRole.User when i + 1 < messages.Count && messages[i + 1].Role != MessageRole.User:
-                    result.Add(new ChatMessage(ChatRole.User, message.Content));
+                case MessageRole.User:
+                    AddUserMessage(result, message.Content);
                     break;
                 case MessageRole.Assistant when message.ToolCallsJson is not null:
                     // The text of a tool round is also part of the answer of the turn, so only the calls are sent.
@@ -79,6 +82,18 @@ internal static class ConversationHistory
         }
 
         return result;
+    }
+
+    /// <summary>Adds a user message, or joins it to the last message when that is a user message without an answer.</summary>
+    public static void AddUserMessage(List<ChatMessage> messages, string text)
+    {
+        if (messages.Count > 0 && messages[^1].Role == ChatRole.User)
+        {
+            messages[^1] = new ChatMessage(ChatRole.User, $"{messages[^1].Text}\n\n{text}");
+            return;
+        }
+
+        messages.Add(new ChatMessage(ChatRole.User, text));
     }
 
     /// <summary>Earlier tool results: movies cut to id, title and year; other results as they are, up to 1000 characters.</summary>

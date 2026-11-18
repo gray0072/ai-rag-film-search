@@ -28,6 +28,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The judge prompt of the assistant suite (I14): versioned like the product prompts, loaded by FilmSearch.AI's
+         PromptLibrary, which reads resources under this fixed name prefix. -->
+    <EmbeddedResource Include="Prompts\*.v*.md" LogicalName="FilmSearch.AI.Prompts.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="FilmSearch.UnitTests" />
   </ItemGroup>
 

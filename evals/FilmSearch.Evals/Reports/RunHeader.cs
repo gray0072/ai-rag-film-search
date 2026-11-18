@@ -59,6 +59,12 @@ public sealed record RunHeader
 
     public IReadOnlyDictionary<string, string> Overrides { get; init; } = new Dictionary<string, string>();
 
+    /// <summary>Assistant options in effect (assistant suites).</summary>
+    public IReadOnlyDictionary<string, string> AssistantParameters { get; set; } = new Dictionary<string, string>();
+
+    /// <summary>Judge profile, model and prompt (assistant suites); null when the judge is off.</summary>
+    public string? Judge { get; set; }
+
     public static RunHeader Create(
         EvalOptions options,
         EvalEnvironment environment,
@@ -146,6 +152,16 @@ public sealed record RunHeader
         if (SearchParameters.Count > 0)
         {
             Row("Search parameters", string.Join(", ", SearchParameters.Select(p => $"`{p.Key.Replace("Search:", "", StringComparison.Ordinal)}={p.Value}`")));
+        }
+
+        if (AssistantParameters.Count > 0)
+        {
+            Row("Assistant parameters", string.Join(", ", AssistantParameters.Select(p => $"`{p.Key.Replace("Assistant:", "", StringComparison.Ordinal)}={p.Value}`")));
+        }
+
+        if (Judge is not null)
+        {
+            Row("Judge", Judge);
         }
 
         if (Overrides.Count > 0)

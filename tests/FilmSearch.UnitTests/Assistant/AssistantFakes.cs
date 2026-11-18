@@ -31,7 +31,12 @@ internal sealed class AssistantHarness
 
     public FakeCheckoutConfirmations Confirmations { get; }
 
-    public AssistantMetrics Metrics { get; } = new(new TestMeterFactory());
+    private AssistantMetrics? _metrics;
+
+    /// <summary>Meters of this harness only: a metric test must not see measurements of tests running in parallel.</summary>
+    public TestMeterFactory MeterFactory { get; } = new();
+
+    public AssistantMetrics Metrics => _metrics ??= new AssistantMetrics(MeterFactory);
 
     public FakeTimeProvider Time { get; } = new(new DateTimeOffset(2026, 11, 18, 12, 0, 0, TimeSpan.Zero));
 
@@ -332,6 +337,8 @@ internal sealed class FakeCheckoutConfirmations(FakeCartService cart, TimeProvid
 internal sealed class TestMeterFactory : IMeterFactory
 {
     private readonly List<Meter> _meters = [];
+
+    public bool Owns(Meter meter) => _meters.Contains(meter);
 
     public Meter Create(MeterOptions options)
     {

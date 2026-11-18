@@ -20,8 +20,16 @@ internal sealed record GroundingResult(IReadOnlyList<string> Titles, IReadOnlyLi
 /// normalization (case, diacritics, punctuation, a trailing year), it appears as whole words in the reference texts:
 /// tool results of this turn and earlier ones, the system prompt with the rolling summary, and the user's messages (the
 /// user may name a movie that is not in the catalog, and the answer may repeat it). Known gaps: titles written without
-/// markup are missed; a short bold word that occurs in an overview counts as grounded; an inflected title (Russian
-/// «Ла-Ла Ленде» for «Ла-Ла Ленд») counts as unknown. I14 measures it on the evaluation set.
+/// markup are missed; a short bold word that occurs in an overview counts as grounded.
+/// </para>
+/// <para>
+/// Tuned on the I14 evaluation: a bold span that starts with a lower-case letter is emphasis («детская», «взрослая»), not
+/// a title, and is skipped, like a runtime (**148 minutes**); a Cyrillic candidate is also grounded when every word of
+/// it shares a prefix with a word of one reference text (all letters but the last two of the shorter word, at least
+/// three), so an inflected title («Матрицей», «Ла-Ла Ленде» for «Матрица», «Ла-Ла Ленд») counts as grounded. Original
+/// titles are in the tool results (<c>originalTitle</c>), so «Иван Васильевич меняет профессию» for the English title
+/// is grounded too. Gaps: a title that starts with a lower-case letter (mother!) is missed; a transliterated name
+/// («Фрэнсис Форд Коппола» for "Francis Ford Coppola") counts as unknown.
 /// </para>
 /// </summary>
 internal static partial class GroundingCheck
@@ -31,7 +39,9 @@ internal static partial class GroundingCheck
 
     public static GroundingResult Check(string answer, IEnumerable<string> references)
     {
-        var haystack = " " + string.Join(" | ", references.Select(Normalize)) + " ";
+        var normalizedReferences = references.Select(Normalize).ToList();
+        var haystack = " " + string.Join(" | ", normalizedReferences) + " ";
+        List<string[]>? referenceWords = null;
         var titles = new List<string>();
         var unknown = new List<string>();
 
@@ -44,7 +54,9 @@ internal static partial class GroundingCheck
 
             titles.Add(candidate);
             var normalized = Normalize(candidate);
-            if (normalized.Length > 0 && !haystack.Contains($" {normalized} ", StringComparison.Ordinal))
+            if (normalized.Length > 0
+                && !haystack.Contains($" {normalized} ", StringComparison.Ordinal)
+                && !(normalized.Any(IsCyrillic) && MatchesInflected(normalized, referenceWords ??= [.. normalizedReferences.Select(r => r.Split(' '))])))
             {
                 unknown.Add(candidate);
             }
@@ -62,8 +74,8 @@ internal static partial class GroundingCheck
                 : match.Groups["curly"].Success ? match.Groups["curly"]
                 : match.Groups["swedish"]).Value.Trim();
 
-            // A label such as **Total:** or **Why it fits:**.
-            if (text.EndsWith(':'))
+            // A label such as **Total:** or **Why it fits:**, or emphasis such as **детская** (titles start with a capital).
+            if (text.EndsWith(':') || (text.Length > 0 && char.IsLower(text[0])))
             {
                 continue;
             }
@@ -73,7 +85,8 @@ internal static partial class GroundingCheck
                 || text.Length > MaxCandidateLength
                 || !text.Any(char.IsLetter)
                 || text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > MaxCandidateWords
-                || Price().IsMatch(text))
+                || Price().IsMatch(text)
+                || Runtime().IsMatch(text))
             {
                 continue;
             }
@@ -81,6 +94,32 @@ internal static partial class GroundingCheck
             yield return text;
         }
     }
+
+    /// <summary>Every word of the candidate has a word with the same stem in one reference text (Russian inflection).</summary>
+    private static bool MatchesInflected(string normalized, List<string[]> references)
+    {
+        var words = normalized.Split(' ');
+        return references.Any(reference => words.All(w => reference.Any(r => SameStem(w, r))));
+    }
+
+    /// <summary>Same word up to the ending: a common prefix of all but the last two letters of the shorter word, at least three.</summary>
+    internal static bool SameStem(string a, string b)
+    {
+        if (a == b)
+        {
+            return true;
+        }
+
+        var common = 0;
+        while (common < a.Length && common < b.Length && a[common] == b[common])
+        {
+            common++;
+        }
+
+        return common >= Math.Max(3, Math.Min(a.Length, b.Length) - 2);
+    }
+
+    private static bool IsCyrillic(char c) => c is >= '\u0400' and <= '\u04FF';
 
     /// <summary>Lower case, no diacritics (ё → е, é → e), letters and digits only, single spaces.</summary>
     internal static string Normalize(string text)
@@ -119,6 +158,9 @@ internal static partial class GroundingCheck
 
     [GeneratedRegex(@"\d+[.,]\d{2}")]
     private static partial Regex Price();
+
+    [GeneratedRegex(@"^\d+\s*(min\w*|minut\w*|минут\w*|мин\.?|h|hours?|ч\.?|час\w*|tim\w*)$", RegexOptions.IgnoreCase)]
+    private static partial Regex Runtime();
 }
 
 /// <summary>Metrics of the assistant (meter <c>FilmSearch</c>, spec 10 §3).</summary>

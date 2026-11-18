@@ -65,3 +65,4 @@ Rules:
 | [S13](sessions/2026-11-18_S13_chat-foundation.md) | 2026-11-18 | I11 | Chat foundation: conversations, streaming, grounded answers |
 | [S14](sessions/2026-11-18_S14_agent-tools.md) | 2026-11-18 | I12 | Agent: tools, cart, checkout confirmation |
 | [S15](sessions/2026-11-18_S15_chat-ui.md) | 2026-11-18 | I13 | Chat UI |
+| [S16](sessions/2026-11-18_S16_assistant-eval-guardrails.md) | 2026-11-18 | I14 | Assistant evaluation and guardrails |

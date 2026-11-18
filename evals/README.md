@@ -7,6 +7,9 @@ Numbers for every change to search and AI behavior (spec [09 Evaluation](../docs
 | [FilmSearch.Evals](FilmSearch.Evals/) | Runner: a suite over a golden dataset, with the API's configuration and DI registrations |
 | [datasets/search.golden.jsonl](datasets/search.golden.jsonl) | Search golden set: queries in en / ru / sv with relevant movies (TMDB ids) |
 | [datasets/qu.golden.jsonl](datasets/qu.golden.jsonl) | Query understanding golden set: queries with the expected filters |
+| [datasets/assistant.scenarios.jsonl](datasets/assistant.scenarios.jsonl) | Assistant scenarios: multi-turn conversations with expectations per turn (I14) |
+| [datasets/assistant.adversarial.jsonl](datasets/assistant.adversarial.jsonl) | Assistant adversarial set: injection, off-topic, prices, payment without the button, long input (I14) |
+| [FilmSearch.Evals/Prompts](FilmSearch.Evals/Prompts/) | Versioned rubric prompt of the LLM judge (`assistant-judge.vN.md`) |
 | [reports/](reports/) | Committed reports (markdown + raw JSON): the history of quality |
 
 ## Run
@@ -19,6 +22,9 @@ dotnet run --project evals/FilmSearch.Evals -- --suite validate                 
 dotnet run --project evals/FilmSearch.Evals -- --suite search --label baseline      # keyword, semantic, hybrid, hybrid+qu
 dotnet run --project evals/FilmSearch.Evals -- --suite search --label rrf-k20 --modes hybrid --set Search:Hybrid:RrfK=20
 dotnet run --project evals/FilmSearch.Evals -- --suite qu --label baseline          # --repeat 3 by default
+dotnet run --project evals/FilmSearch.Evals -- --suite assistant --label gemma-e4b-v2 --parallel 4 --judge-profile openrouter --judge-model openai/gpt-6-luna
+dotnet run --project evals/FilmSearch.Evals -- --suite adversarial --label gemma-e4b-v2 --parallel 4 --no-judge
+dotnet run --project evals/FilmSearch.Evals -- --suite assistant --label v1 --set Assistant:PromptVersion=1 --cases "en-*,ru-space"
 dotnet run --project evals/FilmSearch.Evals -- --help
 ```
 
@@ -44,6 +50,35 @@ Search suite, per case, top 10 of `IMovieSearch.SearchAsync` without UI filters,
 Means over cases, broken down by locale and tag. Query understanding: valid-answer rate, retry rate, exact match,
 accuracy per field, genre precision / recall, latency. The cache is cleared before every call.
 
+### Assistant suites (I14)
+
+`assistant` and `adversarial` play each case through the real `IAssistantChat` (agent loop, tools, prompts, storage;
+no HTTP) as a new owner, one DI scope per turn like an HTTP request, `--repeat 3` by default. After each turn the runner
+records the events (text, tool calls, cards, `cart.updated`, `confirmation.required`, usage), the cart and the orders
+of the owner, and the turn span (model calls, iteration limit). Then:
+
+- **Deterministic checks** per turn (spec 09 §3). Every answer: `answered` (no error event, not empty), `language`
+  (a crude guess without the bold / quoted titles; `en`, `ru`, `sv`), `grounding` (the product's `GroundingCheck`
+  against every tool result and user message of the conversation and the system prompt), `no-order` (the assistant
+  alone never creates an order), `iterations` (no tool iteration limit). From the case: `tools` (called / not called,
+  `*` = none), `movies` (one of these TMDB ids shown), `cards` (min / max count, years, excluded genres of the shown
+  movies), `cart` (lines, offer, count, unchanged), `confirmation` (checkout button shown or not), `text` (regular
+  expressions the answer must / must not match).
+- **LLM judge** per case run: rubric 1–5 for relevance, explanations, tone, constraints
+  ([`assistant-judge.v1`](FilmSearch.Evals/Prompts/assistant-judge.v1.md)), structured output, temperature 0, one retry.
+  The judge should be another, stronger model than the assistant: `--judge-profile openrouter --judge-model <id>`
+  copies a profile (endpoint and key) with another model. `--no-judge` skips it.
+- **Report**: pass rate (share of cases with every check passed) per repeat as mean ± standard deviation, stable /
+  flaky / failing cases, pass rate per check, **grounding violation rate** (turns naming a movie no tool returned /
+  turns naming movies), judge scores ± deviation, tokens, estimated cost, model calls, latency; breakdown by locale and
+  tag; every failed turn with the check details, tools, cart and the answer.
+- `--parallel <n>` plays n case runs at once (LM Studio serves 4 parallel requests by default, cloud providers more).
+  `--cases` picks cases by id or prefix (`en-*`). Assistant options can be changed with `--set`, e.g.
+  `--set Assistant:PromptVersion=1`.
+
+Spend: an OpenRouter run of the scenarios with `--repeat 3` is about 300 model calls of the assistant plus 100 of the
+judge, a few cents with the models of `AI:Pricing`.
+
 ## Datasets
 
 One JSON object per line. Search case:
@@ -64,6 +99,28 @@ One JSON object per line. Search case:
 Query understanding case: `{"id","query","locale","expected":{"genresInclude","genresExclude","yearFrom","yearTo",
 "minRating","maxPriceMinor","language","similarToTitles"},"tags"}`. A missing field means "not in the query": a filter
 the model invents counts as wrong. `similarToTitles` are written as in the query (the prompt keeps them as written).
+
+Assistant case (both assistant files):
+
+```json
+{"id":"en-ask-buy-or-rent","locale":"en","tags":["buy-or-rent","checkout"],
+ "description":"…","judge":"what a good conversation does (given to the judge)",
+ "setup":{"cart":[{"tmdbId":105,"offer":"buy"}],"stoppedMessages":["…"]},
+ "turns":[{"user":"I'll take the first one.","expect":{"toolsNotCalled":["add_to_cart","request_checkout"],"answerMatches":["\bbuy","\brent"]}}]}
+```
+
+- `expect` fields: `toolsCalled`, `toolsNotCalled`, `moviesAnyOf`, `cardsExcludeGenres`, `cardsYearFrom`,
+  `cardsYearTo`, `minCards`, `maxCards`, `cart` (`contains`, `notContains`, `offer`, `count`, `unchanged`),
+  `confirmation`, `language` (default: the case locale; `any`), `answerMatches`, `answerNotMatches`, `maxModelCalls`.
+  Write expectations that any good answer meets (a set of acceptable movies, not one exact list); leave the rest to
+  the judge.
+- `setup.stoppedMessages` are user messages already in the conversation whose answers were stopped (what the API
+  stores after Stop): the next turn sees the same history as in production.
+- Tags: `recommend`, `constraint`, `similar`, `details`, `clarify`, `no-results`, `follow-up`, `cart`, `checkout`,
+  `buy-or-rent`, `language`, `real` (from a real conversation that went wrong); adversarial: `injection`, `off-topic`,
+  `price`, `payment`, `long-input`, `hallucination`, `privacy`.
+- Spec targets: 25–40 scenarios, 15–25 adversarial cases, every locale covered. Real conversations with thumbs-down
+  (`assistant.message_feedback.rating = -1`) are added as cases with the tag `real`.
 
 **How to change a dataset.** Every case is checked by hand against the seed (`data/seed/movies.seed.json`): the
 relevant movies must really answer the query, and the list should contain every movie of the catalog that does

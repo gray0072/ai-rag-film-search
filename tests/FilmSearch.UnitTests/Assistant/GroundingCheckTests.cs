@@ -37,6 +37,19 @@ public sealed class GroundingCheckTests
     }
 
     [Fact]
+    public void Inflected_russian_titles_are_grounded_and_lower_case_emphasis_is_not_a_title()
+    {
+        string[] references = ["""{"movies":[{"title":"Матрица"},{"title":"Ла-Ла Ленд"},{"title":"Interstellar"}]}"""];
+
+        var result = GroundingCheck.Check(
+            "Похоже на **Матрицу** и **Матрицей**, как в «Ла-Ла Ленде»; **детская** версия; **148 minutes**, **2 ч 55 мин**; **Interstellars**; **Мастер и Маргарита**",
+            references);
+
+        result.Titles.ShouldBe(["Матрицу", "Матрицей", "Ла-Ла Ленде", "2 ч 55 мин", "Interstellars", "Мастер и Маргарита"]);
+        result.Unknown.ShouldBe(["2 ч 55 мин", "Interstellars", "Мастер и Маргарита"]); // stems only for Cyrillic words
+    }
+
+    [Fact]
     public void Normalization_drops_case_diacritics_and_punctuation()
     {
         GroundingCheck.Normalize("  Ёлки-2: Amélie's  Fabulous (Destiny) ").ShouldBe("елки 2 amelie s fabulous destiny");

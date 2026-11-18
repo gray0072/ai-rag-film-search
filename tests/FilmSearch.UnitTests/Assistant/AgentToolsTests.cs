@@ -125,10 +125,10 @@ public sealed class AgentToolsTests
     }
 
     [Theory]
-    [InlineData(null, "buy", "`movieId` is required: a movie id (uuid) from a tool result.")]
+    [InlineData(null, "buy", "`movieId` is required: " + AssistantTool<AddToCartArgs>.MovieIdHint + ".")]
     [InlineData("valid", null, "`offerType` is required: one of buy, rent.")]
     [InlineData("valid", "purchase", "`offerType` has an invalid value: one of buy, rent.")]
-    [InlineData("Interstellar", "buy", "`movieId` has an invalid value: a movie id (uuid) from a tool result.")]
+    [InlineData("Interstellar", "buy", "`movieId` has an invalid value: " + AssistantTool<AddToCartArgs>.MovieIdHint + ".")]
     public async Task Add_to_cart_arguments_are_checked_against_the_schema(string? movieId, string? offerType, string expected)
     {
         var movie = AssistantHarness.Movie("Moon", 2009);
@@ -289,7 +289,7 @@ public sealed class AgentToolsTests
         using var listener = new System.Diagnostics.Metrics.MeterListener();
         listener.InstrumentPublished = (instrument, l) =>
         {
-            if (instrument.Name == "assistant.grounding.titles")
+            if (instrument.Name == "assistant.grounding.titles" && _harness.MeterFactory.Owns(instrument.Meter))
             {
                 l.EnableMeasurementEvents(instrument);
             }
@@ -317,13 +317,17 @@ public sealed class AgentToolsTests
     }
 
     [Fact]
-    public async Task Answers_use_prompt_v2_by_default_and_v1_can_be_pinned()
+    public async Task Answers_use_prompt_v3_by_default_and_v1_can_be_pinned()
     {
         _harness.Chat.Answer(Text("Hi!"));
         var conversation = _harness.Store.Add("en", "local");
         await _harness.SendAsync(conversation, "hello");
-        _harness.Store.Messages.Single(m => m.Role == MessageRole.Assistant).PromptVersion.ShouldBe("assistant-system.v2");
+        _harness.Store.Messages.Single(m => m.Role == MessageRole.Assistant).PromptVersion.ShouldBe("assistant-system.v3");
         _harness.Chat.StreamRequests[0].Messages[0].Text.ShouldContain("request_checkout");
+
+        // The payment button label of every UI locale is in the prompt, so the grounding check knows it (I14).
+        _harness.Chat.StreamRequests[0].Messages[0].Text.ShouldContain("**Перейти к оплате**");
+        _harness.Chat.StreamRequests[0].Messages[0].Text.ShouldContain("**Gå till betalning**");
 
         _harness.Options.PromptVersion = 1;
         await _harness.SendAsync(conversation, "hello again");

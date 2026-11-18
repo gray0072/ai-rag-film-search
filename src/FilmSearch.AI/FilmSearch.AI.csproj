@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="FilmSearch.UnitTests" />
+    <!-- The assistant evaluation (I14) runs GroundingCheck and loads its judge prompt with PromptLibrary. -->
+    <InternalsVisibleTo Include="FilmSearch.Evals" />
   </ItemGroup>
 
   <ItemGroup>

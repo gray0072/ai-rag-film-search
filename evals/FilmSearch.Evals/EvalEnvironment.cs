@@ -1,8 +1,13 @@
+using FilmSearch.AI.Assistant;
 using FilmSearch.AI.Providers;
 using FilmSearch.Core.Catalog;
 using FilmSearch.Core.Ingestion;
+using FilmSearch.Core.Owners;
 using FilmSearch.Core.Search;
+using FilmSearch.Evals.Assistant;
+using FilmSearch.Infrastructure.Assistant;
 using FilmSearch.Infrastructure.Catalog;
+using FilmSearch.Infrastructure.Commerce;
 using FilmSearch.Infrastructure.Persistence;
 using FilmSearch.Infrastructure.Search;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +20,8 @@ namespace FilmSearch.Evals;
 
 /// <summary>
 /// The services the suites run against: the API's configuration (<c>src/FilmSearch.Api/appsettings*.json</c> + API user
-/// secrets) and the same module registrations as the API (catalog, search, AI providers), over a database with the seed
+/// secrets) and the same module registrations as the API (catalog, search, AI providers, commerce and the assistant with
+/// an owner set by the suite instead of a cookie; no payment gateway), over a database with the seed
 /// loaded and embedded. By default the database is a fresh pgvector container, so every run starts from the same data.
 /// The host is built but not started: no background jobs run.
 /// </summary>
@@ -27,13 +33,20 @@ public sealed class EvalEnvironment : IAsyncDisposable
     private readonly PostgreSqlContainer? _container;
     private readonly IHost _host;
 
-    private EvalEnvironment(PostgreSqlContainer? container, IHost host, IConfiguration configuration, bool freshDatabase)
+    /// <summary>Name of the profile <c>--judge-model</c> creates: a copy of the judge's source profile with another model.</summary>
+    public const string JudgeProfileName = "eval-judge";
+
+    private EvalEnvironment(PostgreSqlContainer? container, IHost host, IConfiguration configuration, bool freshDatabase, string judgeProfile)
     {
         _container = container;
         _host = host;
         Configuration = configuration;
         FreshDatabase = freshDatabase;
+        JudgeProfile = judgeProfile;
     }
+
+    /// <summary>Chat profile of the LLM judge (assistant suites).</summary>
+    public string JudgeProfile { get; }
 
     public IServiceProvider Services => _host.Services;
 
@@ -68,6 +81,8 @@ public sealed class EvalEnvironment : IAsyncDisposable
             // A fresh database has no migrations history table yet: EF logs the failed probe as an error. Failed
             // commands still throw.
             ["Logging:LogLevel:Microsoft.EntityFrameworkCore.Database.Command"] = "None",
+            // Tool refusals and grounding warnings of the assistant are in the report; the console stays readable.
+            ["Logging:LogLevel:FilmSearch.AI.Assistant"] = "Error",
             [$"ConnectionStrings:{DatabaseSetup.ConnectionName}"] = connectionString,
             ["Catalog:Seed:FilePath"] = Path.Combine(repositoryRoot, "data", "seed", "movies.seed.json"),
             ["AI:HealthChecksEnabled"] = "false",
@@ -90,14 +105,33 @@ public sealed class EvalEnvironment : IAsyncDisposable
 
         builder.Configuration.AddInMemoryCollection(settings);
 
+        // The judge: a named profile, or a copy of one with another model (same endpoint and key).
+        var judgeProfile = options.JudgeProfile ?? builder.Configuration[$"{AiOptions.SectionName}:{nameof(AiOptions.ActiveChatProfile)}"] ?? "";
+        if (options.JudgeModel is not null)
+        {
+            var source = builder.Configuration.GetSection($"{AiOptions.SectionName}:{nameof(AiOptions.ChatProfiles)}:{judgeProfile}");
+            var copy = source.AsEnumerable(makePathsRelative: true)
+                .Where(p => p.Value is not null)
+                .ToDictionary(p => $"{AiOptions.SectionName}:{nameof(AiOptions.ChatProfiles)}:{JudgeProfileName}:{p.Key}", p => p.Value);
+            copy[$"{AiOptions.SectionName}:{nameof(AiOptions.ChatProfiles)}:{JudgeProfileName}:{nameof(ChatProfileOptions.Model)}"] = options.JudgeModel;
+            builder.Configuration.AddInMemoryCollection(copy);
+            judgeProfile = JudgeProfileName;
+        }
+
         // The same registrations as Program.cs of the API (AddCatalogModule / AddSearchModule delegate to these).
         builder.AddDatabase();
         builder.AddAiProviders();
         builder.Services.AddCatalogInfrastructure(builder.Configuration);
         builder.Services.AddSearchInfrastructure(builder.Configuration);
 
+        // Commerce and the assistant (AddCommerceModule / AddAssistantModule). The owner comes from the suite, not a cookie.
+        builder.Services.AddScoped<IOwnerContext, EvalOwnerContext>();
+        builder.Services.AddCommerceInfrastructure(builder.Configuration);
+        builder.Services.AddAssistantInfrastructure();
+        builder.Services.AddAssistant(builder.Configuration);
+
         var host = builder.Build();
-        return new EvalEnvironment(container, host, builder.Configuration, container is not null);
+        return new EvalEnvironment(container, host, builder.Configuration, container is not null, judgeProfile);
     }
 
     /// <summary>Applies migrations and loads the seed when the catalog is empty.</summary>

@@ -41,4 +41,19 @@ public sealed class PromptLibraryTests
             ["extra"] = "x",
         })).Message.ShouldContain("extra");
     }
+
+    [Theory]
+    [InlineData("en")]
+    [InlineData("ru")]
+    [InlineData("sv")]
+    public void Assistant_prompt_names_the_payment_button_as_the_web_app_shows_it(string locale)
+    {
+        // The confirmation card's button is cart.checkout (src/web ConfirmationCard). The assistant tells the user to press
+        // it, and the grounding check accepts the bold label because it is in the system prompt.
+        var root = FilmSearch.Evals.RepositoryPaths.FindRoot();
+        using var json = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "src", "web", "src", "i18n", "locales", $"{locale}.json")));
+        var label = json.RootElement.GetProperty("cart").GetProperty("checkout").GetString();
+
+        new PromptLibrary().Get("assistant-system").Text.ShouldContain($"**{label}**");
+    }
 }

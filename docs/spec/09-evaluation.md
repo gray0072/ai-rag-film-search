@@ -9,6 +9,8 @@ Evaluation is the main difference between "it seems to work" and AI engineering.
 ```
 dotnet run --project evals/FilmSearch.Evals -- --suite search --label hybrid-k60 [--profile local] [--modes hybrid] [--set Search:Hybrid:RrfK=60] [--repeat 3]
 dotnet run --project evals/FilmSearch.Evals -- --suite qu --label baseline [--chat-profile local]
+dotnet run --project evals/FilmSearch.Evals -- --suite assistant --label gemma-v2 [--chat-profile local] [--judge-profile openrouter --judge-model openai/gpt-6-luna] [--parallel 4]
+dotnet run --project evals/FilmSearch.Evals -- --suite adversarial --label gemma-v2 [--no-judge] [--cases "adv-en-*"]
 dotnet run --project evals/FilmSearch.Evals -- --suite validate
 ```
 
@@ -22,7 +24,7 @@ Reports are committed. They are the history of quality. A report header contains
 |---|---|---|
 | `search.golden.jsonl` | `{ id, query, locale, relevant: [tmdbIds], graded?: {tmdbId: 1..3}, excludedGenres?: [slugs], tags: [...] }`. TMDB ids, because catalog GUIDs differ per database. A relevant movie without a grade has grade 1. Tags: `plot`, `mood`, `person` (actor / director), `title-typo`, `constraint` ("before 1990", "Tarantino westerns"), `negative` ("no horror", "not about World War II"), `cross-language` (a ru / sv query whose words exist only in another language: the movie has no overview in the query's language, or a transliterated name). | 90–120 queries, at least 25 per language (en, ru, sv) |
 | `qu.golden.jsonl` | `{ id, query, locale, expected: { genresInclude, genresExclude, yearFrom, yearTo, minRating, maxPriceMinor, language, similarToTitles }, tags }` for query understanding. A missing field means "not in the query": an invented filter is wrong. | 40 |
-| `assistant.scenarios.jsonl` | Multi-turn scripts: user turns, expectations (tools that must / must not be called, movies that must appear, must end with checkout confirmation, must answer in ru or sv…). | 25–40 |
+| `assistant.scenarios.jsonl` | `{ id, locale, tags, description?, judge?, setup?: { cart, stoppedMessages }, turns: [{ user, expect? }] }`. Multi-turn scripts: user turns with expectations per turn (tools that must / must not be called, movies that must appear, cards within years / without genres, cart contents and offer, checkout confirmation shown or not, answer language, patterns the answer must / must not match). `judge` tells the LLM judge what a good conversation does. Tag `real` = from a real conversation that went wrong. | 25–40 |
 | `assistant.adversarial.jsonl` | Prompt injection, off-topic, requests to "make it free", requests to pay without confirmation, very long input. | 15–25 |
 
 How datasets are built: hand-written first (they are small), then extended with LLM-generated queries **reviewed by a human**, then with real queries from chat logs and thumbs-down feedback.
@@ -43,8 +45,10 @@ How datasets are built: hand-written first (they are small), then extended with 
 - Per-field accuracy (genres include / exclude as sets, years, rating, price, language exact, similar titles by containment after a crude stem), exact match of all fields, genre precision / recall, JSON validity rate (no fallback), retry rate (from the `filmsearch.qu.attempts` span tag), latency. The QU cache is cleared before every call.
 
 ### Assistant
-- **Deterministic checks:** tool-call expectations, grounding (no movies outside tool results), language of the answer, checkout requires confirmation, number of iterations, tokens and latency.
-- **LLM-as-judge:** rubric 1–5 for relevance of recommendations, quality of explanations, tone, following the user's constraints. The judge prompt is versioned. The judge model should be stronger than or different from the assistant model (e.g. through OpenRouter); the local model is acceptable for learning, with this limitation noted in the report.
+- The runner plays every case through `IAssistantChat` (no HTTP) as a new owner, one DI scope per turn, and records events, cart and orders after each turn, and the turn span (I14).
+- **Deterministic checks** per turn: tool-call expectations, grounding (the product's `GroundingCheck`: no bold or quoted title outside the tool results, user messages and system prompt), language of the answer (a crude guess without titles), checkout requires confirmation (`confirmation.required` shown or not; no order is ever created by the assistant), cart contents, cards within the constraints, iteration limit and model calls, tokens and latency. A case passes when every check of every turn passes; **pass rate** per repeat, mean ± standard deviation.
+- **Grounding violation rate:** turns that name a movie no tool returned / turns that name movies.
+- **LLM-as-judge:** rubric 1–5 for relevance of recommendations, quality of explanations, tone, following the user's constraints (`evals/FilmSearch.Evals/Prompts/assistant-judge.vN.md`, structured output, temperature 0, one retry). The judge prompt is versioned. The judge model should be stronger than or different from the assistant model (e.g. through OpenRouter: `--judge-profile openrouter --judge-model <id>`); the local model is acceptable for learning, with this limitation noted in the report.
 - **User simulator** (stretch): an LLM plays the customer from a scenario description for multi-turn tests.
 - Adversarial pass rate.
 

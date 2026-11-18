@@ -216,16 +216,26 @@ public sealed class AssistantChatTests
     }
 
     [Fact]
-    public async Task Unanswered_user_messages_are_left_out_of_the_context()
+    public async Task An_unanswered_user_message_is_joined_with_the_next_one()
     {
+        // The user pressed Stop (or the model failed): the message is stored without an answer. Roles still alternate.
         _harness.Chat.Fail(new HttpRequestException("down"));
-        _harness.Chat.Answer(Text("Back again."));
+        _harness.Chat.Answer(Text("One thriller."));
+        _harness.Chat.Answer(Text("Sure."));
         var conversation = _harness.Store.Add("en", "local");
 
-        await _harness.SendAsync(conversation, "lost");
-        await _harness.SendAsync(conversation, "again");
+        await _harness.SendAsync(conversation, "Recommend three thrillers from the nineties.");
+        await _harness.SendAsync(conversation, "Just one, please.");
+        await _harness.SendAsync(conversation, "Thanks.");
 
-        _harness.Chat.StreamRequests[1].Messages.Select(m => m.Text).Skip(1).ShouldBe(["again"]);
+        var second = _harness.Chat.StreamRequests[1].Messages.Skip(1).ToList();
+        second.Select(m => m.Role).ShouldBe([ChatRole.User]);
+        second[0].Text.ShouldBe("Recommend three thrillers from the nineties.\n\nJust one, please.");
+        _harness.Chat.StreamRequests[2].Messages.Skip(1).Select(m => (m.Role, m.Text)).ShouldBe([
+            (ChatRole.User, "Recommend three thrillers from the nineties.\n\nJust one, please."),
+            (ChatRole.Assistant, "One thriller."),
+            (ChatRole.User, "Thanks."),
+        ]);
     }
 
     [Fact]

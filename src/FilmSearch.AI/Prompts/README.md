@@ -10,5 +10,5 @@ Prompt templates as versioned files: `<name>.vN.md`. A meaningful change creates
 | Prompt | Used by | Versions |
 |---|---|---|
 | `query-understanding` | `QueryUnderstandingService` (I07, spec 05 §5) | v1, v2 (current: bare titles and names are searches, not "similar to") |
-| `assistant-system` | `AssistantChat` (I11, spec 06 §4): system prompt of the assistant | v1 (search only), v2 (current, I12: cart and checkout rules) |
+| `assistant-system` | `AssistantChat` (I11, spec 06 §4): system prompt of the assistant | v1 (search only), v2 (I12: cart and checkout rules), v3 (current, I14: search a named movie before using its id, ask buy or rent before adding, checkout without asking again, `genresExclude`, the payment button label in en / ru / sv) |
 | `assistant-summary` | `ConversationSummarizer` (I11, spec 06 §6): rolling summary of older turns | v1 |
