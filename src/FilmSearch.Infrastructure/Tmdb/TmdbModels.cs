@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace FilmSearch.Infrastructure.Tmdb;
 
-// TMDB API v3 response DTOs (only the fields we use). Used by tools/seed-builder now and by the TMDB sync (I16).
+// TMDB API v3 response DTOs (only the fields we use). Used by tools/seed-builder and by TmdbClient (the import job, I16).
 // https://developer.themoviedb.org/reference/movie-details
 
 public static class TmdbJson

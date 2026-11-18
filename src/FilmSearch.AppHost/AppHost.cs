@@ -15,6 +15,12 @@ var api = builder.AddProject<Projects.FilmSearch_Api>("api")
     .WaitFor(database)
     .WithHttpHealthCheck("/health");
 
+// Background jobs (I16): TMDB import, embedding reindex, order expiry. It applies migrations itself in Development
+// (advisory lock), so it does not wait for the API; jobs queued by the API are picked up from the job table.
+var worker = builder.AddProject<Projects.FilmSearch_Worker>("worker")
+    .WithReference(database)
+    .WaitFor(database);
+
 // React app (Vite dev server). `npm install` runs before the start; the API URL is injected
 // as service discovery variables and the Vite dev server proxies /api to it (src/web/vite.config.ts).
 var web = builder.AddViteApp("web", "../web")
@@ -24,6 +30,8 @@ var web = builder.AddViteApp("web", "../web")
     .WithExternalHttpEndpoints();
 
 // Stripe (I15) sends the browser back to absolute URLs: the API resolves its success / cancel paths against the web app.
+// The Worker gets it too: it runs the same Commerce options validation (Stripe needs absolute URLs).
 api.WithEnvironment("Commerce__WebBaseUrl", web.GetEndpoint("http"));
+worker.WithEnvironment("Commerce__WebBaseUrl", web.GetEndpoint("http"));
 
 await builder.Build().RunAsync();

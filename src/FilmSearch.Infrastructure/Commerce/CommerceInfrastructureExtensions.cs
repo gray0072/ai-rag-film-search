@@ -10,8 +10,9 @@ namespace FilmSearch.Infrastructure.Commerce;
 public static class CommerceInfrastructureExtensions
 {
     /// <summary>
-    /// Cart, checkout, library, webhook processing, order expiry and the Stripe gateway (when <c>Stripe:SecretKey</c>
-    /// is set). The Fake gateway (<see cref="IPaymentGateway"/>) is registered by the API host (I09).
+    /// Cart, checkout, library, webhook processing, the order expiry job and the Stripe gateway (when <c>Stripe:SecretKey</c>
+    /// is set). The Fake gateway (<see cref="IPaymentGateway"/>) is registered by the API host (I09). The service that runs
+    /// the expiry job on a timer is registered by the Worker (<see cref="AddOrderExpiryService"/>).
     /// </summary>
     public static IServiceCollection AddCommerceInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
@@ -38,8 +39,14 @@ public static class CommerceInfrastructureExtensions
         services.AddSingleton<PaymentGateways>();
 
         services.AddScoped<OrderExpiryJob>();
-        services.AddHostedService<OrderExpiryService>();
 
+        return services;
+    }
+
+    /// <summary>Runs <see cref="OrderExpiryJob"/> every <c>Commerce:ExpiryScanSeconds</c> (the Worker, I16).</summary>
+    public static IServiceCollection AddOrderExpiryService(this IServiceCollection services)
+    {
+        services.AddHostedService<OrderExpiryService>();
         return services;
     }
 

@@ -103,8 +103,10 @@ public sealed partial class OrderExpiryJob(
 }
 
 /// <summary>
-/// Runs <see cref="OrderExpiryJob"/> every <see cref="CommerceOptions.ExpiryScanSeconds"/> inside the API process.
-/// It moves to the Worker in I16. Several API replicas may run it at the same time: the row version keeps that safe.
+/// Runs <see cref="OrderExpiryJob"/> every <see cref="CommerceOptions.ExpiryScanSeconds"/> in the Worker (I16; the API
+/// ran it before). Several Worker replicas may run it at the same time: the row version keeps that safe. Without the
+/// Fake gateway (it lives in the API process) the payment of an expired fake order is just marked expired; the fake
+/// session expires by its own time anyway.
 /// </summary>
 internal sealed partial class OrderExpiryService(
     IServiceScopeFactory scopes,

@@ -13,7 +13,7 @@ Stack: .NET 10, ASP.NET Core, EF Core, PostgreSQL + pgvector, .NET Aspire, Micro
 
 ## Status
 
-The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); hybrid search (keyword + semantic fused with RRF, the default mode) and LLM query understanding that turns free text into filters with structured output, retry and fallback (I07); cart, orders and a fake payment provider (I09), the store UI (I10) and Stripe Checkout in test mode with signed webhooks (I15); the assistant chat API: conversations, answers streamed over SSE, an own agent loop with a `search_movies` tool so recommendations come only from the catalog, rolling summary, token usage and cost per message, feedback (I11); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
+The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); hybrid search (keyword + semantic fused with RRF, the default mode) and LLM query understanding that turns free text into filters with structured output, retry and fallback (I07); cart, orders and a fake payment provider (I09), the store UI (I10) and Stripe Checkout in test mode with signed webhooks (I15); the assistant chat API: conversations, answers streamed over SSE, an own agent loop with a `search_movies` tool so recommendations come only from the catalog, rolling summary, token usage and cost per message, feedback (I11); a Worker process with a job queue in PostgreSQL that imports movies from TMDB (lists or ids, rate-limited, idempotent) and keeps embeddings fresh, and runs order expiry (I16); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
 
 ## Documentation
 
@@ -46,7 +46,7 @@ No Aspire workload or Aspire CLI is needed: the AppHost uses the `Aspire.AppHost
 dotnet run --project src/FilmSearch.AppHost
 ```
 
-The console prints the Aspire dashboard login URL (`https://localhost:17180/login?t=...`). The dashboard shows the `postgres` container, the `filmsearch` database, the `api` project and the `web` app with logs, traces and metrics. Open the **web** URL from the dashboard to use the app; before the first start the AppHost runs `npm install` for it, which takes a minute. The web app's dev server proxies `/api` to the API.
+The console prints the Aspire dashboard login URL (`https://localhost:17180/login?t=...`). The dashboard shows the `postgres` container, the `filmsearch` database, the `api` and `worker` projects and the `web` app with logs, traces and metrics. Open the **web** URL from the dashboard to use the app; before the first start the AppHost runs `npm install` for it, which takes a minute. The web app's dev server proxies `/api` to the API.
 
 The API listens on `https://localhost:7180`:
 
@@ -56,12 +56,13 @@ The API listens on `https://localhost:7180`:
 - `POST /api/search` with `{ "query": "nolan dream", "debug": true }`: keyword search (filters as in `GET /api/movies`); `"mode": "semantic"` searches by meaning (`{ "query": "a heist inside dreams", "mode": "semantic" }`, needs LM Studio)
 - `GET /api/movies/{id}/similar`: movies nearest to this one by embedding
 - `POST /api/admin/ingestion/seed`: reload the seed file (Development only, idempotent)
-- `GET /api/admin/embeddings`, `POST /api/admin/embeddings/reindex`, `DELETE /api/admin/embeddings?model=`: embedding index state, background reindex, deleting an old model's vectors (Development only)
+- `GET /api/admin/embeddings`, `POST /api/admin/embeddings/reindex`, `DELETE /api/admin/embeddings?model=`: embedding index state, a reindex job for the Worker, deleting an old model's vectors (Development only)
+- `POST /api/admin/ingestion/tmdb` with `{ "list": "topRated", "pages": 50 }` or `{ "tmdbIds": [27205] }`: a TMDB import job for the Worker (needs a TMDB key, see below); `GET /api/admin/jobs`, `GET /api/admin/jobs/{id}`, `POST /api/admin/jobs/{id}/cancel`: background jobs with progress and counters (Development only)
 - `POST /api/admin/ai/chat` with `{ "message": "Hi", "profile": "local" }`: one call to a chat profile, with token usage (Development only); the call shows up as a GenAI trace in the dashboard
 - `POST /api/chat/conversations`, then `POST /api/chat/conversations/{id}/messages` with `{ "text": "Recommend a space movie" }`: the assistant's answer as server-sent events (needs a chat model; examples in [Assistant.http](src/FilmSearch.Api/Assistant.http)); `GET /api/chat/conversations/{id}`: the history with movie cards
 - `GET /openapi/v1.json`: OpenAPI document (Development)
 
-On first start the API applies EF Core migrations and, if the catalog is empty, loads `data/seed/movies.seed.json` (Development only). Then it queues a background job that embeds every movie whose embedding text changed (about 30 s for the whole seed with LM Studio running; with LM Studio off the job fails, keyword search works, and the next start or `POST /api/admin/embeddings/reindex` catches up). The Postgres container `filmsearch-postgres` is persistent: it keeps running after you stop the AppHost, and its data lives in the Docker volume `filmsearch-postgres-data`.
+On first start the API applies EF Core migrations and, if the catalog is empty, loads `data/seed/movies.seed.json` (Development only). Then it queues a reindex job that the Worker runs: it embeds every movie whose embedding text changed (about 30 s for the whole seed with LM Studio running; with LM Studio off the job fails, keyword search works, and the next start or `POST /api/admin/embeddings/reindex` catches up). The Worker (`src/FilmSearch.Worker`) runs every background job from the table `ingestion.jobs` and expires unpaid orders; it reads the API's appsettings files and user secrets. The Postgres container `filmsearch-postgres` is persistent: it keeps running after you stop the AppHost, and its data lives in the Docker volume `filmsearch-postgres-data`.
 
 ### Build and test
 
@@ -120,6 +121,16 @@ By default checkout uses the fake payment page inside the API (`Payments:Provide
    ```
 
 Test cards (any future date, any CVC): `4242 4242 4242 4242` succeeds, `4000 0000 0000 9995` is declined (the page shows the error, the order stays pending and you can try another card), `4000 0025 0000 3155` asks for 3-D Secure. `stripe events resend evt_…` replays an event: the order is not paid twice. Stripe sends the browser back to absolute URLs; the AppHost passes the web app's address to the API (`Commerce:WebBaseUrl`). To go back to the fake page: `dotnet user-secrets remove Payments:Provider --project src/FilmSearch.Api`.
+
+### Movies from TMDB
+
+The seed has 1000 movies. To import more from TMDB ([spec 08 §3](docs/spec/08-data-ingestion.md#3-tmdb-import-i16)), get a free API key at themoviedb.org (Settings → API; the v4 read access token or the v3 key) and put it in the API user secrets, which the Worker shares:
+
+```bash
+dotnet user-secrets set Tmdb:ApiKey <token> --project src/FilmSearch.Api
+```
+
+Then queue an import (`POST /api/admin/ingestion/tmdb` with `{ "list": "topRated", "pages": 50 }`, about 5 minutes at 40 requests per 10 seconds) and follow it with `GET /api/admin/jobs/{id}`. The job upserts by TMDB id (a rerun changes nothing that did not change at TMDB) and embeds the new and changed movies before it ends, so they are searchable in every mode. A daily import can be switched on with `Tmdb:Schedule:Enabled` (off by default; `Tmdb:Schedule` in appsettings).
 
 ### Evaluations
 

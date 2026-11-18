@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FilmSearch.Api\FilmSearch.Api.csproj" />
+    <ProjectReference Include="..\FilmSearch.Worker\FilmSearch.Worker.csproj" />
   </ItemGroup>
 
 </Project>

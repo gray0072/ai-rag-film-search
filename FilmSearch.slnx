@@ -14,6 +14,7 @@
     <Project Path="src/FilmSearch.Core/FilmSearch.Core.csproj" />
     <Project Path="src/FilmSearch.Infrastructure/FilmSearch.Infrastructure.csproj" />
     <Project Path="src/FilmSearch.ServiceDefaults/FilmSearch.ServiceDefaults.csproj" />
+    <Project Path="src/FilmSearch.Worker/FilmSearch.Worker.csproj" />
   </Folder>
   <Folder Name="/evals/">
     <Project Path="evals/FilmSearch.Evals/FilmSearch.Evals.csproj" />

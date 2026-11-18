@@ -19,6 +19,7 @@ Instructions for AI coding agents (Claude Code, Codex, Cursor, …) working in t
 | Code layout (target) | [docs/spec/02-architecture.md §4](docs/spec/02-architecture.md#4-solution-layout-target) |
 | Evaluation runner, datasets and reports | [evals/](evals/README.md) |
 | Seed data | `data/seed/` (from I03) |
+| Background jobs, TMDB import | `src/FilmSearch.Worker`, `src/FilmSearch.Infrastructure/Ingestion` (from I16) |
 
 ## Session workflow
 
@@ -95,6 +96,7 @@ An iteration (or task) is done when:
 
 ```bash
 dotnet run --project src/FilmSearch.AppHost          # run everything (Aspire); dashboard URL is printed in the console
+dotnet run --project src/FilmSearch.Worker           # the Worker alone (I16): background jobs, order expiry; needs ConnectionStrings:filmsearch
 dotnet build                                          # build (warnings are errors)
 dotnet test                                           # all .NET tests (Docker needed for integration tests)
 dotnet test --project tests/FilmSearch.UnitTests      # unit tests only (no Docker)
@@ -154,6 +156,7 @@ Notes:
 - Assistant tools (I12): unit tests build every tool with fakes (`AssistantHarness.CreateTools()`: in-memory cart, confirmations whose `ResolveAsync` throws). Integration tests of the sales flow (`AssistantCheckoutApiTests`) use a commerce fixture of their own and script the model's `add_to_cart` / `request_checkout` calls with `Chat.ScriptStream`; an order may exist only after `POST .../confirmations/{id}`.
 - Assistant evaluations (I14): `--suite assistant` / `--suite adversarial` play the cases through `IAssistantChat` with an `EvalOwnerContext` per case run (see evals/README.md). LM Studio shares one KV cache of the loaded context length between its parallel slots: with `--parallel 4` load the chat model with `lms load google/gemma-4-e4b -c 32768 --parallel 4 -y`, otherwise turns fail with "Context size has been exceeded" (`answered` check, error `providerUnavailable`). Do not build the solution while a run is going: the runner's DLLs are locked.
 - Stripe (I15) integration tests: `StripeCommerceFixture` makes Stripe the active provider; the real `StripePaymentGateway` and SDK call `Factory.StripeApi` (`FakeStripeApi`, an in-memory create / get / expire of Checkout Sessions, registered for every factory so no test reaches the network). `PostStripeEventAsync` sends a Checkout Session event signed with the test endpoint secret. Unit tests parse real test mode events captured with the Stripe CLI (`tests/FilmSearch.UnitTests/Commerce/StripeEvents/*.json`); sign them in the test, never commit account names or keys.
+- Worker and jobs (I16): the Worker (`src/FilmSearch.Worker`) has no own appsettings: the API's files are linked into its output and it shares the API's user secrets (`Tmdb:ApiKey` lives there). Jobs are rows of `ingestion.jobs` (ADR-0009): the API only enqueues (`IBackgroundJobs`, `IEmbeddingJobs`), the Worker's `JobWorker` claims them. Integration tests host the real Worker composition in-process with `TestWorker.StartAsync(connectionString)` next to a `FilmSearchApiFactory` on the same database (own database per test); TMDB is `TmdbStub` (`tests/fixtures`, recorded and trimmed responses, scriptable status codes per path, shared by unit and integration tests). The integration project references the Worker with `Aliases="worker"` because both hosts have a public `Program`. Store-level queue tests use `JobStore` with a `FakeTimeProvider` (`BackgroundJobsTests`). Do not read `Database.GetConnectionString()` after EF opened a connection: Npgsql strips the password (use the context's own connection, as `ReindexLock` does).
 - Testing Cyrillic or Swedish queries with `curl -d "..."` from Git Bash on Windows mangles the text; send a UTF-8 file (`--data-binary @query.json`) or use a script.
 - The AppHost Postgres container is named `filmsearch-postgres`, uses `ContainerLifetime.Persistent` and the named volume `filmsearch-postgres-data`: it keeps running after the AppHost stops. Its password is stored in the AppHost user secrets. To reset the DB: `docker rm -f filmsearch-postgres` and `docker volume rm filmsearch-postgres-data`.
 

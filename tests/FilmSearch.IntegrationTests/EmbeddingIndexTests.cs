@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using FilmSearch.Api.Modules.Admin;
 using FilmSearch.Api.Modules.Search;
 using FilmSearch.Core.Catalog;
+using FilmSearch.Core.Ingestion;
 using FilmSearch.Core.Search;
 using FilmSearch.Infrastructure.Persistence;
 using FilmSearch.Infrastructure.Search.Semantic;
@@ -138,18 +139,21 @@ public sealed class EmbeddingIndexTests(PostgresFixture postgres)
     }
 
     [Fact]
-    public async Task Reindex_endpoint_runs_a_background_job()
+    public async Task Reindex_endpoint_queues_a_job_that_the_worker_runs()
     {
         await using var factory = await CreateCatalogAsync("emb_job");
         using var client = factory.CreateClient();
+        await using var worker = await TestWorker.StartAsync(_connectionStrings[factory]);
 
         using var started = await client.PostAsJsonAsync("/api/admin/embeddings/reindex", new { onlyStale = true }, Ct);
         started.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var job = (await started.Content.ReadFromJsonAsync<EmbeddingJobStatus>(CatalogApiFixture.Json, Ct)).ShouldNotBeNull();
-        job.State.ShouldBeOneOf(EmbeddingJobState.Queued, EmbeddingJobState.Running, EmbeddingJobState.Succeeded);
+        job.State.ShouldBeOneOf(JobState.Queued, JobState.Running, JobState.Succeeded);
+        job.Trigger.ShouldBe(JobTrigger.Admin);
+        started.Headers.Location.ShouldNotBeNull().ToString().ShouldBe($"/api/admin/jobs/{job.Id}");
 
         var state = await WaitForJobAsync(client, job.Id);
-        state.Job!.State.ShouldBe(EmbeddingJobState.Succeeded, state.Job.Error);
+        state.Job!.State.ShouldBe(JobState.Succeeded, state.Job.Error);
         state.Job.Result.ShouldNotBeNull().Embedded.ShouldBe(3);
         state.Job.Progress.ShouldNotBeNull().Processed.ShouldBe(3);
         state.ActiveProfile.ShouldBe("local");

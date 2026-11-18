@@ -7,6 +7,7 @@ using FilmSearch.Api.Modules.AppInfo;
 using FilmSearch.Api.Modules.Assistant;
 using FilmSearch.Api.Modules.Catalog;
 using FilmSearch.Api.Modules.Commerce;
+using FilmSearch.Api.Modules.Ingestion;
 using FilmSearch.Api.Modules.Search;
 using FilmSearch.Api.OpenApi;
 using FilmSearch.Api.Owners;
@@ -38,6 +39,7 @@ builder.AddAiProviders();
 builder.Services.AddAppInfoModule();
 builder.Services.AddCatalogModule(builder.Configuration);
 builder.Services.AddSearchModule(builder.Configuration);
+builder.Services.AddIngestionModule(builder.Configuration);
 builder.AddCommerceModule();
 builder.AddAssistantModule();
 
@@ -75,6 +77,6 @@ if (app.Configuration.GetValue<bool>(DatabaseSetup.MigrateOnStartupKey))
 }
 
 await app.SeedCatalogOnStartupAsync();
-app.IndexEmbeddingsOnStartup();
+await app.QueueEmbeddingsOnStartupAsync();
 
 await app.RunAsync();

@@ -28,6 +28,7 @@ public static class AdminModule
 
         group.MapAdminAiEndpoints();
         group.MapAdminEmbeddingEndpoints();
+        group.MapAdminJobEndpoints();
 
         return app;
     }

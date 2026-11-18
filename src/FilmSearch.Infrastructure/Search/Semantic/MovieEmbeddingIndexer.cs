@@ -40,6 +40,10 @@ internal sealed partial class MovieEmbeddingIndexer(
         activity?.SetTag("filmsearch.embedding.locales", localeList);
         activity?.SetTag("filmsearch.embedding.only_stale", request.OnlyStale);
 
+        // One reindex at a time across processes: a TMDB import's reindex and a reindex job of another Worker replica
+        // would otherwise embed the same stale texts twice and race on inserting the same vector rows.
+        await using var reindexLock = await ReindexLock.AcquireAsync(db, cancellationToken);
+
         await EnsureVectorIndexAsync(model.Dimensions, cancellationToken);
 
         // Vectors of locales that are no longer indexed would still be found by search: remove them.

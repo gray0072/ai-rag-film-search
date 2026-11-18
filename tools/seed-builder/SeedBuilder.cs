@@ -82,25 +82,15 @@ internal sealed class SeedBuilder(TmdbClient tmdb, SeedBuilderOptions options, T
         File.Move(temp, path, overwrite: true);
     }
 
-    private async Task<List<GenreImport>> LoadGenresAsync(CancellationToken cancellationToken)
+    private async Task<IReadOnlyList<GenreImport>> LoadGenresAsync(CancellationToken cancellationToken)
     {
-        var names = new Dictionary<int, Dictionary<string, string>>();
+        var lists = new Dictionary<string, TmdbGenreList>(StringComparer.Ordinal);
         foreach (var (locale, language) in TmdbLanguage)
         {
-            var list = await tmdb.GetAsync<TmdbGenreList>($"genre/movie/list?language={language}", $"genres-{locale}", cancellationToken);
-            foreach (var genre in list.Genres)
-            {
-                if (!names.TryGetValue(genre.Id, out var byLocale))
-                {
-                    names[genre.Id] = byLocale = new Dictionary<string, string>(StringComparer.Ordinal);
-                }
-
-                // TMDB returns lower-case Russian names ("драма"); capitalize them for the UI.
-                byLocale[locale] = string.IsNullOrEmpty(genre.Name) ? genre.Name : char.ToUpperInvariant(genre.Name[0]) + genre.Name[1..];
-            }
+            lists[locale] = await tmdb.GetAsync<TmdbGenreList>($"genre/movie/list?language={language}", $"genres-{locale}", cancellationToken);
         }
 
-        return [.. names.Select(pair => TmdbMovieMapper.ToGenre(pair.Key, pair.Value))];
+        return TmdbMovieMapper.ToGenres(lists);
     }
 
     private async Task CollectAsync(

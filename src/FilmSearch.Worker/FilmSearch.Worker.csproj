@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <!--
+    Background jobs (I16, spec 02 §2): the job queue (TMDB import, embedding reindex), the daily TMDB schedule and the
+    order expiry job. The same modules as the API, without HTTP.
+  -->
+
+  <PropertyGroup>
+    <!-- Shares the user secrets of the API (AI keys, Stripe test keys, the TMDB key), like the evaluation runner. -->
+    <UserSecretsId>filmsearch-api-6f1d2c9e</UserSecretsId>
+  </PropertyGroup>
+
+  <!-- One configuration for the modules: the API's appsettings files ship with the Worker under the same names. -->
+  <ItemGroup>
+    <Content Include="..\FilmSearch.Api\appsettings.json" Link="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\FilmSearch.Api\appsettings.Development.json" Link="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FilmSearch.AI\FilmSearch.AI.csproj" />
+    <ProjectReference Include="..\FilmSearch.Core\FilmSearch.Core.csproj" />
+    <ProjectReference Include="..\FilmSearch.Infrastructure\FilmSearch.Infrastructure.csproj" />
+    <ProjectReference Include="..\FilmSearch.ServiceDefaults\FilmSearch.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>

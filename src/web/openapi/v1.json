@@ -1007,7 +1007,7 @@
         "tags": [
           "Admin"
         ],
-        "summary": "Starts a background reindex job (202). 409 while another job is queued or running.",
+        "summary": "Queues a reindex job for the Worker (202). 409 while another reindex job is queued or running.",
         "operationId": "ReindexEmbeddings",
         "requestBody": {
           "content": {
@@ -1049,6 +1049,180 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/admin/ingestion/tmdb": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Queues a TMDB import job for the Worker (202): a list with pages, or TMDB ids. 409 while another import is queued or running.",
+        "operationId": "ImportFromTmdb",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminTmdbImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/jobs": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Background jobs, newest first, optionally of one kind (tmdbImport, embeddingReindex).",
+        "operationId": "ListJobs",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobStatus"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/jobs/{id}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "State, progress and result of a background job.",
+        "operationId": "GetJob",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/admin/jobs/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Cancels a job: a queued one at once, a running one at its next heartbeat. A finished job is returned unchanged.",
+        "operationId": "CancelJob",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -1175,6 +1349,45 @@
           }
         },
         "description": "Body of `POST /api/admin/embeddings/reindex`."
+      },
+      "AdminTmdbImportRequest": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "TMDB list to import: `topRated` or `popular`.",
+                "$ref": "#/components/schemas/TmdbMovieList"
+              }
+            ]
+          },
+          "pages": {
+            "maximum": 500,
+            "minimum": 1,
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Pages of the list, 20 movies each (default 1).",
+            "format": "int32"
+          },
+          "tmdbIds": {
+            "maxItems": 5000,
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "TMDB ids to import instead of a list."
+          }
+        },
+        "description": "Body of `POST /api/admin/ingestion/tmdb`: a list with pages, or TMDB ids."
       },
       "AppInfoResponse": {
         "required": [
@@ -1906,19 +2119,11 @@
         },
         "description": "State of the embedding index: the active model and the stored vectors of every model."
       },
-      "EmbeddingJobState": {
-        "enum": [
-          "queued",
-          "running",
-          "succeeded",
-          "failed",
-          "cancelled"
-        ]
-      },
       "EmbeddingJobStatus": {
         "required": [
           "id",
           "state",
+          "trigger",
           "request",
           "queuedAt"
         ],
@@ -1929,7 +2134,10 @@
             "format": "uuid"
           },
           "state": {
-            "$ref": "#/components/schemas/EmbeddingJobState"
+            "$ref": "#/components/schemas/JobState"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/JobTrigger"
           },
           "request": {
             "$ref": "#/components/schemas/ReindexRequest"
@@ -1982,7 +2190,7 @@
             "type": "boolean"
           }
         },
-        "description": "State of a background reindex job. `Progress` while it runs, `Result` when it succeeded, `Error` when it failed."
+        "description": "State of a background reindex job (a job of kind `EmbeddingReindex`). `Progress` while it runs, `Result` when it succeeded, `Error` when it failed."
       },
       "EmbeddingSetStats": {
         "required": [
@@ -2103,6 +2311,131 @@
           }
         }
       },
+      "JobKind": {
+        "enum": [
+          "tmdbImport",
+          "embeddingReindex"
+        ],
+        "description": "What a background job does."
+      },
+      "JobState": {
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed",
+          "cancelled"
+        ],
+        "description": "Lifecycle of a job: Queued → Running → Succeeded / Failed / Cancelled. A running job whose worker stopped sending heartbeats is queued again."
+      },
+      "JobStatus": {
+        "required": [
+          "id",
+          "kind",
+          "state",
+          "trigger",
+          "parameters",
+          "queuedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/JobKind"
+          },
+          "state": {
+            "$ref": "#/components/schemas/JobState"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/JobTrigger"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/JsonElement"
+          },
+          "progress": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            ]
+          },
+          "result": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "attempts": {
+            "type": "integer",
+            "description": "Number of times a worker started the job (more than one after a worker was lost).",
+            "format": "int32"
+          },
+          "cancelRequested": {
+            "type": "boolean"
+          },
+          "workerId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The worker process that runs or ran the job."
+          },
+          "queuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "heartbeatAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "description": "A background job: parameters, progress while it runs, result when it succeeded, error when it failed. Parameters, progress and result are JSON whose shape depends on the kind."
+      },
+      "JobTrigger": {
+        "enum": [
+          "admin",
+          "schedule",
+          "startup"
+        ],
+        "description": "Who queued a job: an admin endpoint, the daily schedule of the Worker, or the API on startup (Development)."
+      },
+      "JsonElement": { },
       "LibraryItem": {
         "required": [
           "movieId",
@@ -3318,6 +3651,13 @@
             ]
           }
         }
+      },
+      "TmdbMovieList": {
+        "enum": [
+          "topRated",
+          "popular",
+          null
+        ]
       },
       "TokenUsage": {
         "required": [

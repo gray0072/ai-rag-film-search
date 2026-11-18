@@ -22,6 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Recorded TMDB responses and the fake TMDB API shared by the unit and integration tests (I16). -->
+    <None Include="..\fixtures\tmdb\*.json" Link="fixtures\tmdb\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="..\fixtures\TmdbStub.cs" Link="Fixtures\TmdbStub.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\FilmSearch.Api\FilmSearch.Api.csproj" />
     <ProjectReference Include="..\..\evals\FilmSearch.Evals\FilmSearch.Evals.csproj" />
   </ItemGroup>

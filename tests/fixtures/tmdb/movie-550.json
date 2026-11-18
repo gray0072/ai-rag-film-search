@@ -1,0 +1,359 @@
+{
+  "adult": false,
+  "backdrop_path": "/c6OLXfKAk5BKeR6broC8pYiCquX.jpg",
+  "budget": 63000000,
+  "genres": [
+    {
+      "id": 18,
+      "name": "Drama"
+    },
+    {
+      "id": 53,
+      "name": "Thriller"
+    }
+  ],
+  "homepage": "https://www.20thcenturystudios.com/movies/fight-club",
+  "id": 550,
+  "imdb_id": "tt0137523",
+  "origin_country": [
+    "US"
+  ],
+  "original_language": "en",
+  "original_title": "Fight Club",
+  "overview": "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.",
+  "popularity": 33.3477,
+  "poster_path": "/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
+  "release_date": "1999-10-15",
+  "revenue": 100853753,
+  "runtime": 139,
+  "softcore": false,
+  "status": "Released",
+  "tagline": "Mischief. Mayhem. Soap.",
+  "title": "Fight Club",
+  "video": false,
+  "vote_average": 8.4,
+  "vote_count": 33362,
+  "credits": {
+    "cast": [
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 819,
+        "known_for_department": "Acting",
+        "name": "Edward Norton",
+        "original_name": "Edward Norton",
+        "popularity": 5.1579,
+        "profile_path": "/8nytsqL59SFJTVYVrN72k6qkGgJ.jpg",
+        "cast_id": 4,
+        "character": "Narrator",
+        "credit_id": "52fe4250c3a36847f80149f3",
+        "order": 0
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 287,
+        "known_for_department": "Acting",
+        "name": "Brad Pitt",
+        "original_name": "Brad Pitt",
+        "popularity": 12.2783,
+        "profile_path": "/ajNaPmXVVMJFg9GWmu6MJzTaXdV.jpg",
+        "cast_id": 5,
+        "character": "Tyler Durden",
+        "credit_id": "52fe4250c3a36847f80149f7",
+        "order": 1
+      },
+      {
+        "adult": false,
+        "gender": 1,
+        "id": 1283,
+        "known_for_department": "Acting",
+        "name": "Helena Bonham Carter",
+        "original_name": "Helena Bonham Carter",
+        "popularity": 3.6244,
+        "profile_path": "/hJMbNSPJ2PCahsP3rNEU39C8GWU.jpg",
+        "cast_id": 285,
+        "character": "Marla Singer",
+        "credit_id": "631f0de8bd32090082733691",
+        "order": 2
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7470,
+        "known_for_department": "Acting",
+        "name": "Meat Loaf",
+        "original_name": "Meat Loaf",
+        "popularity": 1.0932,
+        "profile_path": "/1zkohpaG3my4qQAZGVgzgPuXwZ6.jpg",
+        "cast_id": 7,
+        "character": "Robert Paulson",
+        "credit_id": "52fe4250c3a36847f80149ff",
+        "order": 3
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7499,
+        "known_for_department": "Acting",
+        "name": "Jared Leto",
+        "original_name": "Jared Leto",
+        "popularity": 3.0539,
+        "profile_path": "/ca3x0OfIKbJppZh8S1Alx3GfUZO.jpg",
+        "cast_id": 286,
+        "character": "Angel Face",
+        "credit_id": "631f0e29ce9e91007f757d86",
+        "order": 4
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7471,
+        "known_for_department": "Acting",
+        "name": "Zach Grenier",
+        "original_name": "Zach Grenier",
+        "popularity": 1.5082,
+        "profile_path": "/fSyQKZO39sUsqY283GXiScOg3Hi.jpg",
+        "cast_id": 31,
+        "character": "Richard Chesler (Regional Manager)",
+        "credit_id": "52fe4250c3a36847f8014a55",
+        "order": 5
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7497,
+        "known_for_department": "Acting",
+        "name": "Holt McCallany",
+        "original_name": "Holt McCallany",
+        "popularity": 2.326,
+        "profile_path": "/b1FEXFQ8ZnvXhVrMqCv5mTJ8aW3.jpg",
+        "cast_id": 32,
+        "character": "The Mechanic",
+        "credit_id": "52fe4250c3a36847f8014a59",
+        "order": 6
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7498,
+        "known_for_department": "Acting",
+        "name": "Eion Bailey",
+        "original_name": "Eion Bailey",
+        "popularity": 4.0226,
+        "profile_path": "/3DW13W47cKk4LQZwS4EvRaNBoVu.jpg",
+        "cast_id": 33,
+        "character": "Ricky",
+        "credit_id": "52fe4250c3a36847f8014a5d",
+        "order": 7
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7472,
+        "known_for_department": "Acting",
+        "name": "Richmond Arquette",
+        "original_name": "Richmond Arquette",
+        "popularity": 0.7065,
+        "profile_path": "/7byGiVac0GjBSVD1h6ylZlVXZK6.jpg",
+        "cast_id": 34,
+        "character": "Intern at Hospital",
+        "credit_id": "52fe4250c3a36847f8014a61",
+        "order": 8
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7219,
+        "known_for_department": "Acting",
+        "name": "David Andrews",
+        "original_name": "David Andrews",
+        "popularity": 1.0625,
+        "profile_path": "/s5jEvhtGrYptw3Mmv7bejvcAKLv.jpg",
+        "cast_id": 35,
+        "character": "Thomas at Remaining Men Together",
+        "credit_id": "52fe4250c3a36847f8014a65",
+        "order": 9
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 1129738,
+        "known_for_department": "Acting",
+        "name": "George Maguire",
+        "original_name": "George Maguire",
+        "popularity": 0.3924,
+        "profile_path": "/pyKzJNkpjCA96ItVq93x1Y2YfYx.jpg",
+        "cast_id": 59,
+        "character": "Group Leader at Remaining Men Together",
+        "credit_id": "581fce4c92514168ad00899d",
+        "order": 10
+      },
+      {
+        "adult": false,
+        "gender": 1,
+        "id": 1317693,
+        "known_for_department": "Acting",
+        "name": "Eugenie Bondurant",
+        "original_name": "Eugenie Bondurant",
+        "popularity": 0.4737,
+        "profile_path": "/9ULAELEKNha7VCJhRWoer58NcJe.jpg",
+        "cast_id": 60,
+        "character": "Weeping Woman - Onward and Upward",
+        "credit_id": "581fce7fc3a368555600847b",
+        "order": 11
+      }
+    ],
+    "crew": [
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7468,
+        "known_for_department": "Writing",
+        "name": "Chuck Palahniuk",
+        "original_name": "Chuck Palahniuk",
+        "popularity": 0.4279,
+        "profile_path": "/r8WZhWea6RXCNO7HXvvB4lWYxzu.jpg",
+        "credit_id": "52fe4250c3a36847f8014a4d",
+        "department": "Writing",
+        "job": "Novel"
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7467,
+        "known_for_department": "Directing",
+        "name": "David Fincher",
+        "original_name": "David Fincher",
+        "popularity": 3.6117,
+        "profile_path": "/tpEczFclQZeKAiCeKZZ0adRvtfz.jpg",
+        "credit_id": "631f0289568463007bbe28a5",
+        "department": "Directing",
+        "job": "Director"
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 7469,
+        "known_for_department": "Writing",
+        "name": "Jim Uhls",
+        "original_name": "Jim Uhls",
+        "popularity": 0.7524,
+        "profile_path": "/uNkXdgsIdJF1xyj4BUSgHOfqjyb.jpg",
+        "credit_id": "56380f0cc3a3681b5c0200be",
+        "department": "Writing",
+        "job": "Screenplay"
+      }
+    ]
+  },
+  "keywords": {
+    "keywords": [
+      {
+        "id": 851,
+        "name": "dual identity"
+      },
+      {
+        "id": 3927,
+        "name": "rage and hate"
+      },
+      {
+        "id": 818,
+        "name": "based on novel or book"
+      },
+      {
+        "id": 1541,
+        "name": "nihilism"
+      },
+      {
+        "id": 1721,
+        "name": "fight"
+      },
+      {
+        "id": 825,
+        "name": "support group"
+      },
+      {
+        "id": 4565,
+        "name": "dystopia"
+      },
+      {
+        "id": 4142,
+        "name": "insomnia"
+      },
+      {
+        "id": 9181,
+        "name": "alter ego"
+      },
+      {
+        "id": 11687,
+        "name": "breaking the fourth wall"
+      },
+      {
+        "id": 156761,
+        "name": "split personality"
+      },
+      {
+        "id": 179173,
+        "name": "quitting a job"
+      },
+      {
+        "id": 212803,
+        "name": "dissociative identity disorder"
+      },
+      {
+        "id": 260426,
+        "name": "self destructiveness"
+      }
+    ]
+  },
+  "translations": {
+    "translations": [
+      {
+        "iso_3166_1": "US",
+        "iso_639_1": "en",
+        "name": "English",
+        "english_name": "English",
+        "data": {
+          "homepage": "https://www.20thcenturystudios.com/movies/fight-club",
+          "overview": "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.",
+          "runtime": 139,
+          "tagline": "Mischief. Mayhem. Soap.",
+          "title": ""
+        }
+      },
+      {
+        "iso_3166_1": "RU",
+        "iso_639_1": "ru",
+        "name": "Pусский",
+        "english_name": "Russian",
+        "data": {
+          "homepage": "https://www.20thcenturystudios.com/movies/fight-club",
+          "overview": "Сотрудник страховой компании страдает хронической бессонницей и отчаянно пытается вырваться из мучительно скучной жизни. Однажды в очередной командировке он встречает некоего Тайлера Дёрдена — харизматического торговца мылом с извращенной философией. Тайлер уверен, что самосовершенствование — удел слабых, а единственное, ради чего стоит жить, — саморазрушение.\r Проходит немного времени, и вот уже новые друзья лупят друг друга почем зря на стоянке перед баром, и очищающий мордобой доставляет им высшее блаженство. Приобщая других мужчин к простым радостям физической жестокости, они основывают тайный Бойцовский клуб, который начинает пользоваться невероятной популярностью.",
+          "runtime": 139,
+          "tagline": "«Интриги. Хаос. Мыло»",
+          "title": "Бойцовский клуб"
+        }
+      },
+      {
+        "iso_3166_1": "SE",
+        "iso_639_1": "sv",
+        "name": "svenska",
+        "english_name": "Swedish",
+        "data": {
+          "homepage": "",
+          "overview": "Jack hatar sitt vanliga liv och när Tyler Durden äntrar det är det ett välkommet knytnävsslag i ansiktet. Tillsammans startar de en hemlig klubb som breder ut sig till en större och större verksamhet, men samtidigt får Tyler allt mer kontroll över Jack. Detta provokativa, svarta, humoristiska mästerverk är mycket mer än en våldsam actionfilm. En modern klassiker.",
+          "runtime": 140,
+          "tagline": "",
+          "title": ""
+        }
+      }
+    ]
+  },
+  "external_ids": {
+    "imdb_id": "tt0137523",
+    "wikidata_id": "Q190050",
+    "facebook_id": "FightClub",
+    "instagram_id": null,
+    "twitter_id": null
+  }
+}

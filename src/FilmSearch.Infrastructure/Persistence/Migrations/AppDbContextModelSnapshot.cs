@@ -929,6 +929,99 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                     b.ToTable("payment_events", "commerce");
                 });
 
+            modelBuilder.Entity("FilmSearch.Infrastructure.Ingestion.Jobs.JobRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
+                    b.Property<bool>("CancelRequested")
+                        .HasColumnType("boolean")
+                        .HasColumnName("cancel_requested");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("error");
+
+                    b.Property<DateTimeOffset?>("FinishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("finished_at");
+
+                    b.Property<DateTimeOffset?>("HeartbeatAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("heartbeat_at");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("kind");
+
+                    b.Property<Guid?>("LeaseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("lease_id");
+
+                    b.Property<string>("ParametersJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("parameters");
+
+                    b.Property<string>("ProgressJson")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("progress");
+
+                    b.Property<DateTimeOffset>("QueuedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("queued_at");
+
+                    b.Property<string>("ResultJson")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("result");
+
+                    b.Property<DateTimeOffset?>("StartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("started_at");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("state");
+
+                    b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("trigger");
+
+                    b.Property<string>("WorkerId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("worker_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_jobs");
+
+                    b.HasIndex("Kind")
+                        .IsUnique()
+                        .HasDatabaseName("ux_jobs_one_active_per_kind")
+                        .HasFilter("state IN ('Queued', 'Running')");
+
+                    b.HasIndex("Kind", "QueuedAt")
+                        .HasDatabaseName("ix_jobs_kind_queued_at");
+
+                    b.HasIndex("State", "QueuedAt")
+                        .HasDatabaseName("ix_jobs_state_queued_at");
+
+                    b.ToTable("jobs", "ingestion");
+                });
+
             modelBuilder.Entity("FilmSearch.Infrastructure.Search.Keyword.MovieSearchDocument", b =>
                 {
                     b.Property<Guid>("MovieId")

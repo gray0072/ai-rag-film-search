@@ -19,7 +19,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Recorded TMDB responses and the fake TMDB API shared by the unit and integration tests (I16). -->
+    <None Include="..\fixtures\tmdb\*.json" Link="fixtures\tmdb\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="..\fixtures\TmdbStub.cs" Link="Fixtures\TmdbStub.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\FilmSearch.Api\FilmSearch.Api.csproj" />
+    <!-- Alias: the Worker has a public Program too (top-level statements), like the API used by WebApplicationFactory. -->
+    <ProjectReference Include="..\..\src\FilmSearch.Worker\FilmSearch.Worker.csproj" Aliases="worker" />
   </ItemGroup>
 
 </Project>

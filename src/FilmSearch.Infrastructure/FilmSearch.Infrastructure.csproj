@@ -1,10 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <!-- IHttpClientFactory (Stripe gateway) from the shared framework, as in FilmSearch.AI. -->
+    <!-- IHttpClientFactory (Stripe gateway, TMDB client) and hosting (Worker services) from the shared framework, as in FilmSearch.AI. -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="EFCore.NamingConventions" />
+    <!-- TMDB client (I16): its own retry, rate limiter (Polly.RateLimiting) and timeouts instead of the standard handler. -->
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" />
     <PackageReference Include="Stripe.net" />

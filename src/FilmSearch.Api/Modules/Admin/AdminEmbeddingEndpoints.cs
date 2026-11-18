@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FilmSearch.Core.Ingestion;
 using FilmSearch.Core.Localization;
 using FilmSearch.Core.Search;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,7 +20,7 @@ internal static class AdminEmbeddingEndpoints
 
         group.MapPost("/embeddings/reindex", Reindex)
             .WithName("ReindexEmbeddings")
-            .WithSummary("Starts a background reindex job (202). 409 while another job is queued or running.");
+            .WithSummary("Queues a reindex job for the Worker (202). 409 while another reindex job is queued or running.");
 
         group.MapDelete("/embeddings", DeleteModel)
             .WithName("DeleteEmbeddingModel")
@@ -36,13 +37,14 @@ internal static class AdminEmbeddingEndpoints
     {
         var active = embedder.Active;
         var stats = await indexer.GetStatsAsync(cancellationToken);
-        return TypedResults.Ok(new EmbeddingIndexState(active.Profile, active.Model, active.Dimensions, stats, jobs.Current));
+        return TypedResults.Ok(new EmbeddingIndexState(active.Profile, active.Model, active.Dimensions, stats, await jobs.GetLatestAsync(cancellationToken)));
     }
 
-    private static Results<Accepted<EmbeddingJobStatus>, Conflict<EmbeddingJobStatus>, ValidationProblem> Reindex(
+    private static async Task<Results<Accepted<EmbeddingJobStatus>, Conflict<EmbeddingJobStatus>, ValidationProblem>> Reindex(
         AdminReindexRequest request,
         ITextEmbedder embedder,
-        IEmbeddingJobs jobs)
+        IEmbeddingJobs jobs,
+        CancellationToken cancellationToken)
     {
         var errors = new Dictionary<string, string[]>();
         var profile = string.IsNullOrWhiteSpace(request.Profile) ? null : request.Profile.Trim();
@@ -70,8 +72,9 @@ internal static class AdminEmbeddingEndpoints
         }
 
         var locales = request.Locales is { Count: > 0 } ? [.. request.Locales.Select(l => l.Trim().ToLowerInvariant()).Distinct()] : (IReadOnlyList<string>?)null;
-        return jobs.TryStart(new ReindexRequest(profile, request.OnlyStale, locales), out var status)
-            ? TypedResults.Accepted("/api/admin/embeddings", status)
+        var (started, status) = await jobs.TryStartAsync(new ReindexRequest(profile, request.OnlyStale, locales), JobTrigger.Admin, cancellationToken);
+        return started
+            ? TypedResults.Accepted($"/api/admin/jobs/{status.Id}", status)
             : TypedResults.Conflict(status);
     }
 

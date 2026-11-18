@@ -78,9 +78,11 @@ Each event: `event: <type>` and `data: <json>`. The data also carries `type` (th
 | Method | Path | Description |
 |---|---|---|
 | POST | `/api/admin/ingestion/seed` | Load the seed file (idempotent). |
-| POST | `/api/admin/ingestion/tmdb` | `{ list: "top_rated"\|"popular", pages }` or `{ tmdbIds: [] }`. Starts a job → `{ jobId }`. |
-| GET | `/api/admin/jobs/{id}` | Job status and counters. |
-| POST | `/api/admin/embeddings/reindex` | `{ profile?, onlyStale: bool (default true), locales?: ["en", "ru", "sv"] }`. Starts a background job → 202 with the job status; 409 while a job is queued or running; 400 for an unknown profile or locale. `profile` is an embedding profile (model, dimension and prefixes come with it); vectors of other locales of that model are deleted. |
+| POST | `/api/admin/ingestion/tmdb` | `{ list: "topRated"\|"popular", pages?: 1–500 (default 1) }` or `{ tmdbIds: [] }` (up to 5000). Queues a job for the Worker → 202 with the job status (`Location: /api/admin/jobs/{id}`); 409 with the active import while one is queued or running; 400 for both or neither, bad pages or ids. |
+| GET | `/api/admin/jobs?kind=&limit=` | Jobs newest first (`kind`: `tmdbImport` / `embeddingReindex`, case-insensitive; `limit` 1–100, default 20). |
+| GET | `/api/admin/jobs/{id}` | Job status: kind, state, trigger, parameters, progress (`phase`, counters), result (`created`, `updated`, `unchanged`, `skipped`, `notFound`, `failed`, `errors`, `embeddings`), error, attempts, timestamps; 404 for an unknown id. |
+| POST | `/api/admin/jobs/{id}/cancel` | A queued job is cancelled at once, a running one at its next heartbeat; a finished job is returned unchanged; 404 for an unknown id. |
+| POST | `/api/admin/embeddings/reindex` | `{ profile?, onlyStale: bool (default true), locales?: ["en", "ru", "sv"] }`. Queues a reindex job for the Worker → 202 with the job status; 409 while a reindex job is queued or running; 400 for an unknown profile or locale. `profile` is an embedding profile (model, dimension and prefixes come with it); vectors of other locales of that model are deleted. |
 | GET | `/api/admin/embeddings` | Active profile, model and dimension; vector counts per model and locale; the current or last job (state, progress, result, error). |
 | DELETE | `/api/admin/embeddings?model=` | Deletes all vectors of a model; 400 for the active model. |
 

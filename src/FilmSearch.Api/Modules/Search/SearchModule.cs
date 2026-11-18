@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using FilmSearch.Api.Localization;
 using FilmSearch.Core.Catalog;
+using FilmSearch.Core.Ingestion;
 using FilmSearch.Core.Search;
 using FilmSearch.Infrastructure.Search;
 using FilmSearch.Infrastructure.Search.Semantic;
@@ -33,12 +34,14 @@ public static class SearchModule
         return app;
     }
 
-    /// <summary>Queues a reindex of stale vectors when <c>Search:Embeddings:IndexOnStartup</c> is on (Development), after the seed.</summary>
-    public static void IndexEmbeddingsOnStartup(this WebApplication app)
+    /// <summary>Queues a reindex of stale vectors when <c>Search:Embeddings:IndexOnStartup</c> is on (Development), after the seed. The Worker runs it.</summary>
+    public static async Task QueueEmbeddingsOnStartupAsync(this WebApplication app)
     {
         if (app.Services.GetRequiredService<IOptions<EmbeddingIndexOptions>>().Value.IndexOnStartup)
         {
-            app.Services.GetRequiredService<IEmbeddingJobs>().TryStart(new ReindexRequest(), out _);
+            await using var scope = app.Services.CreateAsyncScope();
+            await scope.ServiceProvider.GetRequiredService<IEmbeddingJobs>()
+                .TryStartAsync(new ReindexRequest(), JobTrigger.Startup, app.Lifetime.ApplicationStopping);
         }
     }
 

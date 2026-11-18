@@ -6,7 +6,7 @@ using FilmSearch.Core.Localization;
 namespace FilmSearch.Infrastructure.Tmdb;
 
 /// <summary>
-/// TMDB DTOs → import model. The single mapping path for the seed builder and the TMDB sync (spec 08 §3).
+/// TMDB DTOs → import model. The single mapping path for the seed builder and the TMDB import job (spec 08 §3).
 /// The movie details must be requested with <c>language=en-US</c> and
 /// <c>append_to_response=credits,keywords,translations,external_ids</c>.
 /// </summary>
@@ -65,6 +65,27 @@ public static class TmdbMovieMapper
             Translations = translations,
             Credits = MapCredits(movie.Credits),
         };
+    }
+
+    /// <summary>Genre lists per locale (<c>/genre/movie/list</c> in each language) → genres with names per locale.</summary>
+    public static IReadOnlyList<GenreImport> ToGenres(IReadOnlyDictionary<string, TmdbGenreList> listsByLocale)
+    {
+        var names = new SortedDictionary<int, Dictionary<string, string>>();
+        foreach (var (locale, list) in listsByLocale)
+        {
+            foreach (var genre in list.Genres)
+            {
+                if (!names.TryGetValue(genre.Id, out var byLocale))
+                {
+                    names[genre.Id] = byLocale = new Dictionary<string, string>(StringComparer.Ordinal);
+                }
+
+                // TMDB returns lower-case Russian names ("драма"); capitalize them for the UI.
+                byLocale[locale] = string.IsNullOrEmpty(genre.Name) ? genre.Name : char.ToUpperInvariant(genre.Name[0]) + genre.Name[1..];
+            }
+        }
+
+        return [.. names.Where(pair => pair.Value.ContainsKey(Locales.English)).Select(pair => ToGenre(pair.Key, pair.Value))];
     }
 
     public static GenreImport ToGenre(int id, IReadOnlyDictionary<string, string> namesByLocale)

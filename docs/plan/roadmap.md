@@ -31,7 +31,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I10 | [Store UI: catalog, search, cart, checkout](iterations/I10-store-ui.md) | I02, I04, I09 | 4 | 2 | done |
 | I15 | [Stripe test mode](iterations/I15-stripe-test-mode.md) | I09 | 4 | 1–2 | done |
 | I11 | [Chat foundation: conversations, streaming, grounded answers](iterations/I11-chat-foundation.md) | I05, I07 | 5 | 2 | done |
-| I16 | [TMDB sync and Worker](iterations/I16-tmdb-sync-worker.md) | I06 | 5 | 2 | todo |
+| I16 | [TMDB sync and Worker](iterations/I16-tmdb-sync-worker.md) | I06 | 5 | 2 | done |
 | I17 | [Authentication (Identity)](iterations/I17-authentication.md) | I09, I02 | 5 | 1–2 | todo |
 | I12 | [Agent: tools, cart, checkout confirmation](iterations/I12-agent-tools.md) | I11, I09 | 6 | 2 | done |
 | I13 | [Chat UI](iterations/I13-chat-ui.md) | I10, I11 (contract) | 6 | 2 | done |

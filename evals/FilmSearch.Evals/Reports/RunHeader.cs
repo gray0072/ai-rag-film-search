@@ -100,7 +100,7 @@ public sealed record RunHeader
             Suite = options.Suite,
             Label = options.Label,
             StartedAt = DateTimeOffset.UtcNow,
-            CommandLine = string.Join(' ', Environment.GetCommandLineArgs().Skip(1)),
+            CommandLine = RedactedCommandLine(Environment.GetCommandLineArgs().Skip(1)),
             Commit = GitCommit(repositoryRoot),
             Dataset = Path.GetRelativePath(repositoryRoot, datasetPath).Replace('\\', '/'),
             DatasetVersion = datasetVersion,
@@ -207,5 +207,20 @@ public sealed record RunHeader
         {
             return null;
         }
+    }
+
+    /// <summary>The runner's arguments with the value of <c>--connection</c> replaced: a connection string has a password, and reports are committed.</summary>
+    internal static string RedactedCommandLine(IEnumerable<string> args)
+    {
+        var list = args.ToList();
+        for (var i = 0; i < list.Count - 1; i++)
+        {
+            if (string.Equals(list[i], "--connection", StringComparison.Ordinal))
+            {
+                list[i + 1] = "<connection>";
+            }
+        }
+
+        return string.Join(' ', list);
     }
 }

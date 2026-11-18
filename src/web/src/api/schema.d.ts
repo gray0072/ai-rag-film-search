@@ -373,8 +373,76 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Starts a background reindex job (202). 409 while another job is queued or running. */
+        /** Queues a reindex job for the Worker (202). 409 while another reindex job is queued or running. */
         post: operations["ReindexEmbeddings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/ingestion/tmdb": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Queues a TMDB import job for the Worker (202): a list with pages, or TMDB ids. 409 while another import is queued or running. */
+        post: operations["ImportFromTmdb"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Background jobs, newest first, optionally of one kind (tmdbImport, embeddingReindex). */
+        get: operations["ListJobs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/jobs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** State, progress and result of a background job. */
+        get: operations["GetJob"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/jobs/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancels a job: a queued one at once, a running one at its next heartbeat. A finished job is returned unchanged. */
+        post: operations["CancelJob"];
         delete?: never;
         options?: never;
         head?: never;
@@ -418,6 +486,17 @@ export interface components {
             onlyStale?: boolean;
             /** @description Locales to keep vectors for (`en`, `ru`, `sv`); `Search:Embeddings:Locales` when empty. Vectors of other locales of this model are deleted. */
             locales?: null | string[];
+        };
+        /** @description Body of `POST /api/admin/ingestion/tmdb`: a list with pages, or TMDB ids. */
+        AdminTmdbImportRequest: {
+            list?: null | components["schemas"]["TmdbMovieList"];
+            /**
+             * Format: int32
+             * @description Pages of the list, 20 movies each (default 1).
+             */
+            pages?: null | number;
+            /** @description TMDB ids to import instead of a list. */
+            tmdbIds?: null | number[];
         };
         AppInfoResponse: {
             name: string;
@@ -705,13 +784,12 @@ export interface components {
             sets: components["schemas"]["EmbeddingSetStats"][];
             job: null | components["schemas"]["EmbeddingJobStatus"];
         };
-        /** @enum {unknown} */
-        EmbeddingJobState: "queued" | "running" | "succeeded" | "failed" | "cancelled";
-        /** @description State of a background reindex job. `Progress` while it runs, `Result` when it succeeded, `Error` when it failed. */
+        /** @description State of a background reindex job (a job of kind `EmbeddingReindex`). `Progress` while it runs, `Result` when it succeeded, `Error` when it failed. */
         EmbeddingJobStatus: {
             /** Format: uuid */
             id: string;
-            state: components["schemas"]["EmbeddingJobState"];
+            state: components["schemas"]["JobState"];
+            trigger: components["schemas"]["JobTrigger"];
             request: components["schemas"]["ReindexRequest"];
             /** Format: date-time */
             queuedAt: string;
@@ -762,6 +840,51 @@ export interface components {
                 [key: string]: string[];
             };
         };
+        /**
+         * @description What a background job does.
+         * @enum {unknown}
+         */
+        JobKind: "tmdbImport" | "embeddingReindex";
+        /**
+         * @description Lifecycle of a job: Queued → Running → Succeeded / Failed / Cancelled. A running job whose worker stopped sending heartbeats is queued again.
+         * @enum {unknown}
+         */
+        JobState: "queued" | "running" | "succeeded" | "failed" | "cancelled";
+        /** @description A background job: parameters, progress while it runs, result when it succeeded, error when it failed. Parameters, progress and result are JSON whose shape depends on the kind. */
+        JobStatus: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["JobKind"];
+            state: components["schemas"]["JobState"];
+            trigger: components["schemas"]["JobTrigger"];
+            parameters: components["schemas"]["JsonElement"];
+            progress?: null | components["schemas"]["JsonElement"];
+            result?: null | components["schemas"]["JsonElement"];
+            error?: null | string;
+            /**
+             * Format: int32
+             * @description Number of times a worker started the job (more than one after a worker was lost).
+             */
+            attempts?: number;
+            cancelRequested?: boolean;
+            /** @description The worker process that runs or ran the job. */
+            workerId?: null | string;
+            /** Format: date-time */
+            queuedAt: string;
+            /** Format: date-time */
+            startedAt?: null | string;
+            /** Format: date-time */
+            heartbeatAt?: null | string;
+            /** Format: date-time */
+            finishedAt?: null | string;
+            isActive?: boolean;
+        };
+        /**
+         * @description Who queued a job: an admin endpoint, the daily schedule of the Worker, or the API on startup (Development).
+         * @enum {unknown}
+         */
+        JobTrigger: "admin" | "schedule" | "startup";
+        JsonElement: unknown;
         LibraryItem: {
             /**
              * Format: uuid
@@ -1180,6 +1303,8 @@ export interface components {
             eventId?: null | string;
             reconnectionInterval?: null | string;
         };
+        /** @enum {unknown} */
+        TmdbMovieList: "topRated" | "popular" | null;
         /** @description Tokens of all model calls of a turn. */
         TokenUsage: {
             /** Format: int64 */
@@ -2000,6 +2125,138 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["EmbeddingJobStatus"];
                 };
+            };
+        };
+    };
+    ImportFromTmdb: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminTmdbImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobStatus"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobStatus"];
+                };
+            };
+        };
+    };
+    ListJobs: {
+        parameters: {
+            query?: {
+                kind?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobStatus"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    GetJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CancelJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobStatus"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -12,8 +12,9 @@ namespace FilmSearch.Infrastructure.Search;
 public static class SearchInfrastructureExtensions
 {
     /// <summary>
-    /// <see cref="IMovieSearch"/>, the indexers that keep search data in sync with the catalog, and the background
-    /// embedding jobs. Semantic search needs an <see cref="ITextEmbedder"/> (registered by <c>AddAiProviders</c>).
+    /// <see cref="IMovieSearch"/> and the indexers that keep search data in sync with the catalog. Semantic search needs an
+    /// <see cref="ITextEmbedder"/> (registered by <c>AddAiProviders</c>). Reindex jobs are queued through
+    /// <c>AddIngestionInfrastructure</c> and run by the Worker.
     /// </summary>
     public static IServiceCollection AddSearchInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
@@ -45,10 +46,6 @@ public static class SearchInfrastructureExtensions
             .Validate(o => o.KeywordWeight >= 0 && o.RelaxedKeywordWeight >= 0 && o.SemanticWeight >= 0 && o.SimilarTitleWeight >= 0, "Search:Hybrid weights must not be negative.")
             .Validate(o => o.MaxSimilarTitles is >= 0 and <= 10, "Search:Hybrid:MaxSimilarTitles must be between 0 and 10.")
             .ValidateOnStart();
-        services.AddSingleton<EmbeddingJobRunner>();
-        services.AddSingleton<IEmbeddingJobs>(sp => sp.GetRequiredService<EmbeddingJobRunner>());
-        services.AddHostedService(sp => sp.GetRequiredService<EmbeddingJobRunner>());
-
         return services;
     }
 }

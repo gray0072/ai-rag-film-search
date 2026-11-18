@@ -1,7 +1,9 @@
+using FilmSearch.Core.Ingestion;
+
 namespace FilmSearch.Core.Search;
 
 // Contracts of the embedding index (spec 08 §4): reindex, statistics, deleting the vectors of an old model,
-// and the background job that runs a reindex. Used by the admin endpoints (and by the Worker from I16).
+// and the background job that runs a reindex. Used by the admin endpoints and by the Worker (I16).
 // Doc comments of types in the OpenAPI document stay on one line (see SearchModels.cs).
 
 /// <summary>What to (re)embed. <c>Profile</c>: embedding profile, the active one when null. <c>OnlyStale</c>: embed only movies whose text hash changed; false re-embeds everything. <c>Locales</c>: locales to keep vectors for, the configured ones when null; vectors of other locales of this model are deleted.</summary>
@@ -43,21 +45,14 @@ public interface IMovieEmbeddingIndexer
     Task<int> DeleteModelAsync(string model, CancellationToken cancellationToken);
 }
 
-public enum EmbeddingJobState
-{
-    Queued,
-    Running,
-    Succeeded,
-    Failed,
-    Cancelled,
-}
-
-/// <summary>State of a background reindex job. <c>Progress</c> while it runs, <c>Result</c> when it succeeded, <c>Error</c> when it failed.</summary>
+/// <summary>State of a background reindex job (a job of kind <c>EmbeddingReindex</c>). <c>Progress</c> while it runs, <c>Result</c> when it succeeded, <c>Error</c> when it failed.</summary>
 public sealed record EmbeddingJobStatus
 {
     public required Guid Id { get; init; }
 
-    public required EmbeddingJobState State { get; init; }
+    public required JobState State { get; init; }
+
+    public required JobTrigger Trigger { get; init; }
 
     public required ReindexRequest Request { get; init; }
 
@@ -73,15 +68,15 @@ public sealed record EmbeddingJobStatus
 
     public string? Error { get; init; }
 
-    public bool IsActive => State is EmbeddingJobState.Queued or EmbeddingJobState.Running;
+    public bool IsActive => State is JobState.Queued or JobState.Running;
 }
 
-/// <summary>Runs reindex jobs in the background, one at a time (spec 04: the reindex endpoint starts a job).</summary>
+/// <summary>Reindex jobs in the job queue, run by the Worker one at a time (spec 04: the reindex endpoint starts a job).</summary>
 public interface IEmbeddingJobs
 {
-    /// <summary>The running job, or the last finished one; null when no job ran since start.</summary>
-    EmbeddingJobStatus? Current { get; }
+    /// <summary>The queued or running job, or the last finished one; null when no reindex job ever ran.</summary>
+    Task<EmbeddingJobStatus?> GetLatestAsync(CancellationToken cancellationToken);
 
-    /// <summary>Queues a job. Returns false, with the active job's status, when a job is already queued or running.</summary>
-    bool TryStart(ReindexRequest request, out EmbeddingJobStatus status);
+    /// <summary>Queues a job. Returns <c>Started = false</c>, with the active job's status, when a reindex job is already queued or running.</summary>
+    Task<(bool Started, EmbeddingJobStatus Status)> TryStartAsync(ReindexRequest request, JobTrigger trigger, CancellationToken cancellationToken);
 }

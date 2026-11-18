@@ -69,6 +69,13 @@ The commerce tables live in the `commerce` schema: `carts`, `cart_items`, `order
 
 The assistant tables live in the `assistant` schema: `conversations`, `messages`, `message_feedback`, `confirmations`.
 
+### Ingestion (I16)
+| Entity | Fields |
+|---|---|
+| **Job** | `Id`, `Kind` (`TmdbImport` / `EmbeddingReindex`), `State` (`Queued` / `Running` / `Succeeded` / `Failed` / `Cancelled`), `Trigger` (`Admin` / `Schedule` / `Startup`), `Parameters`, `Progress?`, `Result?` (jsonb), `Error?`, `Attempts`, `CancelRequested`, `WorkerId?`, `LeaseId?`, `QueuedAt`, `StartedAt?`, `HeartbeatAt?`, `FinishedAt?` |
+
+Table `ingestion.jobs`; at most one queued or running job per kind (partial unique index). Queue rules: [spec 08 §3](08-data-ingestion.md#job-queue).
+
 ### Identity (from I17)
 ASP.NET Core Identity tables in schema `identity`. `OwnerId` in other modules becomes the user id after login. The anonymous id is migrated on login.
 

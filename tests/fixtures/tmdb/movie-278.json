@@ -1,0 +1,379 @@
+{
+  "adult": false,
+  "backdrop_path": "/pNjh59JSxChQktamG3LMp9ZoQzp.jpg",
+  "budget": 25000000,
+  "genres": [
+    {
+      "id": 18,
+      "name": "Drama"
+    },
+    {
+      "id": 80,
+      "name": "Crime"
+    }
+  ],
+  "homepage": "",
+  "id": 278,
+  "imdb_id": "tt0111161",
+  "origin_country": [
+    "US"
+  ],
+  "original_language": "en",
+  "original_title": "The Shawshank Redemption",
+  "overview": "Imprisoned in the 1940s for the double murder of his wife and her lover, upstanding banker Andy Dufresne begins a new life at the Shawshank prison, where he puts his accounting skills to work for an amoral warden. During his long stretch in prison, Dufresne comes to be admired by the other inmates -- including an older prisoner named Red -- for his integrity and unquenchable sense of hope.",
+  "popularity": 45.4678,
+  "poster_path": "/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg",
+  "release_date": "1994-09-23",
+  "revenue": 28341469,
+  "runtime": 142,
+  "softcore": false,
+  "status": "Released",
+  "tagline": "Fear can hold you prisoner. Hope can set you free.",
+  "title": "The Shawshank Redemption",
+  "video": false,
+  "vote_average": 8.734,
+  "vote_count": 31863,
+  "credits": {
+    "cast": [
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 504,
+        "known_for_department": "Acting",
+        "name": "Tim Robbins",
+        "original_name": "Tim Robbins",
+        "popularity": 3.9344,
+        "profile_path": "/3FfJMIVwXgsIXbAT8ECBSZJAncR.jpg",
+        "cast_id": 3,
+        "character": "Andy Dufresne",
+        "credit_id": "52fe4231c3a36847f800b131",
+        "order": 0
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 192,
+        "known_for_department": "Acting",
+        "name": "Morgan Freeman",
+        "original_name": "Morgan Freeman",
+        "popularity": 6.0964,
+        "profile_path": "/jPsLqiYGSofU4s6BjrxnefMfabb.jpg",
+        "cast_id": 4,
+        "character": "Ellis Boyd 'Red' Redding",
+        "credit_id": "52fe4231c3a36847f800b135",
+        "order": 1
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 4029,
+        "known_for_department": "Acting",
+        "name": "Bob Gunton",
+        "original_name": "Bob Gunton",
+        "popularity": 2.3043,
+        "profile_path": "/ulbVvuBToBN3aCGcV028hwO0MOP.jpg",
+        "cast_id": 5,
+        "character": "Warden Norton",
+        "credit_id": "52fe4231c3a36847f800b139",
+        "order": 2
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 6573,
+        "known_for_department": "Acting",
+        "name": "William Sadler",
+        "original_name": "William Sadler",
+        "popularity": 2.0765,
+        "profile_path": "/rWeb2kjYCA7V9MC9kRwRpm57YoY.jpg",
+        "cast_id": 7,
+        "character": "Heywood",
+        "credit_id": "52fe4231c3a36847f800b13d",
+        "order": 3
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 6574,
+        "known_for_department": "Acting",
+        "name": "Clancy Brown",
+        "original_name": "Clancy Brown",
+        "popularity": 3.7275,
+        "profile_path": "/1JeBRNG7VS7r64V9lOvej9bZXW5.jpg",
+        "cast_id": 8,
+        "character": "Captain Byron T. Hadley",
+        "credit_id": "52fe4231c3a36847f800b141",
+        "order": 4
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 6575,
+        "known_for_department": "Acting",
+        "name": "Gil Bellows",
+        "original_name": "Gil Bellows",
+        "popularity": 1.9175,
+        "profile_path": "/eCOIv2nSGnWTHdn88NoMyNOKWyR.jpg",
+        "cast_id": 9,
+        "character": "Tommy",
+        "credit_id": "52fe4231c3a36847f800b145",
+        "order": 5
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 6577,
+        "known_for_department": "Acting",
+        "name": "James Whitmore",
+        "original_name": "James Whitmore",
+        "popularity": 1.5271,
+        "profile_path": "/nYMAbkfwFIgKK84vnLoQctI6vHg.jpg",
+        "cast_id": 11,
+        "character": "Brooks Hatlen",
+        "credit_id": "52fe4231c3a36847f800b14d",
+        "order": 6
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 6576,
+        "known_for_department": "Acting",
+        "name": "Mark Rolston",
+        "original_name": "Mark Rolston",
+        "popularity": 1.4452,
+        "profile_path": "/hcrNRIptYMRXgkJ9k76BlQu6DQp.jpg",
+        "cast_id": 10,
+        "character": "Bogs Diamond",
+        "credit_id": "52fe4231c3a36847f800b149",
+        "order": 7
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 12645,
+        "known_for_department": "Acting",
+        "name": "Jeffrey DeMunn",
+        "original_name": "Jeffrey DeMunn",
+        "popularity": 1.9432,
+        "profile_path": "/70bkLdlkBB7x2NztuJAh4pjdyxy.jpg",
+        "cast_id": 28,
+        "character": "1946 D.A.",
+        "credit_id": "540dc040c3a36879b200546e",
+        "order": 8
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 92119,
+        "known_for_department": "Acting",
+        "name": "Larry Brandenburg",
+        "original_name": "Larry Brandenburg",
+        "popularity": 0.6779,
+        "profile_path": "/y13c1a4keaLnoTbi3dERwolQXWP.jpg",
+        "cast_id": 29,
+        "character": "Skeet",
+        "credit_id": "542eb4a5c3a3680439000009",
+        "order": 9
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 168323,
+        "known_for_department": "Acting",
+        "name": "Neil Giuntoli",
+        "original_name": "Neil Giuntoli",
+        "popularity": 0.4403,
+        "profile_path": "/dRFzPIAinOjXbYOqYEax0sGrfTl.jpg",
+        "cast_id": 30,
+        "character": "Jigger",
+        "credit_id": "542eb4b1c3a3680436000003",
+        "order": 10
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 6580,
+        "known_for_department": "Acting",
+        "name": "Brian Libby",
+        "original_name": "Brian Libby",
+        "popularity": 0.6071,
+        "profile_path": "/sumWxPgIbCpnp1v1exfJWIt43i3.jpg",
+        "cast_id": 31,
+        "character": "Floyd",
+        "credit_id": "542eb4bd0e0a2625a6000004",
+        "order": 11
+      }
+    ],
+    "crew": [
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 4027,
+        "known_for_department": "Directing",
+        "name": "Frank Darabont",
+        "original_name": "Frank Darabont",
+        "popularity": 1.9945,
+        "profile_path": "/vZ50guP86otYTiBSGfi35GNHWVf.jpg",
+        "credit_id": "62bec10a28723c007c122123",
+        "department": "Writing",
+        "job": "Screenplay"
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 3027,
+        "known_for_department": "Writing",
+        "name": "Stephen King",
+        "original_name": "Stephen King",
+        "popularity": 2.4098,
+        "profile_path": "/7r5nEzNanuEhmxtpsKE1uCBU5Jd.jpg",
+        "credit_id": "575cfd879251412b0c001d2a",
+        "department": "Writing",
+        "job": "Novel"
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 4027,
+        "known_for_department": "Directing",
+        "name": "Frank Darabont",
+        "original_name": "Frank Darabont",
+        "popularity": 1.9945,
+        "profile_path": "/vZ50guP86otYTiBSGfi35GNHWVf.jpg",
+        "credit_id": "5e8477cd691cd5001257256a",
+        "department": "Directing",
+        "job": "Director"
+      }
+    ]
+  },
+  "keywords": {
+    "keywords": [
+      {
+        "id": 378,
+        "name": "prison"
+      },
+      {
+        "id": 6054,
+        "name": "friendship"
+      },
+      {
+        "id": 796,
+        "name": "police brutality"
+      },
+      {
+        "id": 417,
+        "name": "corruption"
+      },
+      {
+        "id": 818,
+        "name": "based on novel or book"
+      },
+      {
+        "id": 6089,
+        "name": "freedom"
+      },
+      {
+        "id": 3929,
+        "name": "hope"
+      },
+      {
+        "id": 2885,
+        "name": "prison cell"
+      },
+      {
+        "id": 4779,
+        "name": "delinquent"
+      },
+      {
+        "id": 11436,
+        "name": "redemption"
+      },
+      {
+        "id": 8622,
+        "name": "parole board"
+      },
+      {
+        "id": 9777,
+        "name": "prison escape"
+      },
+      {
+        "id": 12662,
+        "name": "wrongful imprisonment"
+      },
+      {
+        "id": 165583,
+        "name": "interracial friendship"
+      },
+      {
+        "id": 180172,
+        "name": "framed for murder"
+      },
+      {
+        "id": 207883,
+        "name": "1940s"
+      },
+      {
+        "id": 236369,
+        "name": "voiceover"
+      },
+      {
+        "id": 325765,
+        "name": "amused"
+      },
+      {
+        "id": 377433,
+        "name": "epic"
+      }
+    ]
+  },
+  "translations": {
+    "translations": [
+      {
+        "iso_3166_1": "US",
+        "iso_639_1": "en",
+        "name": "English",
+        "english_name": "English",
+        "data": {
+          "homepage": "",
+          "overview": "Imprisoned in the 1940s for the double murder of his wife and her lover, upstanding banker Andy Dufresne begins a new life at the Shawshank prison, where he puts his accounting skills to work for an amoral warden. During his long stretch in prison, Dufresne comes to be admired by the other inmates -- including an older prisoner named Red -- for his integrity and unquenchable sense of hope.",
+          "runtime": 142,
+          "tagline": "Fear can hold you prisoner. Hope can set you free.",
+          "title": ""
+        }
+      },
+      {
+        "iso_3166_1": "RU",
+        "iso_639_1": "ru",
+        "name": "Pусский",
+        "english_name": "Russian",
+        "data": {
+          "homepage": "",
+          "overview": "Бухгалтер Энди Дюфрейн обвинён в убийстве собственной жены и её любовника. Оказавшись в тюрьме под названием Шоушенк, он сталкивается с жестокостью и беззаконием, царящими по обе стороны решётки. Каждый, кто попадает в эти стены, становится их рабом до конца жизни. Но Энди, обладающий живым умом и доброй душой, находит подход как к заключённым, так и к охранникам, добиваясь их особого к себе расположения.",
+          "runtime": 142,
+          "tagline": "«Страх — это кандалы. Надежда — это свобода»",
+          "title": "Побег из Шоушенка"
+        }
+      },
+      {
+        "iso_3166_1": "SE",
+        "iso_639_1": "sv",
+        "name": "svenska",
+        "english_name": "Swedish",
+        "data": {
+          "homepage": "",
+          "overview": "Bankiren Andy Dufresne börjar ett nytt liv i fängelse efter att ha blivit ditsatt för dubbelmord på sin fru och hennes älskare. Han nyttjar sina bankirkunskaper till att arbeta för fängelsets föreståndare. Dufresne beundras av de andra fångarna – inklusive en äldre fånge vid namn Red – för hans integritet och osinande hopp för rättvisa och upprättelse.",
+          "runtime": 143,
+          "tagline": "Fruktan kan hålla dig fången. Hoppet kan göra dig  fri.",
+          "title": "Nyckeln till frihet"
+        }
+      }
+    ]
+  },
+  "external_ids": {
+    "imdb_id": "tt0111161",
+    "wikidata_id": "Q172241",
+    "facebook_id": null,
+    "instagram_id": null,
+    "twitter_id": null
+  }
+}
