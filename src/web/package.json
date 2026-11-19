@@ -17,6 +17,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
+    "docs:screenshots": "node scripts/docs-screenshots.mjs",
     "gen:api": "openapi-typescript openapi/v1.json --output src/api/schema.d.ts"
   },
   "dependencies": {

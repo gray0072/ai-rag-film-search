@@ -13,6 +13,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | **M3 AI sales assistant** | Chat, agent with tools, checkout with confirmation, chat UI, assistant evaluations and guardrails | I11–I14 |
 | **M4 Real integrations** | Stripe test mode, TMDB sync + Worker, authentication | I15–I17 |
 | **M5 Production ready** | Observability and cost, resilience and caching, deployment | I18–I20 |
+| **M6 Showcase** | README, textbook, build journal, role handbook, documentation website | I21 |
 
 ## Iterations
 
@@ -39,6 +40,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I18 | [Observability and cost tracking](iterations/I18-observability-cost.md) | I12 | 7 | 1 | done |
 | I19 | [Resilience, caching, rate limiting](iterations/I19-resilience-caching.md) | I12 | 8 | 1 | done |
 | I20 | [Containers and deployment](iterations/I20-deployment.md) | I15, I17 | 8 | 1–2 | done |
+| I21 | [Documentation and project showcase](iterations/I21-documentation.md) | I20 | 9 | 3–4 | in progress |
 
 IDs are stable and do not follow the execution order. Order is defined by **waves**.
 
@@ -77,6 +79,7 @@ flowchart TD
     I12 --> I19[I19 Resilience + caching]
     I15 --> I20[I20 Deploy]
     I17 --> I20
+    I20 --> I21[I21 Docs + showcase]
 
     classDef ai fill:#e8f0fe,stroke:#3367d6;
     class I05,I06,I07,I08,I11,I12,I14,I18 ai;
@@ -97,6 +100,7 @@ Blue = AI-focused iterations.
 | 6 | **I12 ‖ I13** | I13 works against the SSE contract from spec 04 with a mocked stream, then connects to the real one. |
 | 7 | **I14 ‖ I18** | |
 | 8 | **I19 ‖ I20** | |
+| 9 | I21 | Documentation only. |
 
 Shortest path to a working AI assistant: I01 → I03 + I05 → I06 → I04 → I07 → I11 → I12 (+ I09 for checkout, I02/I10/I13 for UI).
 

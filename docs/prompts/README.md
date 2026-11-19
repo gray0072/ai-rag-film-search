@@ -73,3 +73,4 @@ Rules:
 | [S21](sessions/2026-11-19_S21_resilience-caching.md) | 2026-11-19 | I19 | Resilience, caching, rate limiting |
 | [S22](sessions/2026-11-19_S22_deployment.md) | 2026-11-19 | I20 | Containers and deployment |
 | [S23](sessions/2026-11-19_S23_remove-ollama.md) | 2026-11-19 | — | Remove Ollama: demo embeddings on OpenRouter or LM Studio |
+| [S24](sessions/2026-11-19_S24_documentation.md) | 2026-11-19 | I21 | Documentation system: README, journal, RAG guide, role guides, GitHub Pages |
