@@ -47,7 +47,7 @@ POST /api/chat/conversations/{id}/messages        HTTP request (ASP.NET Core)
 - **A slow turn.** Metric `assistant.turn.duration` shows when turns got slow (by `outcome`, `prompt`). Then find the slowest answers: `SELECT trace_id, latency_ms, model FROM assistant.messages WHERE role = 'Assistant' AND latency_ms IS NOT NULL ORDER BY latency_ms DESC LIMIT 20;`. In the trace, compare the chat spans (model time; a local model on battery power runs on the CPU), the tool spans and `search.embed_query` (embedding provider).
 - **An expensive conversation.** `SELECT id, owner_id, total_input_tokens + total_output_tokens AS tokens, estimated_cost_usd FROM assistant.conversations ORDER BY tokens DESC LIMIT 20;`. In Langfuse, Sessions lists conversations (session id = conversation id) with their cost.
 - **A conversation the user reports.** The conversation id is in the chat URL. Langfuse → Sessions → that id shows all turns in order. In the Aspire dashboard, filter traces by the tag `gen_ai.conversation.id`.
-- **Errors.** `assistant.turns{outcome != answered}` counts turns by error code (`providerUnavailable`, `budgetExceeded`, `dailyBudgetExceeded`, `conversationBusy`, `internalError`, `cancelled`). The logs carry the conversation id. Failed spans have status Error.
+- **Errors.** `assistant.turns{outcome != answered}` counts turns by outcome: `cancelled` (the user stopped the answer) or an error code (`providerUnavailable`, `budgetExceeded`, `dailyBudgetExceeded`, `serviceBudgetExceeded`, `toolsNotSupported`, `conversationBusy`, `internalError`). The logs carry the conversation id. Failed spans have status Error.
 
 ## Metrics (meter `FilmSearch`)
 
@@ -76,7 +76,8 @@ Other meters: `resilience.polly.strategy.events` (meter `Polly`; tags `pipeline.
 ## Budgets (NFR-5)
 
 - `Assistant:MaxConversationTokens` (300 000): a conversation past it gets `error: budgetExceeded`, and the UI asks the user to start a new one.
-- `Assistant:MaxOwnerTokensPerDay` (1 000 000): the owner (anonymous session or user) has used that many tokens in answers of the last 24 hours, over all conversations. The next turn gets `error: dailyBudgetExceeded`. Both checks run before any model call, and the warning log names the budget.
+- `Assistant:MaxOwnerTokensPerDay` (1 000 000): the owner (anonymous session or user) has used that many tokens in answers of the last 24 hours, over all conversations. The next turn gets `error: dailyBudgetExceeded`.
+- `Assistant:MaxTotalTokensPerDay` (0 = off; set in the Demo environment): the whole service has used that many tokens in the last 24 hours, the spend cap of the public demo (I20). The next turn of anyone gets `error: serviceBudgetExceeded`. All checks run before any model call, and the warning log names the budget.
 - `Assistant:MaxToolIterations` (6) limits model calls per turn. Each hit is counted in `assistant.iteration_limit_hits`.
 
 ## Langfuse housekeeping

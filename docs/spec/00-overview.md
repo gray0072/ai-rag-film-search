@@ -53,7 +53,7 @@ The full learning map is in [learning-path.md](../learning-path.md).
 - Observability, evaluation, guardrails, CI, containerized deployment.
 
 ### Out of scope (non-goals)
-- Real video streaming. A purchased movie only shows a fake "Watch" button.
+- Real video streaming. A purchased movie only appears in the library and is marked as owned or rented on its page.
 - Real money and live Stripe mode.
 - Admin UI for catalog editing. Admin actions are API endpoints or CLI commands.
 - Mobile apps.

@@ -69,7 +69,7 @@ queries: a multilingual model is not optional for this store.
 |---|---|---|
 | HNSW returned 4.8 of 10 rows at low `ef_search`, the planner estimated 1 row | Dead graph entries and no statistics after a bulk insert | `VACUUM (ANALYZE)` after every reindex |
 | Filters could remove most of the approximate top-k | Post-filtering an HNSW result | Pre-filter in SQL and `hnsw.iterative_scan = relaxed_order` |
-| The planner ignored the HNSW index | At 1000 rows an exact scan is cheaper (0.22 vs 3.5 ms per query, recall 1.000 both) | Accepted; a plan test forces the index to check the query shape |
+| The planner ignored the HNSW index | At 1000 rows the planner *estimates* the exact scan as cheaper (cost ≈ 460–600 vs ≈ 1640), although HNSW is faster (0.22 vs 3.5 ms per query, recall 1.000 both) | Accepted: both are far below the 20–30 ms of embedding the query; a plan test forces the index to check the query shape |
 | Admin chat answered 500 instead of 503 with LM Studio off | The OpenAI client wraps exhausted retries in `AggregateException` | Shared `IsProviderFailure` check for chat and embeddings |
 | A telemetry test failed only in CI | It collected spans of the whole process, and a parallel test added its own | Tests keep only spans of their own trace |
 

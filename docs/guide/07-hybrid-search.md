@@ -127,4 +127,4 @@ Latency: hybrid 78 ms p50 in process vs 58 ms for semantic: the keyword query ru
 
 **Previous:** [6. Vector search](06-vector-search.md) · **Next:** [8. Query understanding](08-query-understanding.md) ·
 **See also:** [Spec 05 §4](../spec/05-search.md#4-hybrid-search) · [Journal: I07](../journal/m2-smart-search.md#i07--hybrid-search-and-query-understanding) ·
-[Advanced: tuning fusion](README.md#advanced)
+[Advanced: tuning fusion](advanced/fusion-tuning.md)

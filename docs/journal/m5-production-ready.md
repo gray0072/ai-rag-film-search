@@ -101,4 +101,4 @@ I19 hides most of it.)
 ---
 
 **Previous:** [M4 Real integrations](m4-real-integrations.md) · **Back to:** [Journal](README.md) ·
-**See also:** [Operator guide](../handbook/README.md#roles) · [Spec 10 Ops and security](../spec/10-ops-security.md)
+**See also:** [Operator guide](../handbook/operator.md) · [Spec 10 Ops and security](../spec/10-ops-security.md)

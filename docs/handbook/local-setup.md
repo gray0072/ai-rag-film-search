@@ -33,7 +33,7 @@ The API listens on `https://localhost:7180`:
 - `GET /api/movies`, `GET /api/movies/{id}`, `GET /api/genres`: catalog; texts follow `Accept-Language` (`en`, `ru`, `sv`)
 - `POST /api/search` with `{ "query": "nolan dream", "debug": true }`: keyword search (filters as in `GET /api/movies`); `"mode": "semantic"` searches by meaning (`{ "query": "a heist inside dreams", "mode": "semantic" }`, needs LM Studio)
 - `GET /api/movies/{id}/similar`: movies nearest to this one by embedding
-- `POST /api/auth/register`, `POST /api/auth/login` with `{ "email", "password" }`, `POST /api/auth/logout`, `GET /api/auth/me`: accounts with an HttpOnly cookie; signing in moves the anonymous cart, orders and conversations to the account. The web app has `/login` and `/register`
+- `POST /api/auth/register`, `POST /api/auth/login` with `{ "email", "password" }`, `POST /api/auth/logout`, `GET /api/auth/me`: accounts with an HttpOnly cookie; signing in moves the anonymous cart, orders, purchases and conversations to the account. The web app has `/login` and `/register`
 - Admin endpoints (role `admin`, see "Admin account" below):
   - `POST /api/admin/ingestion/seed`: reload the seed file (idempotent)
   - `GET /api/admin/embeddings`, `POST /api/admin/embeddings/reindex`, `DELETE /api/admin/embeddings?model=`: embedding index state, a reindex job for the Worker, deleting an old model's vectors
@@ -53,7 +53,7 @@ dotnet user-secrets set Auth:Admin:Password "<a long password>" --project src/Fi
 dotnet user-secrets list --project src/FilmSearch.Api      # shows the current one
 ```
 
-Without the password the API starts without an admin account (a warning in the log). Sign in as admin in the web app (`/login`) or with `POST /api/auth/login`; the cookie then works for the admin endpoints. An account that already exists with the admin email gets the role only if its password is the configured one.
+Without the password the API starts without an admin account (a warning in the log). Sign in as admin in the web app (`/login`) or with `POST /api/auth/login`; the cookie then works for the admin endpoints. An account that already exists with the admin email gets the role only if its password is the configured one. Changing `Auth:Admin:Password` later does not change the password of an existing admin account.
 
 ## Build and test
 

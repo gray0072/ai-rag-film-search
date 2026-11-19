@@ -134,7 +134,7 @@ Core. The cart is kept until the payment succeeds, so a declined or cancelled pa
 ## I10 — Store UI
 
 [Plan](../plan/iterations/I10-store-ui.md) · [Session S11](../prompts/sessions/2026-11-18_S11_store-ui.md) ·
-[Customer guide](../handbook/README.md#roles)
+[Customer guide](../handbook/customer.md)
 
 **Built:** catalog with filters in the URL, search with a mode switch, "understood" filter chips and debug scores,
 movie page with similar movies, cart, checkout success and cancel pages, library; all text in three languages; an

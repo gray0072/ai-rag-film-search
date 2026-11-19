@@ -32,7 +32,7 @@ Both LM Studio and OpenRouter expose an **OpenAI-compatible API**, so one client
 - Options are validated on start (`AI:ActiveChatProfile` exists, endpoints are absolute URLs, the **active** profiles have an `ApiKey`, …). An inactive cloud profile may have no key.
 - Registration (`builder.AddAiProviders()` in `FilmSearch.AI`): unkeyed `IChatClient` / `IEmbeddingGenerator<string, Embedding<float>>` = active profiles; every profile is also a keyed service (`[FromKeyedServices("openrouter")] IChatClient`).
 - Health checks `ai-chat` and `ai-embeddings` call `GET {Endpoint}/models` and check that the model is listed. Failure status is **Degraded**, not Unhealthy: the store without AI keeps working and Aspire does not block on LM Studio.
-- `POST /api/admin/ai/chat` (admin, Development) sends one message to any profile; it is the quickest way to check a provider and to see a GenAI trace in the Aspire dashboard. `tools/ai-playground` does the same from the console, plus streaming, tools, JSON and embeddings.
+- `POST /api/admin/ai/chat` (admin role, every environment) sends one message to any profile; it is the quickest way to check a provider and to see a GenAI trace in the Aspire dashboard. `tools/ai-playground` does the same from the console, plus streaming, tools, JSON and embeddings.
 
 Model choice is made in **I05** after a small benchmark on the owner's hardware (RTX 4070 Laptop, 8 GB VRAM): see the [I05 benchmark report](../../evals/reports/2026-11-17_I05_model-benchmark.md). Requirements:
 - Chat model: reliable **tool calling** and **JSON output**, good Russian and Swedish.

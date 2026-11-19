@@ -75,3 +75,4 @@ Rules:
 | [S23](sessions/2026-11-19_S23_remove-ollama.md) | 2026-11-19 | — | Remove Ollama: demo embeddings on OpenRouter or LM Studio |
 | [S24](sessions/2026-11-19_S24_documentation.md) | 2026-11-19 | I21 | Documentation system: README, journal, RAG guide, role guides, GitHub Pages |
 | [S25](sessions/2026-11-19_S25_guide-core.md) | 2026-11-19 | I21 | Guide: core chapters 01–14 |
+| [S26](sessions/2026-11-19_S26_guide-advanced-handbook.md) | 2026-11-19 | I21 | Guide: advanced chapters, handbook role pages |

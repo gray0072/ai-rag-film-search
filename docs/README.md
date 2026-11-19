@@ -30,12 +30,12 @@ flowchart LR
 
 | You are… | What you get | Start with | Then |
 |---|---|---|---|
-| 🛒 **Customer** (or demoing the app) | How to search, ask the assistant, buy and watch | [Handbook: customer](handbook/README.md#roles) | — |
-| 📊 **Product owner / manager** | What the system can do, its limits, quality and cost numbers, the levers | [Handbook: product owner](handbook/README.md#roles) | [Guide ch. 1: the business problem](guide/01-business-problem.md), [Journal](journal/README.md) |
-| 🛠️ **Administrator** | Catalog, TMDB import, embeddings, jobs, payment provider, budgets | [Handbook: administrator](handbook/README.md#roles) | [Local setup](handbook/local-setup.md) |
-| 🚦 **Operator / DevOps** | Environments, deploy, monitoring, incidents, backup, rollback | [Handbook: operator](handbook/README.md#roles) | [Deploy runbook](../deploy/README.md), [Observability runbook](runbooks/observability.md) |
-| 💻 **Developer** | Setup, architecture, code map, conventions, tests | [Local setup](handbook/local-setup.md) | [Architecture](spec/02-architecture.md), [AGENTS.md](../AGENTS.md), [Journal](journal/README.md) |
-| 🧪 **AI engineer** | Models, prompts, search parameters, evaluation suites | [Guide](guide/README.md) | [Evaluations](../evals/README.md), [reports](../evals/reports/) |
+| 🛒 **Customer** (or demoing the app) | How to search, ask the assistant, buy and watch | [Handbook: customer](handbook/customer.md) | — |
+| 📊 **Product owner / manager** | What the system can do, its limits, quality and cost numbers, the levers | [Handbook: product owner](handbook/product-owner.md) | [Guide ch. 1: the business problem](guide/01-business-problem.md), [Journal](journal/README.md) |
+| 🛠️ **Administrator** | Catalog, TMDB import, embeddings, jobs, payment provider, budgets | [Handbook: administrator](handbook/administrator.md) | [Local setup](handbook/local-setup.md) |
+| 🚦 **Operator / DevOps** | Environments, deploy, monitoring, incidents, backup, rollback | [Handbook: operator](handbook/operator.md) | [Deploy runbook](../deploy/README.md), [Observability runbook](runbooks/observability.md) |
+| 💻 **Developer** | Setup, architecture, code map, conventions, tests | [Handbook: developer](handbook/developer.md) | [Local setup](handbook/local-setup.md), [Architecture](spec/02-architecture.md), [AGENTS.md](../AGENTS.md) |
+| 🧪 **AI engineer** | Models, prompts, search parameters, evaluation suites | [Handbook: AI engineer](handbook/ai-engineer.md) | [Guide](guide/README.md), [Evaluations](../evals/README.md), [reports](../evals/reports/) |
 | 🎓 **Learner** (the main audience of a pet project) | RAG and AI engineering on a complete example | [Guide](guide/README.md) | [Learning path](learning-path.md), [Journal](journal/README.md) |
 
 ## Start by question
@@ -47,9 +47,10 @@ flowchart LR
 | Why PostgreSQL + pgvector and not a vector database? | [Guide ch. 6](guide/06-vector-search.md), [ADR-0001](adr/0001-postgresql-pgvector.md), [ADR-0008](adr/0008-vector-storage-per-dimension.md) |
 | How good is search, in numbers? | [Guide ch. 11](guide/11-evaluation.md), [search evaluation reports](../evals/reports/), [I08 in the journal](journal/m2-smart-search.md) |
 | How good is the assistant, and on which model? | [I14 assistant evaluation](../evals/reports/2026-11-18_I14_assistant-evaluation.md) |
-| What does a chat answer cost, and how is spending capped? | [Local setup: demo environment](handbook/local-setup.md#demo-environment), [observability runbook](runbooks/observability.md) |
+| What does a chat answer cost, and how is spending capped? | [Handbook: product owner](handbook/product-owner.md), [ch. 13: observability and cost](guide/13-observability-and-cost.md), [observability runbook](runbooks/observability.md) |
+| Which setting controls what, and what is its default? | [Configuration reference](handbook/configuration.md) |
 | A user complains about an answer. How do I see what happened? | [Observability runbook](runbooks/observability.md) |
-| How do I deploy or roll back? | [Deploy runbook](../deploy/README.md) |
+| How do I deploy or roll back? | [Handbook: operator](handbook/operator.md), [deploy runbook](../deploy/README.md) |
 | Which problems came up while building it? | [Journal: problems and solutions](journal/README.md#problems-and-solutions) |
 | What is planned next? | [Roadmap: stretch goals](plan/roadmap.md#stretch-goals-after-m5-or-when-a-topic-is-interesting) |
 

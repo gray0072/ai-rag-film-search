@@ -44,10 +44,10 @@ The numbers themselves mean nothing to a person. What matters:
   have cosine 0.84; unrelated text 0.19 ([I05 benchmark](../../evals/reports/2026-11-17_I05_model-benchmark.md)).
 - **Task prefixes.** Many models were trained with instructions in front of the text: EmbeddingGemma wants
   `task: search result | query: ` for queries and `title: none | text: ` for documents. Using them did not change the
-  ranking in the benchmark, but it doubled the gap between related and unrelated texts (unrelated cosine 0.19 instead of
-  0.33), which matters for thresholds and fusion. Prefixes belong to the model, so they are part of the profile.
+  ranking in the benchmark, but it pushed unrelated texts much further apart (unrelated cosine 0.19 instead of 0.33; the
+  gap to related texts grew about 1.3–1.5×), which matters for thresholds and fusion. Prefixes belong to the model, so they are part of the profile.
 - **Similarity scores are relative.** "0.45" is a good match for EmbeddingGemma; another model's scale differs. Rank,
-  don't threshold ([advanced: similarity metrics](README.md#advanced)).
+  don't threshold ([advanced: similarity metrics](advanced/similarity-metrics.md)).
 
 ### Asymmetric search
 
@@ -157,4 +157,4 @@ documents: the embedded text shapes the result in ways you have to read failures
 
 **Previous:** [4. Keyword search](04-keyword-search.md) · **Next:** [6. Vector search in PostgreSQL](06-vector-search.md) ·
 **See also:** [Spec 05 §3](../spec/05-search.md#3-semantic-search) · [Journal: I06](../journal/m2-smart-search.md#i06--embeddings-and-semantic-search) ·
-[Advanced: choosing an embedding model](README.md#advanced)
+[Advanced: choosing an embedding model](advanced/choosing-an-embedding-model.md)

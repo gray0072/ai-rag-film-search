@@ -86,7 +86,7 @@ approves exactly the lines and total the server shows.
 ## I13 — Chat UI
 
 [Plan](../plan/iterations/I13-chat-ui.md) · [Session S15](../prompts/sessions/2026-11-18_S15_chat-ui.md) ·
-[Customer guide](../handbook/README.md#roles)
+[Customer guide](../handbook/customer.md)
 
 **Built:** an SSE client over `fetch` (POST with a body, so not `EventSource`), a pure reducer for the streamed turn,
 the chat page and a drawer available on every page, tool chips ("Searching the catalog…"), safe markdown

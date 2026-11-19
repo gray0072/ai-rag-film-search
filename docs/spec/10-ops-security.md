@@ -35,8 +35,8 @@ Never committed: `.env`, `appsettings.*.local.json`, user-secrets, keys of any k
 - [ ] Anonymous session cookie: HttpOnly, Secure, SameSite=Lax, random 128-bit id.
 - [x] Token budgets per conversation and per owner and day (NFR-5, I18), and for the whole service per day (`Assistant:MaxTotalTokensPerDay`, I20: a public demo has unlimited anonymous owners); prompt and completion texts in traces only with `AI:EnableSensitiveData` (Development).
 - [x] Rate limiting (`Microsoft.AspNetCore.RateLimiting`, I19): chat 20 msgs/min per owner, search 60 req/min per IP, new conversations 10/min per IP; 429 Problem Details with `Retry-After`. Behind a reverse proxy the client IP needs the forwarded headers (I20: `ASPNETCORE_FORWARDEDHEADERS_ENABLED`, Caddy is the only way in). The demo uses lower limits (`appsettings.Demo.json`).
-- [ ] Input limits: chat message ≤ 2000 chars, search query ≤ 300 chars.
-- [ ] Stripe webhook signature check; Fake webhook HMAC; Fake endpoints mapped only in Development.
+- [ ] Input limits: chat message ≤ 2000 chars, search query ≤ 500 chars.
+- [ ] Stripe webhook signature check; Fake webhook HMAC; Fake endpoints are not mapped in Production (they are in Development and Demo; the API refuses to start with the Fake gateway in Production).
 - [ ] Startup refuses live Stripe keys.
 - [x] Resilience (NFR-6, I19, [ADR-0011](../adr/0011-ai-resilience-and-fallback.md)): per-profile AI pipelines (safe retries, circuit breaker, attempt timeout), optional fallback chat profile, search without embeddings degrades to keyword; payment calls retried only for reads and idempotent requests.
 - [x] Admin endpoints require the admin role (I17; Development-only before).

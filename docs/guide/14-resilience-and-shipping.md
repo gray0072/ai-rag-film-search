@@ -127,7 +127,7 @@ Steps and rollback: [deploy runbook](../../deploy/README.md).
 The core chapters end here: a store whose search finds movies by meaning in three languages, an assistant that sells
 from the catalog and never moves money on its own, numbers for every decision, and a way to see, limit and ship it.
 
-- The [advanced chapters](README.md#advanced) go deeper into similarity metrics, choosing an embedding model, pgvector
+- The [advanced chapters](advanced/README.md) go deeper into similarity metrics, choosing an embedding model, pgvector
   indexes, vector storage, fusion tuning and LLM judges.
 - The [journal](../journal/README.md) tells what really happened, problem by problem.
 - The [roadmap's stretch goals](../plan/roadmap.md#stretch-goals-after-m5-or-when-a-topic-is-interesting) list what is

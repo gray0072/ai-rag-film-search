@@ -5,7 +5,7 @@
 With every movie embedded, search becomes "find the vectors nearest to the query vector, among movies that pass the
 filters". This chapter covers exact and approximate search, how filters interact with an approximate index, and how
 FilmSearch stores vectors of several models in one table. The deeper trade-offs are in the
-[advanced chapters](README.md#advanced).
+[advanced chapters](advanced/README.md).
 
 ## The business problem
 
@@ -35,7 +35,7 @@ Recall of an ANN index is measured **against exact search**: of the exact top 10
 
 pgvector offers `<->` (L2), `<#>` (negative inner product) and `<=>` (cosine distance = 1 − cosine similarity). For
 text embeddings cosine is the usual choice; for normalized vectors all three give the same order
-([advanced: similarity metrics](README.md#advanced)).
+([advanced: similarity metrics](advanced/similarity-metrics.md)).
 
 ### Filters: before or after?
 
@@ -80,7 +80,7 @@ WHERE dimensions = 768 AND model = @model AND kind = 'Profile'
 ```
 
 Per query, [`SemanticRetriever`](../../src/FilmSearch.Infrastructure/Search/Semantic/SemanticRetriever.cs) sets
-`hnsw.ef_search = max(40, rows requested)` and `hnsw.iterative_scan = relaxed_order`. Similarity is `1 − distance`.
+`hnsw.ef_search` = rows requested × indexed locales, clamped to 40–1000, and `hnsw.iterative_scan = relaxed_order`. Similarity is `1 − distance`.
 The list is cut at 100 (`Search:Semantic:MaxResults`). "Similar movies" uses the same query with a movie's own vector.
 
 Switching models: reindex with the new profile (vectors are added next to the old ones), switch
@@ -135,4 +135,4 @@ write load, or when search must scale separately from the store ([ADR-0001](../a
 
 **Previous:** [5. Embeddings](05-embeddings.md) · **Next:** [7. Hybrid search](07-hybrid-search.md) ·
 **See also:** [ADR-0008](../adr/0008-vector-storage-per-dimension.md) · [Spec 05 §3](../spec/05-search.md#3-semantic-search) ·
-[Journal: I06](../journal/m2-smart-search.md#i06--embeddings-and-semantic-search) · [Advanced: pgvector indexes](README.md#advanced)
+[Journal: I06](../journal/m2-smart-search.md#i06--embeddings-and-semantic-search) · [Advanced: pgvector indexes](advanced/pgvector-indexes.md) · [Advanced: vector storage](advanced/vector-storage.md)

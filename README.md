@@ -23,7 +23,7 @@ with tools, evaluations, observability and deployment, all in one small but comp
 
 > [!NOTE]
 > **This is a pet project for learning.** Payments run in a fake gateway or Stripe **test mode** (no real money), and
-> "watching" a purchased movie is a placeholder button. Everything else (search quality, the agent, telemetry, tests,
+> a purchased movie only appears in the library (there is no video player). Everything else (search quality, the agent, telemetry, tests,
 > CI, containers) is built the way a real product would be. The whole project was built with AI coding agents; every
 > prompt is in the [prompt history](docs/prompts/README.md).
 
@@ -113,12 +113,12 @@ The documentation is one connected set. Start where your question is; every page
 |---|---|
 | Learn how RAG and an AI assistant are built, from the business problem to production | 📘 [Guide: building an AI store](docs/guide/README.md) |
 | See what really happened: plan vs fact, problems and how they were solved | 📓 [Build journal](docs/journal/README.md) |
-| Use the store and the assistant | 🛒 [Customer guide](docs/handbook/README.md#roles) |
-| Know what the system can do and which levers it has | 📊 [Product owner guide](docs/handbook/README.md#roles) |
-| Run the catalog, imports, payments, budgets | 🛠️ [Administrator guide](docs/handbook/README.md#roles) |
-| Deploy, monitor and troubleshoot | 🚦 [Operator guide](docs/handbook/README.md#roles) |
-| Change the code | 💻 [Developer guide](docs/handbook/README.md#roles) |
-| Change models and prompts and measure the effect | 🧪 [AI engineer guide](docs/handbook/README.md#roles) |
+| Use the store and the assistant | 🛒 [Customer guide](docs/handbook/customer.md) |
+| Know what the system can do and which levers it has | 📊 [Product owner guide](docs/handbook/product-owner.md) |
+| Run the catalog, imports, payments, budgets | 🛠️ [Administrator guide](docs/handbook/administrator.md) |
+| Deploy, monitor and troubleshoot | 🚦 [Operator guide](docs/handbook/operator.md) |
+| Change the code | 💻 [Developer guide](docs/handbook/developer.md) |
+| Change models and prompts and measure the effect | 🧪 [AI engineer guide](docs/handbook/ai-engineer.md) |
 | Read the spec, decisions and plan | [Spec](docs/spec/00-overview.md) · [ADRs](docs/adr/README.md) · [Roadmap](docs/plan/roadmap.md) |
 
 All of it is mapped in the **[documentation hub](docs/README.md)**.

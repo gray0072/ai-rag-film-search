@@ -127,4 +127,4 @@ pieces and to see traces without extra setup ([ADR-0005](../adr/0005-dotnet-aspi
 
 **Previous:** [1. The business problem](01-business-problem.md) · **Next:** [3. Language models for engineers](03-language-models.md) ·
 **See also:** [Spec 02 Architecture](../spec/02-architecture.md) · [ADRs](../adr/README.md) ·
-[Developer handbook](../handbook/README.md)
+[Developer handbook](../handbook/developer.md)

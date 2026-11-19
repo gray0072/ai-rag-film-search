@@ -79,9 +79,9 @@ of the box.
   observability and cost, resilience, shipping). Mermaid diagrams, links to plan, journal, code, ADRs and reports.
 
 ### Session 3: textbook advanced, handbook
-- [ ] `docs/guide/advanced/`: similarity metrics and normalization, choosing an embedding model, pgvector indexes
+- [x] `docs/guide/advanced/`: similarity metrics and normalization, choosing an embedding model, pgvector indexes
   (exact, HNSW, IVFFlat; filtering), vector storage per dimension, fusion tuning, LLM-as-judge.
-- [ ] `docs/handbook/`: README with the role matrix, the six role pages and the configuration reference, with
+- [x] `docs/handbook/`: README with the role matrix, the six role pages and the configuration reference, with
   screenshots.
 
 ### Session 4: website and polish
@@ -142,6 +142,33 @@ _Updated at the end of every session; the next session continues from the first 
   this plan).
 - The advanced chapters are still linked as `README.md#advanced` from chapters 5, 6, 7 and 11; session 3 replaces those
   links with the real files.
+
+**After S26 (session 3 of 4): done.**
+- Advanced chapters in [guide/advanced/](../../guide/advanced/README.md): similarity metrics, choosing an embedding
+  model, pgvector indexes, vector storage, fusion tuning, LLM as a judge (4 Mermaid diagrams). Numbers come from the
+  reports; a few were measured on the development database while writing (vector norms, `ef_search` with and without
+  iterative scan, index sizes for float / halfvec / bit) and are labelled that way. IVFFlat, halfvec and binary recall
+  were not measured and the chapters say so.
+- Handbook role pages: [customer](../../handbook/customer.md), [product owner](../../handbook/product-owner.md),
+  [administrator](../../handbook/administrator.md), [operator](../../handbook/operator.md),
+  [developer](../../handbook/developer.md), [AI engineer](../../handbook/ai-engineer.md) and the
+  [configuration reference](../../handbook/configuration.md) (every key from appsettings, options classes and
+  `deploy/.env.example`, with defaults, overrides, roles and validation rules).
+- Placeholders replaced: the `README.md#advanced` links in chapters 5, 6, 7, 11, 14; the role rows of the README, the
+  hub, the handbook README and the journal now point at the role pages.
+- Writing against the code found stale statements, fixed in the same change: there is no "Watch" button (README, spec
+  00); `POST /api/admin/ai/chat` is mapped in every environment (spec 06); the search query limit is 500 characters
+  (spec 10, as spec 04 and the code); fake payment endpoints are off only in Production (spec 10); semantic search
+  degrades to keyword results instead of 503 (spec 05 §3); the planner *estimates* the exact scan as cheaper at 1000
+  rows but HNSW is faster (journal M2, AGENTS.md, a test comment); prefixes cut the unrelated cosine from 0.33 to 0.19,
+  the gap grew 1.3–1.5×, not 2× (guide ch. 5); `ef_search` = rows × locales clamped to 40–1000 (guide ch. 6); the
+  observability runbook lists `cancelled` as an outcome and the error codes `serviceBudgetExceeded`,
+  `toolsNotSupported` and the budget `Assistant:MaxTotalTokensPerDay`; sign-in also merges purchases, and changing
+  `Auth:Admin:Password` does not reset an existing admin (local setup); `Stripe:PublishableKey` is stored but not read
+  (AGENTS.md).
+- Follow-ups found, not done (outside I21): the Dockerfiles in `deploy/docker/` have no `LABEL project=filmsearch`;
+  there is no admin UI (admin work is API only, as spec 00 says); the default search mode is fixed in the web app, not
+  a setting.
 
 **Notes for the next sessions.**
 - Page conventions: a breadcrumb line under the title (`> [Docs](../README.md) › [Guide](README.md) › Title`), a

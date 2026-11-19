@@ -135,4 +135,4 @@ Averages tell you *that* something moved. Only the cases tell you *why*.
 **Previous:** [10. Agents and tools](10-agents-and-tools.md) · **Next:** [12. Guardrails](12-guardrails.md) ·
 **See also:** [Spec 09 Evaluation](../spec/09-evaluation.md) · [Evaluations README](../../evals/README.md) ·
 [Journal: I08](../journal/m2-smart-search.md#i08--search-evaluation-harness) · [Journal: I14](../journal/m3-ai-assistant.md#i14--assistant-evaluation-and-guardrails) ·
-[Advanced: LLM as a judge](README.md#advanced)
+[Advanced: LLM as a judge](advanced/llm-as-judge.md)

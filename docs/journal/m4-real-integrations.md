@@ -89,4 +89,4 @@ designed in I01 (a `Guid` owner id that Identity could take over), which kept I1
 ---
 
 **Previous:** [M3 AI sales assistant](m3-ai-assistant.md) · **Next:** [M5 Production ready](m5-production-ready.md) ·
-**See also:** [Administrator guide](../handbook/README.md#roles) · [Spec 08 Data ingestion](../spec/08-data-ingestion.md)
+**See also:** [Administrator guide](../handbook/administrator.md) · [Spec 08 Data ingestion](../spec/08-data-ingestion.md)

@@ -135,7 +135,7 @@ public sealed class SemanticSearchApiTests(CatalogApiFixture fixture) : IClassFi
     {
         // The plan of the real query (raw SQL + LINQ composition), captured from the command EF Core sends. The partial
         // expression index is used only when the query repeats its expression and predicate, through EF Core's subquery.
-        // Sequential scans and sorts are switched off for the second EXPLAIN: on ~1000 rows the planner rightly prefers an exact scan
+        // Sequential scans and sorts are switched off for the second EXPLAIN: on ~1000 rows the planner estimates an exact scan as cheaper
         // (see the I06 experiment), but the index must be usable.
         var explain = new ExplainVectorQueryInterceptor();
         var options = new DbContextOptionsBuilder<AppDbContext>();

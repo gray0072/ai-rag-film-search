@@ -7,11 +7,6 @@ the theory needed to solve it, shows what FilmSearch does and why, and ends with
 reports, traces. Links lead to the [plan](../plan/roadmap.md) (what we intended), the [journal](../journal/README.md)
 (what happened) and the code.
 
-> [!NOTE]
-> Status: the core chapters 1–14 are written. The advanced chapters are written in session 3 of
-> [I21](../plan/iterations/I21-documentation.md); until then the chapters link to the evaluation reports and ADRs that
-> hold the same material.
-
 ## How to read it
 
 Read chapters 1–3 first: the problem, the architecture, and what a language model request is. Then either follow the
@@ -72,13 +67,17 @@ is needed. The examples are in C# and SQL, but the ideas carry over to any stack
     spending limits. *(I19, I20)*
 
 ### Advanced
-- Similarity metrics and normalization: cosine, dot product, L2, and how to compare embedding models.
-- Choosing an embedding model: dimensions, languages, prefixes, local vs hosted (evaluation reports).
-- pgvector indexes: exact scan, HNSW, IVFFlat, parameters, filtering and the query planner.
-- Storing vectors: one column per dimension vs an untyped column with partial indexes (ADR-0008), half precision,
-  quantization.
-- Tuning fusion: RRF k, weights, candidates per list (evaluation reports).
-- LLM as a judge: rubrics, bias, a different model family, cost.
+Deep dives for after the core chapters ([overview](advanced/README.md)):
+- **[Similarity metrics and normalization.](advanced/similarity-metrics.md)** Cosine, dot product, L2, and how to compare
+  embedding models.
+- **[Choosing an embedding model.](advanced/choosing-an-embedding-model.md)** Dimensions, languages, prefixes, local vs
+  hosted (evaluation reports).
+- **[pgvector indexes.](advanced/pgvector-indexes.md)** Exact scan, HNSW, IVFFlat, parameters, filtering and the query
+  planner.
+- **[Storing vectors.](advanced/vector-storage.md)** One column per dimension vs an untyped column with partial indexes
+  (ADR-0008), half precision, quantization.
+- **[Tuning fusion.](advanced/fusion-tuning.md)** RRF k, weights, candidates per list (evaluation reports).
+- **[LLM as a judge.](advanced/llm-as-judge.md)** Rubrics, bias, a different model family, cost.
 
 ---
 
