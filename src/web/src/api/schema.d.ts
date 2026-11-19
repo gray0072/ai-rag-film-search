@@ -596,7 +596,7 @@ export interface components {
             code: string;
             message: string;
         };
-        /** @description The answer is complete and stored. */
+        /** @description The answer is complete and stored. Fallback is true when the fallback chat profile wrote it because the active one failed (I19). */
         AssistantEventMessageCompletedEvent: {
             /** @enum {string} */
             type?: "message.completed";
@@ -606,6 +606,8 @@ export interface components {
             model: string;
             /** Format: int64 */
             latencyMs: number;
+            /** @default false */
+            fallback: boolean;
         };
         /** @description The next chunk of the answer text (markdown). */
         AssistantEventMessageDeltaEvent: {
@@ -1042,6 +1044,11 @@ export interface components {
             latencyMs: null | number;
             feedback: null | components["schemas"]["FeedbackView"];
             confirmation?: null | components["schemas"]["ConfirmationView"];
+            /**
+             * @description The fallback chat profile wrote the answer because the active one failed (I19).
+             * @default false
+             */
+            fallback: boolean;
         };
         /** @description A movie shown next to an assistant message. Built from the catalog (prices from the DB), never from model text (FR-AST-3). */
         MovieCard: {
@@ -1363,7 +1370,7 @@ export interface components {
             total: number;
             understoodQuery?: null | components["schemas"]["UnderstoodQuery"];
             /**
-             * @description Hybrid search returned keyword results only because the query could not be embedded.
+             * @description Semantic or hybrid search returned keyword results only because the query could not be embedded (AI provider down).
              * @default false
              */
             degraded: boolean;
@@ -1491,6 +1498,15 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
@@ -2025,6 +2041,15 @@ export interface operations {
                     "application/json": components["schemas"]["ConversationListItem"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     GetConversation: {
@@ -2095,6 +2120,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
             };
         };
     };

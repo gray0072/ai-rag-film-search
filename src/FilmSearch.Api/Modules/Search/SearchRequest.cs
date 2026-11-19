@@ -141,7 +141,7 @@ public sealed class SearchFilters : IValidatableObject
 /// <param name="PageSize">Items per page.</param>
 /// <param name="Total">Number of matching movies (keyword), or length of the result list (semantic: at most 100; hybrid: union of the fused candidate lists).</param>
 /// <param name="UnderstoodQuery">Result of query understanding when <c>understand</c> was true.</param>
-/// <param name="Degraded">Hybrid search returned keyword results only because the query could not be embedded.</param>
+/// <param name="Degraded">Semantic or hybrid search returned keyword results only because the query could not be embedded (AI provider down).</param>
 public sealed record SearchResponse(
     IReadOnlyList<SearchItem> Items,
     SearchFilters AppliedFilters,

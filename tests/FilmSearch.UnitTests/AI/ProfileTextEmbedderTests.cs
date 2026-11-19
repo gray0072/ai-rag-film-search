@@ -1,5 +1,7 @@
+using System.Diagnostics.Metrics;
 using System.Net;
 using FilmSearch.Core.Search;
+using FilmSearch.UnitTests.Assistant;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FilmSearch.UnitTests.AI;
@@ -91,7 +93,7 @@ public sealed class ProfileTextEmbedderTests
     public async Task Unreachable_provider_becomes_AiProviderUnavailableException()
     {
         // LM Studio server stopped: the connection is refused.
-        // With retries on, the OpenAI client throws an AggregateException after the last failed attempt.
+        // The HTTP pipeline retries the refused connection (I19); then the OpenAI client wraps the last error.
         var handler = new FakeProviderHandler { Respond = _ => throw new HttpRequestException("Connection refused (local.test:80)") };
         using var host = AiTestHost.Build(handler, new Dictionary<string, string?>(Prefixes) { ["AI:EmbeddingProfiles:local:MaxRetries"] = "1" });
         var embedder = host.Services.GetRequiredService<ITextEmbedder>();
@@ -99,7 +101,7 @@ public sealed class ProfileTextEmbedderTests
         var error = await Should.ThrowAsync<AiProviderUnavailableException>(() => embedder.EmbedAsync(embedder.Active, ["x"], Ct));
 
         error.Message.ShouldContain("Connection refused");
-        error.InnerException.ShouldBeOfType<AggregateException>();
+        error.InnerException.ShouldBeOfType<System.ClientModel.ClientResultException>();
         handler.Requests.Count.ShouldBe(2);
     }
 
@@ -112,5 +114,54 @@ public sealed class ProfileTextEmbedderTests
 
         (await embedder.EmbedAsync(embedder.Active, [], Ct)).ShouldBeEmpty();
         handler.Requests.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Query_vectors_are_cached_by_normalized_text_and_lookups_are_counted()
+    {
+        using var meters = new TestMeterFactory();
+        using var lookups = new OwnedMeasurements(meters, "cache.lookups");
+        using var entries = new OwnedMeasurements(meters, "cache.entries");
+        var handler = new FakeProviderHandler();
+        using var host = AiTestHost.Build(handler, Prefixes, services => services.AddSingleton<IMeterFactory>(meters));
+        var embedder = host.Services.GetRequiredService<ITextEmbedder>();
+
+        var first = await embedder.EmbedQueryAsync(embedder.Active, "Heist  in DREAMS", Ct);
+        var second = await embedder.EmbedQueryAsync(embedder.Active, "heist in dreams", Ct);
+
+        second.ToArray().ShouldBe(first.ToArray());
+        var request = handler.Requests.ShouldHaveSingleItem();
+        request.Body.ShouldContain("query: Heist  in DREAMS"); // the first spelling is embedded, with the query prefix
+        lookups.Values.Select(v => v.Tags["result"]).ShouldBe(["miss", "hit"]);
+        lookups.Values.ShouldAllBe(v => (string?)v.Tags["cache"] == "query_embedding");
+        entries.Observe();
+        entries.Values.ShouldContain(v => (string?)v.Tags["cache"] == "query_embedding" && v.Value == 1);
+    }
+
+    [Fact]
+    public async Task Cached_query_vector_is_served_while_the_provider_is_down()
+    {
+        var handler = new FakeProviderHandler();
+        using var host = AiTestHost.Build(handler, Prefixes);
+        var embedder = host.Services.GetRequiredService<ITextEmbedder>();
+        await embedder.EmbedQueryAsync(embedder.Active, "space opera", Ct);
+
+        handler.Respond = _ => throw new HttpRequestException("Connection refused");
+
+        (await embedder.EmbedQueryAsync(embedder.Active, "space opera", Ct)).Length.ShouldBe(3);
+        await Should.ThrowAsync<AiProviderUnavailableException>(() => embedder.EmbedQueryAsync(embedder.Active, "another query", Ct));
+    }
+
+    [Fact]
+    public async Task Query_cache_can_be_turned_off()
+    {
+        var handler = new FakeProviderHandler();
+        using var host = AiTestHost.Build(handler, new Dictionary<string, string?>(Prefixes) { ["AI:QueryEmbeddingCacheMinutes"] = "0" });
+        var embedder = host.Services.GetRequiredService<ITextEmbedder>();
+
+        await embedder.EmbedQueryAsync(embedder.Active, "space opera", Ct);
+        await embedder.EmbedQueryAsync(embedder.Active, "space opera", Ct);
+
+        handler.Requests.Count.ShouldBe(2);
     }
 }

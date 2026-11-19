@@ -177,25 +177,29 @@ public sealed class EmbeddingIndexTests(PostgresFixture postgres)
     }
 
     [Fact]
-    public async Task Semantic_search_returns_503_and_hybrid_search_degrades_to_keyword_when_the_embedding_provider_fails()
+    public async Task Semantic_and_hybrid_search_degrade_to_keyword_results_when_the_embedding_provider_fails()
     {
+        // LM Studio stopped (I19 acceptance): search keeps working with keyword results and says so.
         await using var catalog = await CreateCatalogAsync("emb_down");
         await using var factory = catalog.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
             services.AddKeyedSingleton<IEmbeddingGenerator<string, Embedding<float>>>("local", new FailingEmbeddingGenerator())));
         using var client = factory.CreateClient();
 
-        using var semantic = await client.PostAsJsonAsync("/api/search", new { query = "dreams", mode = "semantic" }, Ct);
+        using var semantic = await client.PostAsJsonAsync("/api/search", new { query = "dreams", mode = "semantic", debug = true }, Ct);
         using var keyword = await client.PostAsJsonAsync("/api/search", new { query = "dreams", mode = "keyword" }, Ct);
         using var hybrid = await client.PostAsJsonAsync("/api/search", new { query = "dreams", debug = true }, Ct);
 
-        semantic.StatusCode.ShouldBe(HttpStatusCode.ServiceUnavailable);
-        (await semantic.Content.ReadAsStringAsync(Ct)).ShouldContain("Connection refused");
         keyword.StatusCode.ShouldBe(HttpStatusCode.OK);
-        hybrid.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var degraded = (await hybrid.Content.ReadFromJsonAsync<SearchResponse>(CatalogApiFixture.Json, Ct)).ShouldNotBeNull();
-        degraded.Degraded.ShouldBeTrue();
-        degraded.Items.ShouldNotBeEmpty();
-        degraded.Items.ShouldAllBe(i => i.Debug!.KeywordRank != null && i.Debug.VectorRank == null);
+        (await keyword.Content.ReadFromJsonAsync<SearchResponse>(CatalogApiFixture.Json, Ct))!.Degraded.ShouldBeFalse();
+        foreach (var response in new[] { semantic, hybrid })
+        {
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            var degraded = (await response.Content.ReadFromJsonAsync<SearchResponse>(CatalogApiFixture.Json, Ct)).ShouldNotBeNull();
+            degraded.Degraded.ShouldBeTrue();
+            degraded.Items.ShouldNotBeEmpty();
+            degraded.Items[0].Movie.Title.ShouldBe("Dream Thieves");
+            degraded.Items.ShouldAllBe(i => i.Debug!.KeywordRank != null && i.Debug.VectorRank == null);
+        }
     }
 
     private static MovieImport Dreams => Movie(990_601, "Dream Thieves", "Похитители снов", "Thieves enter dreams to plant an idea in a sleeping mind.", 2012);

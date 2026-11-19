@@ -75,6 +75,7 @@ export function HistoryMessage({
   conversationId: string;
   message: MessageView;
 }) {
+  const { t } = useTranslation();
   if (message.role === "user") {
     return <UserBubble text={message.text} />;
   }
@@ -84,7 +85,14 @@ export function HistoryMessage({
       text={message.text}
       movies={message.movies}
       confirmation={message.confirmation}
-      footer={<FeedbackButtons messageId={message.id} rating={message.feedback?.rating} />}
+      footer={
+        <>
+          {message.fallback && (
+            <p className="text-xs text-muted-foreground">{t("chat.fallbackAnswer")}</p>
+          )}
+          <FeedbackButtons messageId={message.id} rating={message.feedback?.rating} />
+        </>
+      }
     />
   );
 }

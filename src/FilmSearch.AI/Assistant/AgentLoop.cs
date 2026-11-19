@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using FilmSearch.AI.Assistant.Tools;
+using FilmSearch.AI.Providers;
 using FilmSearch.AI.Telemetry;
 using FilmSearch.Core.Assistant;
 using Microsoft.Extensions.AI;
@@ -27,19 +28,40 @@ internal sealed class TurnState
 
     public long OutputTokens { get; private set; }
 
-    /// <summary>Model id reported by the provider.</summary>
+    /// <summary>Model id reported by the provider (of the fallback, once it answered a call).</summary>
     public string? Model { get; private set; }
 
     public int ModelCalls { get; private set; }
 
+    /// <summary>The fallback chat profile, when it answered at least one call of the turn (I19).</summary>
+    public string? FallbackProfile { get; private set; }
+
+    /// <summary>Part of <see cref="InputTokens"/> spent by the fallback profile (priced with its model).</summary>
+    public long FallbackInputTokens { get; private set; }
+
+    public long FallbackOutputTokens { get; private set; }
+
     public bool IterationLimitHit { get; set; }
 
-    public void AddUsage(ChatResponse response)
+    /// <param name="response">The response of one model call.</param>
+    /// <param name="fallbackProfile">The fallback profile that wrote it, or null for the active profile.</param>
+    public void AddUsage(ChatResponse response, string? fallbackProfile = null)
     {
         ModelCalls++;
-        InputTokens += response.Usage?.InputTokenCount ?? 0;
-        OutputTokens += response.Usage?.OutputTokenCount ?? 0;
-        Model ??= response.ModelId;
+        var input = response.Usage?.InputTokenCount ?? 0;
+        var output = response.Usage?.OutputTokenCount ?? 0;
+        InputTokens += input;
+        OutputTokens += output;
+        if (fallbackProfile is null)
+        {
+            Model ??= response.ModelId;
+            return;
+        }
+
+        FallbackProfile = fallbackProfile;
+        FallbackInputTokens += input;
+        FallbackOutputTokens += output;
+        Model = response.ModelId ?? Model;
     }
 
     /// <summary>True when the movie was not shown in this turn yet.</summary>
@@ -121,7 +143,7 @@ internal sealed partial class AgentLoop(
             }
 
             var response = updates.ToChatResponse();
-            state.AddUsage(response);
+            state.AddUsage(response, updates.Select(u => FallbackChatClient.FallbackProfileOf(u.AdditionalProperties)).FirstOrDefault(p => p is not null));
 
             var contents = response.Messages.SelectMany(m => m.Contents).ToList();
             var calls = contents.OfType<FunctionCallContent>().ToList();

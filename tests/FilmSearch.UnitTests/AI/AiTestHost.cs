@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text;
-using FilmSearch.AI.Health;
 using FilmSearch.AI.Providers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,15 +25,18 @@ internal static class AiTestHost
         ["AI:ChatProfiles:local:MaxOutputTokens"] = "256",
         ["AI:ChatProfiles:local:ReasoningEffort"] = "None",
         ["AI:ChatProfiles:local:MaxRetries"] = "0",
+        ["AI:ChatProfiles:local:RetryDelayMs"] = "1",
         ["AI:ChatProfiles:openrouter:Endpoint"] = "https://router.test/api/v1",
         ["AI:ChatProfiles:openrouter:Model"] = "vendor/cheap-model",
         ["AI:ChatProfiles:openrouter:ApiKey"] = "secret-key",
         ["AI:ChatProfiles:openrouter:MaxRetries"] = "0",
+        ["AI:ChatProfiles:openrouter:RetryDelayMs"] = "1",
         ["AI:EmbeddingProfiles:local:Endpoint"] = "http://local.test/v1",
         ["AI:EmbeddingProfiles:local:Model"] = "embedding-model",
         ["AI:EmbeddingProfiles:local:ApiKey"] = "lm-studio",
         ["AI:EmbeddingProfiles:local:Dimensions"] = "3",
         ["AI:EmbeddingProfiles:local:MaxRetries"] = "0",
+        ["AI:EmbeddingProfiles:local:RetryDelayMs"] = "1",
         ["AI:Pricing:vendor/cheap-model:InputPerMTokUsd"] = "1",
         ["AI:Pricing:vendor/cheap-model:OutputPerMTokUsd"] = "2",
     };
@@ -50,8 +52,8 @@ internal static class AiTestHost
         builder.Services.AddLogging();
         builder.Services.AddHealthChecks(); // as ServiceDefaults does in the API
         builder.AddAiProviders();
-        builder.Services.AddHttpClient(AiClientFactory.HttpClientName).ConfigurePrimaryHttpMessageHandler(() => handler);
-        builder.Services.AddHttpClient(AiProviderHealthCheck.HttpClientName).ConfigurePrimaryHttpMessageHandler(() => handler);
+        // Every client (one per profile, and the health check's) ends in the fake; their resilience pipelines are real.
+        builder.Services.ConfigureHttpClientDefaults(http => http.ConfigurePrimaryHttpMessageHandler(() => handler));
         configureServices?.Invoke(builder.Services);
         return builder.Build();
     }
@@ -64,10 +66,22 @@ internal sealed class FakeProviderHandler : HttpMessageHandler
 
     public Func<HttpRequestMessage, HttpResponseMessage> Respond { get; set; } = DefaultResponse;
 
+    /// <summary>Time before the response (a slow model); cancelled with the request.</summary>
+    public TimeSpan Delay { get; set; }
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var body = request.Content is null ? "" : await request.Content.ReadAsStringAsync(cancellationToken);
-        Requests.Add(new RecordedRequest(request.Method, request.RequestUri!, request.Headers.Authorization?.ToString(), body));
+        lock (Requests)
+        {
+            Requests.Add(new RecordedRequest(request.Method, request.RequestUri!, request.Headers.Authorization?.ToString(), body));
+        }
+
+        if (Delay > TimeSpan.Zero)
+        {
+            await Task.Delay(Delay, cancellationToken);
+        }
+
         return Respond(request);
     }
 

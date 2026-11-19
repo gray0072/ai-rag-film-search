@@ -56,7 +56,10 @@ public static class Extensions
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation()
                 .AddMeter(FilmSearchTelemetryName)
-                .AddMeter(AiTelemetryName))
+                .AddMeter(AiTelemetryName)
+                // I19: retries, circuit breaker state and timeouts of the HTTP resilience pipelines, and rate limiter decisions.
+                .AddMeter("Polly")
+                .AddMeter("Microsoft.AspNetCore.RateLimiting"))
             .WithTracing(tracing => tracing
                 .AddSource(builder.Environment.ApplicationName)
                 .AddSource(FilmSearchTelemetryName)

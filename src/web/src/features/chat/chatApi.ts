@@ -42,8 +42,8 @@ export function toAssistantEvent(item: ServerSentEvent): AssistantEvent | undefi
 
 /**
  * Sends a user message and calls `onEvent` for every event of the streamed answer (FR-AST-1).
- * Aborting `signal` closes the connection, which cancels the model call on the server (spec 06 §7).
- * Throws an `ApiError` when the request is refused before the stream starts (400, 404),
+ * Aborting `signal` closes the connection, which cancels the model call on the server (spec 06 Â§7).
+ * Throws an `ApiError` when the request is refused before the stream starts (400, 404, 429),
  * and the `AbortError` of the signal when it is aborted.
  */
 export async function streamAnswer(
@@ -75,11 +75,12 @@ export async function streamAnswer(
 
 /** Starts a conversation in the UI language. */
 export async function createConversation(locale: string): Promise<string> {
-  const { data, response } = await apiClient.POST("/api/chat/conversations", {
+  const { data, error } = await apiClient.POST("/api/chat/conversations", {
     body: { locale },
   });
-  if (!data) {
-    throw new ApiError({ status: response.status, title: response.statusText });
+  if (data) {
+    return data.id;
   }
-  return data.id;
+  // A Problem Details body (the client middleware makes one for empty errors); 429 has `code: rateLimited`.
+  throw new ApiError(error);
 }

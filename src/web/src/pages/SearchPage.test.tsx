@@ -87,6 +87,22 @@ describe("SearchPage", () => {
     vi.unstubAllGlobals();
   });
 
+  it("explains the rate limit of search", async () => {
+    mockApi({
+      "GET /api/genres": genres,
+      "GET /api/cart": aCart(),
+      "POST /api/search": Response.json(
+        { status: 429, title: "Too many requests.", code: "rateLimited", retryAfterSeconds: 1 },
+        { status: 429, headers: { "Content-Type": "application/problem+json" } },
+      ),
+    });
+    renderApp("/search?q=matrix");
+
+    expect(
+      await screen.findByText("Too many searches in a short time. Wait a moment and try again."),
+    ).toBeInTheDocument();
+  });
+
   it("asks for a query when there is none", () => {
     stubSearch();
     renderApp("/search");

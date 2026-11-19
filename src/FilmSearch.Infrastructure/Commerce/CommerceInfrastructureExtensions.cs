@@ -83,7 +83,13 @@ public static class CommerceInfrastructureExtensions
             return;
         }
 
-        services.AddHttpClient(StripePaymentGateway.HttpClientName);
+        // Its own pipeline (I19): retries only for reads and requests with an idempotency key.
+        // RemoveAllResilienceHandlers is experimental; it is the supported way to drop the handler of ServiceDefaults.
+#pragma warning disable EXTEXP0001
+        services.AddHttpClient(StripePaymentGateway.HttpClientName)
+            .RemoveAllResilienceHandlers()
+            .AddResilienceHandler("payments", PaymentHttpResilience.Configure);
+#pragma warning restore EXTEXP0001
         services.AddSingleton<StripePaymentGateway>();
         services.AddSingleton<IPaymentGateway>(sp => sp.GetRequiredService<StripePaymentGateway>());
     }

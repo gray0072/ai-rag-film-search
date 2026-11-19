@@ -78,7 +78,8 @@ public sealed partial class StripePaymentGateway(
         var sessions = Sessions();
         try
         {
-            await sessions.ExpireAsync(sessionId, cancellationToken: cancellationToken);
+            // The key makes the call safe to retry (PaymentHttpResilience); expiring twice has the same result anyway.
+            await sessions.ExpireAsync(sessionId, requestOptions: new RequestOptions { IdempotencyKey = $"expire-{sessionId}" }, cancellationToken: cancellationToken);
             LogSessionExpired(logger, sessionId);
         }
         catch (StripeException ex) when (ex.HttpStatusCode == HttpStatusCode.NotFound)
@@ -206,7 +207,7 @@ public sealed partial class StripePaymentGateway(
             throw new InvalidOperationException("Stripe:SecretKey is not configured.");
         }
 
-        // Retries come from the standard resilience handler of the named client (ServiceDefaults), so the SDK's own are off.
+        // Retries come from the resilience pipeline of the named client (PaymentHttpResilience), so the SDK's own are off.
         var http = new SystemNetHttpClient(httpClients.CreateClient(HttpClientName), maxNetworkRetries: 0, appInfo: null, enableTelemetry: false);
         return new SessionService(new StripeClient(settings.SecretKey, httpClient: http));
     }

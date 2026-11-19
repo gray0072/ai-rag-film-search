@@ -27,7 +27,7 @@ public sealed class SearchMetrics
     {
         var meter = meterFactory.Create(SearchTelemetry.Name);
         _requests = meter.CreateCounter<long>(
-            "search.requests", unit: "{request}", description: "Search requests by mode; degraded=true when hybrid search fell back to keyword results.");
+            "search.requests", unit: "{request}", description: "Search requests by mode; degraded=true when semantic or hybrid search fell back to keyword results.");
         _latency = meter.CreateHistogram<double>(
             "search.latency",
             unit: "s",

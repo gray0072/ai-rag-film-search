@@ -42,6 +42,16 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -770,6 +780,16 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       },
@@ -875,6 +895,16 @@
           },
           "400": {
             "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -1857,9 +1887,13 @@
           "latencyMs": {
             "type": "integer",
             "format": "int64"
+          },
+          "fallback": {
+            "type": "boolean",
+            "default": false
           }
         },
-        "description": "The answer is complete and stored."
+        "description": "The answer is complete and stored. Fallback is true when the fallback chat profile wrote it because the active one failed (I19)."
       },
       "AssistantEventMessageDeltaEvent": {
         "required": [
@@ -2985,6 +3019,11 @@
                 "$ref": "#/components/schemas/ConfirmationView"
               }
             ]
+          },
+          "fallback": {
+            "type": "boolean",
+            "description": "The fallback chat profile wrote the answer because the active one failed (I19).",
+            "default": false
           }
         },
         "description": "A user message or an answer of the assistant."
@@ -3956,7 +3995,7 @@
           },
           "degraded": {
             "type": "boolean",
-            "description": "Hybrid search returned keyword results only because the query could not be embedded.",
+            "description": "Semantic or hybrid search returned keyword results only because the query could not be embedded (AI provider down).",
             "default": false
           }
         }

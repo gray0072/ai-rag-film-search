@@ -78,6 +78,7 @@ export function aMessage(overrides: Partial<MessageView> = {}): MessageView {
     role: "user",
     text: "Hello",
     createdAt: "2026-11-18T10:00:00Z",
+    fallback: false,
     movies: [],
     model: null,
     promptVersion: null,

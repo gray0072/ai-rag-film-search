@@ -53,7 +53,7 @@ Filters (genre, year, rating, price…) are applied **inside** both the keyword 
   - `RelaxedKeywordWeight` = **0.1** when the keyword query was relaxed to any word (`keywordMatch = any`). For descriptions ("a man discovers that his life is a TV show") the relaxed list matches every overview with "man" or "life"; with full weight it pushed the right semantic hits down (hybrid MRR 0.51 vs semantic 0.87 on English plot queries);
   - `SemanticWeight` = 1.0.
 - Latency: the query embedding (an HTTP call to the model) runs while the keyword query runs; the two database queries stay sequential (one `DbContext`). Median ≈ 110 ms vs ≈ 95 ms for one mode on the laptop.
-- When the query cannot be embedded, hybrid returns the keyword list with `degraded: true` (semantic mode returns 503).
+- When the query cannot be embedded (provider down, open circuit), hybrid and semantic mode return the keyword list with `degraded: true` (I19; semantic mode returned 503 before). Search never fails because of the AI provider. A query embedded before the outage still has its cached vector and stays semantic.
 - Debug output per item: `keywordRank`, `keywordScore`, `keywordMatch`, `vectorRank`, `similarity`, `fusedScore`.
 
 ## 5. Query understanding (QU)
@@ -82,7 +82,7 @@ An LLM call with structured output turns free text into:
 - Merging: a filter set explicitly in the request wins over the same filter found in the text; excluded genres add up.
 - Both retrievers search for `semanticQuery` (filter words removed); an empty `semanticQuery` falls back to the original text.
 - `similarToTitles` ("movies like X", only when the user asks for similar movies — a bare title or name is a normal search) is resolved to movie ids through keyword search (best hit with all words matched, at most `Search:Hybrid:MaxSimilarTitles` = 3). The named movies are left out of the results (`MovieFilter.ExcludedMovieIds`), and the vector search is steered by them. Two strategies (`Search:Hybrid:SimilarTitles`): **`AverageVector`** (default) — `normalize(normalize(query) + mean(normalize(movie vectors)))`; `ExtraList` — the neighbours of each named movie are an extra RRF list (hybrid mode only). On 10 manual queries they were equally good (I07 report); `AverageVector` needs one vector query instead of one per title. Semantic mode always averages.
-- QU results are cached per normalized query (case, whitespace, ё/е), prompt id and chat profile (memory cache, `Search:QueryUnderstanding:CacheMinutes` = 60). Fallbacks are not cached.
+- QU results are cached per normalized query (case, whitespace, ё/е), prompt id and chat profile in a bounded memory cache (I19: `Search:QueryUnderstanding:CacheMinutes` = 1440, `CacheMaxEntries` = 10000; it was 60 minutes, unbounded). A result depends only on the query, the prompt, the model and the catalog's genres, which change rarely, so a day is safe. Fallbacks are not cached, so the model is asked again after an outage. Lookups are counted in `cache.lookups{cache=query_understanding}`.
 - Latency with `google/gemma-4-e4b` on the laptop: ≈ 2.6–3.2 s per call (first call after loading ≈ 7 s); a cached query adds nothing.
 
 ## 6. Reranking (stretch)

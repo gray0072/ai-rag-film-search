@@ -1,3 +1,4 @@
+using FilmSearch.AI.Caching;
 using FilmSearch.AI.Diagnostics;
 using FilmSearch.AI.Embeddings;
 using FilmSearch.AI.Health;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace FilmSearch.AI.Providers;
@@ -43,14 +45,24 @@ public static class AiServiceCollectionExtensions
         services.AddSingleton<AiMetrics>();
         services.AddSingleton<AiClientFactory>();
 
-        // Calls to local models take minutes on a laptop: the default resilience handler (10 s per attempt) would cut
-        // them, so it is removed. Timeout and retries come from the profile (OpenAI client pipeline, AiClientFactory).
-        var http = services.AddHttpClient(AiClientFactory.HttpClientName, client => client.Timeout = Timeout.InfiniteTimeSpan);
-        http.RemoveAllResilienceHandlers();
-        if (builder.Environment.IsDevelopment() && section.GetValue<bool>(nameof(AiOptions.LogRawHttp)))
+        // One HTTP client per profile with its own resilience pipeline (AiHttpResilience, I19). Calls to local models
+        // take minutes on a laptop: the standard resilience handler of ServiceDefaults (10 s per attempt) would cut them,
+        // so it is removed. Profiles are read here, at registration: every configured profile gets its client.
+        var logRawHttp = builder.Environment.IsDevelopment() && section.GetValue<bool>(nameof(AiOptions.LogRawHttp));
+        if (logRawHttp)
         {
             services.AddTransient<RawHttpLoggingHandler>();
-            http.AddHttpMessageHandler<RawHttpLoggingHandler>();
+        }
+
+        var configured = section.Get<AiOptions>() ?? new AiOptions();
+        foreach (var profileName in configured.ChatProfiles.Keys)
+        {
+            AddProviderHttpClient(services, AiProfileKind.Chat, profileName, logRawHttp);
+        }
+
+        foreach (var profileName in configured.EmbeddingProfiles.Keys)
+        {
+            AddProviderHttpClient(services, AiProfileKind.Embedding, profileName, logRawHttp);
         }
 
         // Keyed by profile name: any profile can be resolved without code changes. AnyKey caches one instance per key.
@@ -59,9 +71,22 @@ public static class AiServiceCollectionExtensions
         services.AddKeyedSingleton<IEmbeddingGenerator<string, Embedding<float>>>(KeyedService.AnyKey, (sp, key) =>
             sp.GetRequiredService<AiClientFactory>().CreateEmbeddingGenerator(ProfileName(key)));
 
-        // Unkeyed = active profile. Business code depends only on these two interfaces (ADR-0002).
-        services.AddSingleton(sp => sp.GetRequiredKeyedService<IChatClient>(
-            sp.GetRequiredService<IOptions<AiOptions>>().Value.ActiveChatProfile));
+        // Unkeyed = active profile, with the fallback profile behind it when one is configured (I19).
+        // Business code depends only on these two interfaces (ADR-0002).
+        services.AddSingleton(sp =>
+        {
+            var ai = sp.GetRequiredService<IOptions<AiOptions>>().Value;
+            var active = sp.GetRequiredKeyedService<IChatClient>(ai.ActiveChatProfile);
+            return ai.FallbackChatProfileName is { } fallback
+                ? new FallbackChatClient(
+                    active,
+                    ai.ActiveChatProfile,
+                    sp.GetRequiredKeyedService<IChatClient>(fallback),
+                    fallback,
+                    sp.GetRequiredService<AiMetrics>(),
+                    sp.GetRequiredService<ILogger<FallbackChatClient>>())
+                : active;
+        });
         services.AddSingleton(sp => sp.GetRequiredKeyedService<IEmbeddingGenerator<string, Embedding<float>>>(
             sp.GetRequiredService<IOptions<AiOptions>>().Value.ActiveEmbeddingProfile));
 
@@ -76,8 +101,14 @@ public static class AiServiceCollectionExtensions
             .Bind(builder.Configuration.GetSection(QueryUnderstandingOptions.SectionName))
             .Validate(o => o.CacheMinutes is >= 0 and <= 24 * 60, "Search:QueryUnderstanding:CacheMinutes must be between 0 and 1440.")
             .Validate(o => o.MaxOutputTokens is >= 50 and <= 4000, "Search:QueryUnderstanding:MaxOutputTokens must be between 50 and 4000.")
+            .Validate(o => o.CacheMaxEntries is >= 0 and <= 1_000_000, "Search:QueryUnderstanding:CacheMaxEntries must be between 0 and 1000000.")
             .ValidateOnStart();
         services.AddScoped<IQueryUnderstanding, QueryUnderstandingService>();
+
+        // Bounded caches of AI results with hit / miss metrics (I19).
+        services.AddSingleton<CacheMetrics>();
+        services.AddSingleton<QueryUnderstandingCache>();
+        services.AddSingleton<QueryEmbeddingCache>();
 
         if (section.GetValue(nameof(AiOptions.HealthChecksEnabled), defaultValue: true))
         {
@@ -89,6 +120,24 @@ public static class AiServiceCollectionExtensions
         }
 
         return builder;
+    }
+
+    private static void AddProviderHttpClient(IServiceCollection services, AiProfileKind kind, string profileName, bool logRawHttp)
+    {
+        var http = services.AddHttpClient(AiClientFactory.HttpClientName(kind, profileName), client => client.Timeout = Timeout.InfiniteTimeSpan);
+        http.RemoveAllResilienceHandlers();
+        http.AddResilienceHandler($"ai-{kind}-{profileName}".ToLowerInvariant(), (pipeline, context) =>
+        {
+            var ai = context.ServiceProvider.GetRequiredService<IOptions<AiOptions>>().Value;
+            AiProfileOptions profile = kind == AiProfileKind.Chat ? ai.GetChatProfile(profileName) : ai.GetEmbeddingProfile(profileName);
+            AiHttpResilience.Configure(pipeline, profile);
+        });
+
+        // Inside the pipeline: every attempt is logged.
+        if (logRawHttp)
+        {
+            http.AddHttpMessageHandler<RawHttpLoggingHandler>();
+        }
     }
 
     private static HealthCheckRegistration HealthCheck(string name, AiProfileKind kind) =>

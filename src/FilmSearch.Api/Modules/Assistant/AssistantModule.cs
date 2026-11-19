@@ -6,6 +6,7 @@ using FilmSearch.AI.Providers;
 using FilmSearch.AI.Telemetry;
 using FilmSearch.Api.Localization;
 using FilmSearch.Api.Modules.Commerce;
+using FilmSearch.Api.RateLimiting;
 using FilmSearch.Core.Assistant;
 using FilmSearch.Core.Catalog;
 using FilmSearch.Core.Commerce;
@@ -34,7 +35,9 @@ public static class AssistantModule
 
         chat.MapPost("/conversations", CreateConversation)
             .WithName("CreateConversation")
-            .WithSummary("Starts a conversation with the assistant. The body is optional.");
+            .WithSummary("Starts a conversation with the assistant. The body is optional.")
+            .RequireRateLimiting(RateLimitPolicies.NewConversation)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
         chat.MapGet("/conversations", ListConversations)
             .WithName("ListConversations")
             .WithSummary("The owner's conversations, most recently updated first (at most 50).");
@@ -44,7 +47,9 @@ public static class AssistantModule
         chat.MapPost("/conversations/{id:guid}/messages", SendMessage)
             .WithName("SendMessage")
             .WithSummary("Sends a message and streams the answer as server-sent events: message.started, message.delta, tool.started, tool.completed, movies, cart.updated, confirmation.required, message.completed or error (spec 04).")
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .RequireRateLimiting(RateLimitPolicies.Chat)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
         chat.MapPost("/conversations/{id:guid}/confirmations/{confirmationId:guid}", AnswerConfirmation)
             .WithName("AnswerConfirmation")
             .WithSummary("The user's answer to a confirmation.required event. Approved: creates the order from the unchanged cart and the payment session and returns checkoutUrl; the model alone can never do this.")
@@ -110,7 +115,8 @@ public static class AssistantModule
             m.Role == MessageRole.Assistant ? new UsageView(m.InputTokens ?? 0, m.OutputTokens ?? 0, m.EstimatedCostUsd ?? 0) : null,
             m.LatencyMs,
             feedback.TryGetValue(m.Id, out var f) ? new FeedbackView(f.Rating, f.Comment) : null,
-            buttons.GetValueOrDefault(m.Id))).ToList();
+            buttons.GetValueOrDefault(m.Id),
+            m.Fallback)).ToList();
 
         return TypedResults.Ok(new ConversationView(
             conversation.Id,

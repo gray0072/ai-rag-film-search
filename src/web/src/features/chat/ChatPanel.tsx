@@ -34,6 +34,7 @@ const errorKeys = {
   toolsNotSupported: "chat.errors.toolsNotSupported",
   internalError: "chat.errors.internalError",
   connectionLost: "chat.errors.connectionLost",
+  rateLimited: "chat.errors.rateLimited",
 } as const;
 
 function errorKey(code: string | undefined) {

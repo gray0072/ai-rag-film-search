@@ -82,6 +82,9 @@ public sealed class ConversationMessage
     /// <summary>Model that wrote the answer.</summary>
     public string? Model { get; set; }
 
+    /// <summary>The fallback chat profile wrote (part of) the answer because the active one failed (I19).</summary>
+    public bool Fallback { get; set; }
+
     /// <summary>Input tokens of all model calls of the turn (answers only).</summary>
     public long? InputTokens { get; set; }
 

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using System.Text.Json;
+using FilmSearch.AI.Caching;
 using FilmSearch.AI.Prompts;
 using FilmSearch.AI.Telemetry;
 using FilmSearch.Core.Catalog;
@@ -25,13 +25,15 @@ namespace FilmSearch.AI.QueryUnderstanding;
 /// the error back and one more try;</item>
 /// <item>still invalid, or the provider is down: fallback — no filters, the whole query as semantic text.</item>
 /// </list>
-/// Valid results are cached per normalized query and prompt version (memory cache), so repeated queries cost nothing.
+/// Valid results are cached per normalized query, prompt version and profile (<see cref="QueryUnderstandingCache"/>, bounded),
+/// so repeated queries cost nothing.
 /// </summary>
 internal sealed partial class QueryUnderstandingService(
     IServiceProvider services,
     PromptLibrary prompts,
     ICatalogReader catalog,
     IMemoryCache cache,
+    QueryUnderstandingCache results,
     TimeProvider timeProvider,
     IOptions<QueryUnderstandingOptions> options,
     ILogger<QueryUnderstandingService> logger) : IQueryUnderstanding
@@ -57,7 +59,7 @@ internal sealed partial class QueryUnderstandingService(
         activity?.SetTag(PromptTag, prompt.Id);
 
         var cacheKey = $"qu:{prompt.Id}:{settings.ChatProfile}:{Normalize(query)}";
-        if (cache.TryGetValue(cacheKey, out UnderstoodQuery? cached) && cached is not null)
+        if (results.TryGet(cacheKey, out var cached) && cached is not null)
         {
             activity?.SetTag(SourceTag, "cache");
             return cached with { Source = QueryUnderstandingSource.Cache };
@@ -96,7 +98,7 @@ internal sealed partial class QueryUnderstandingService(
             if (QueryUnderstandingValidator.TryParse(answer, context.GenreSlugs, out var understood, out error))
             {
                 var result = understood! with { PromptVersion = prompt.Id };
-                cache.Set(cacheKey, result, TimeSpan.FromMinutes(settings.CacheMinutes));
+                results.Set(cacheKey, result);
                 activity?.SetTag(SourceTag, "llm");
                 if (logger.IsEnabled(LogLevel.Information))
                 {
@@ -117,21 +119,7 @@ internal sealed partial class QueryUnderstandingService(
     }
 
     /// <summary>Cache key part: case and whitespace do not change the meaning of a query.</summary>
-    internal static string Normalize(string query)
-    {
-        var builder = new StringBuilder(query.Length);
-        foreach (var part in query.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
-        {
-            if (builder.Length > 0)
-            {
-                builder.Append(' ');
-            }
-
-            builder.Append(part.ToLowerInvariant().Replace('ё', 'е'));
-        }
-
-        return builder.ToString();
-    }
+    internal static string Normalize(string query) => QueryText.Normalize(query);
 
     private static UnderstoodQuery Fallback(Activity? activity, string query, PromptTemplate prompt, string error)
     {

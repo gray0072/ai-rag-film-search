@@ -21,6 +21,9 @@ internal sealed class AssistantHarness
 
     public ScriptedStreamingChatClient Chat { get; } = new();
 
+    /// <summary>The chat client the assistant gets instead of <see cref="Chat"/> (e.g. a fallback client around it).</summary>
+    public IChatClient? Client { get; set; }
+
     public InMemoryConversationStore Store { get; } = new();
 
     public FakeMovieSearch Search { get; } = new();
@@ -74,7 +77,7 @@ internal sealed class AssistantHarness
         var options = Microsoft.Extensions.Options.Options.Create(Options);
         return new AssistantChat(
             Store,
-            Chat,
+            Client ?? Chat,
             CreateTools(),
             new ConversationSummarizer(new PromptLibrary(), options, NullLogger<ConversationSummarizer>.Instance),
             new PromptLibrary(),

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FilmSearch.Api.Localization;
+using FilmSearch.Api.RateLimiting;
 using FilmSearch.Core.Catalog;
 using FilmSearch.Core.Ingestion;
 using FilmSearch.Core.Search;
@@ -24,7 +25,9 @@ public static class SearchModule
         app.MapPost("/api/search", Search)
             .WithTags("Search")
             .WithName("SearchMovies")
-            .WithSummary("Searches movies by free text with catalog filters. Movie texts in the Accept-Language locale.");
+            .WithSummary("Searches movies by free text with catalog filters. Movie texts in the Accept-Language locale.")
+            .RequireRateLimiting(RateLimitPolicies.Search)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         app.MapGet("/api/movies/{id:guid}/similar", Similar)
             .WithTags("Search")
@@ -45,7 +48,7 @@ public static class SearchModule
         }
     }
 
-    private static async Task<Results<Ok<SearchResponse>, ValidationProblem, ProblemHttpResult>> Search(
+    private static async Task<Results<Ok<SearchResponse>, ValidationProblem>> Search(
         SearchRequest request,
         IMovieSearch search,
         HttpContext httpContext,
@@ -61,22 +64,16 @@ public static class SearchModule
             });
         }
 
-        try
-        {
-            var result = await search.SearchAsync(query, cancellationToken);
-            return TypedResults.Ok(new SearchResponse(
-                result.Items,
-                SearchFilters.From(result.AppliedFilter),
-                result.Page,
-                result.PageSize,
-                result.Total,
-                result.Understood,
-                result.Degraded));
-        }
-        catch (AiProviderUnavailableException ex)
-        {
-            return EmbeddingsUnavailable(ex);
-        }
+        // Never fails because of the AI provider: semantic and hybrid search degrade to keyword results (I19).
+        var result = await search.SearchAsync(query, cancellationToken);
+        return TypedResults.Ok(new SearchResponse(
+            result.Items,
+            SearchFilters.From(result.AppliedFilter),
+            result.Page,
+            result.PageSize,
+            result.Total,
+            result.Understood,
+            result.Degraded));
     }
 
     private static async Task<Results<Ok<IReadOnlyList<SearchItem>>, NotFound, ValidationProblem>> Similar(
@@ -89,11 +86,4 @@ public static class SearchModule
         var items = await search.FindSimilarAsync(id, MovieFilter.None, httpContext.GetLocale(), limit ?? DefaultSimilarLimit, cancellationToken);
         return items is null ? TypedResults.NotFound() : TypedResults.Ok(items);
     }
-
-    /// <summary>503: semantic mode could not embed the query (LM Studio not running, provider down). Keyword search still works; hybrid search degrades to keyword results.</summary>
-    private static ProblemHttpResult EmbeddingsUnavailable(AiProviderUnavailableException ex) =>
-        TypedResults.Problem(
-            statusCode: StatusCodes.Status503ServiceUnavailable,
-            title: "Semantic search is not available: the embedding provider failed.",
-            detail: ex.Message);
 }

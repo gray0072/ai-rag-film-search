@@ -182,6 +182,10 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                         .HasColumnType("numeric(18,8)")
                         .HasColumnName("estimated_cost_usd");
 
+                    b.Property<bool>("Fallback")
+                        .HasColumnType("boolean")
+                        .HasColumnName("fallback");
+
                     b.Property<long?>("InputTokens")
                         .HasColumnType("bigint")
                         .HasColumnName("input_tokens");

@@ -248,8 +248,8 @@ internal sealed partial class AssistantChat(
             store.AddMessage(ToStored(message, conversation.Id, ++lastSeq, finishedAt));
         }
 
-        var model = state.Model ?? profile.Model;
-        var cost = Cost(profile.Model, state.InputTokens, state.OutputTokens);
+        var model = state.Model ?? (state.FallbackProfile is { } fallbackName ? ai.GetChatProfile(fallbackName).Model : profile.Model);
+        var cost = TurnCost(profile.Model, state);
         store.AddMessage(new ConversationMessage
         {
             Id = answerId,
@@ -258,6 +258,7 @@ internal sealed partial class AssistantChat(
             Role = MessageRole.Assistant,
             Content = state.Text.ToString(),
             Model = model,
+            Fallback = state.FallbackProfile is not null,
             InputTokens = state.InputTokens,
             OutputTokens = state.OutputTokens,
             EstimatedCostUsd = cost,
@@ -269,6 +270,7 @@ internal sealed partial class AssistantChat(
             CreatedAt = finishedAt,
         });
         conversation.AddUsage(state.InputTokens, state.OutputTokens, cost);
+        conversation.ProfileName = state.FallbackProfile ?? profileName;
         conversation.UpdatedAt = finishedAt;
         await store.SaveChangesAsync(CancellationToken.None);
         turn.Saved = true;
@@ -285,6 +287,7 @@ internal sealed partial class AssistantChat(
         activity?.SetTag("filmsearch.assistant.model_calls", state.ModelCalls);
         activity?.SetTag("filmsearch.assistant.tool_calls", state.ToolRounds.Count(m => m.Role == ChatRole.Tool));
         activity?.SetTag("filmsearch.assistant.iteration_limit_hit", state.IterationLimitHit);
+        activity?.SetTag("filmsearch.assistant.fallback_profile", state.FallbackProfile);
         activity?.SetTag("gen_ai.usage.input_tokens", state.InputTokens);
         activity?.SetTag("gen_ai.usage.output_tokens", state.OutputTokens);
         if (cost is { } turnCost)
@@ -299,7 +302,7 @@ internal sealed partial class AssistantChat(
         }
         LogAnswered(logger, conversation.Id, prompt.Id, model, state.ModelCalls, state.InputTokens, state.OutputTokens, latencyMs);
 
-        emit(new MessageCompletedEvent(answerId, new TokenUsage(state.InputTokens, state.OutputTokens), model, latencyMs));
+        emit(new MessageCompletedEvent(answerId, new TokenUsage(state.InputTokens, state.OutputTokens), model, latencyMs, state.FallbackProfile is not null));
     }
 
     /// <summary>
@@ -363,6 +366,19 @@ internal sealed partial class AssistantChat(
     private decimal? Cost(string model, long inputTokens, long outputTokens) =>
         aiOptions.Value.FindPricing(model)?.Estimate(inputTokens, outputTokens);
 
+    /// <summary>Tokens of the active profile priced with its model, those of the fallback profile with the fallback's (I19).</summary>
+    private decimal? TurnCost(string activeModel, TurnState state)
+    {
+        var active = Cost(activeModel, state.InputTokens - state.FallbackInputTokens, state.OutputTokens - state.FallbackOutputTokens);
+        if (state.FallbackProfile is not { } fallback)
+        {
+            return active;
+        }
+
+        var fallbackCost = Cost(aiOptions.Value.GetChatProfile(fallback).Model, state.FallbackInputTokens, state.FallbackOutputTokens);
+        return active is null && fallbackCost is null ? null : (active ?? 0) + (fallbackCost ?? 0);
+    }
+
     /// <summary>After a failure: the tokens already spent still count for the conversation.</summary>
     private async Task SaveSpentUsageAsync(Turn turn)
     {
@@ -375,7 +391,7 @@ internal sealed partial class AssistantChat(
         try
         {
             var model = aiOptions.Value.GetChatProfile(aiOptions.Value.ActiveChatProfile).Model;
-            turn.Conversation.AddUsage(state.InputTokens, state.OutputTokens, Cost(model, state.InputTokens, state.OutputTokens));
+            turn.Conversation.AddUsage(state.InputTokens, state.OutputTokens, TurnCost(model, state));
             await store.SaveChangesAsync(CancellationToken.None);
         }
         catch (Exception ex)

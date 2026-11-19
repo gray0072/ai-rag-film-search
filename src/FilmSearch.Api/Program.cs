@@ -12,6 +12,7 @@ using FilmSearch.Api.Modules.Ingestion;
 using FilmSearch.Api.Modules.Search;
 using FilmSearch.Api.OpenApi;
 using FilmSearch.Api.Owners;
+using FilmSearch.Api.RateLimiting;
 using FilmSearch.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 builder.Services.AddOwnerContext();
 builder.Services.AddRequestLocales();
+builder.Services.AddApiRateLimiting(builder.Configuration);
 builder.AddAiProviders();
 builder.AddIdentityModule();
 
@@ -64,6 +66,8 @@ app.UseAuthentication();
 // After authentication: the owner is the signed-in user, else the anonymous session (I17).
 app.UseOwnerContext();
 app.UseAuthorization();
+// After the owner context: the chat policy is per owner (I19).
+app.UseRateLimiter();
 app.UseRequestLocalization();
 
 app.MapDefaultEndpoints();

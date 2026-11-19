@@ -148,6 +148,7 @@ public sealed record ConversationView(
 /// <param name="LatencyMs">Time to the end of the answer.</param>
 /// <param name="Feedback">The owner's rating of the answer.</param>
 /// <param name="Confirmation">The latest confirmation the answer asked for (checkout button), with its current status.</param>
+/// <param name="Fallback">The fallback chat profile wrote the answer because the active one failed (I19).</param>
 public sealed record MessageView(
     Guid Id,
     MessageRole Role,
@@ -159,7 +160,8 @@ public sealed record MessageView(
     UsageView? Usage,
     int? LatencyMs,
     FeedbackView? Feedback,
-    ConfirmationView? Confirmation = null);
+    ConfirmationView? Confirmation = null,
+    bool Fallback = false);
 
 /// <summary>Token usage and estimated cost.</summary>
 /// <param name="InputTokens">Input (prompt) tokens.</param>

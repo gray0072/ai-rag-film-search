@@ -35,16 +35,15 @@ internal sealed class SemanticRetriever(AppDbContext db, ITextEmbedder embedder,
         return await NearestAsync(vector, filter, MaxResults, cancellationToken);
     }
 
-    /// <summary>The query vector of the active model (query prefix included). Calls the provider only, not the database.</summary>
+    /// <summary>The query vector of the active model (query prefix included; cached, I19). Calls the provider only, not the database.</summary>
     /// <exception cref="AiProviderUnavailableException">The embedding provider failed.</exception>
     public async Task<ReadOnlyMemory<float>> EmbedQueryAsync(string text, CancellationToken cancellationToken)
     {
-        // The provider call is a GenAI embeddings span inside this one.
+        // The provider call is a GenAI embeddings span inside this one; a cached vector has none.
         using var activity = SearchTelemetry.Activities.StartActivity("search.embed_query");
         var model = embedder.Active;
         activity?.SetTag("filmsearch.search.embedding_model", model.Model);
-        var vectors = await embedder.EmbedAsync(model, [model.FormatQuery(text)], cancellationToken);
-        return vectors[0];
+        return await embedder.EmbedQueryAsync(model, text, cancellationToken);
     }
 
     /// <summary>Movies nearest to <paramref name="vector"/> (a vector of the active model), best first.</summary>

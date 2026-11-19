@@ -1,3 +1,4 @@
+using FilmSearch.AI.Caching;
 using FilmSearch.AI.Providers;
 using FilmSearch.Core.Search;
 using Microsoft.Extensions.AI;
@@ -10,9 +11,9 @@ namespace FilmSearch.AI.Embeddings;
 /// <see cref="ITextEmbedder"/> over the embedding profiles: the generator of a profile is the keyed
 /// <see cref="IEmbeddingGenerator{TInput,TEmbedding}"/> registered by <c>AddAiProviders</c>, so calls go through the same
 /// telemetry and usage pipeline as chat. Provider errors become <see cref="AiProviderUnavailableException"/>,
-/// so search code does not see SDK exception types.
+/// so search code does not see SDK exception types. Query vectors are cached (<see cref="QueryEmbeddingCache"/>, I19).
 /// </summary>
-internal sealed class ProfileTextEmbedder(IOptions<AiOptions> options, IServiceProvider services) : ITextEmbedder
+internal sealed class ProfileTextEmbedder(IOptions<AiOptions> options, IServiceProvider services, QueryEmbeddingCache queryCache) : ITextEmbedder
 {
     public EmbeddingModel Active => GetModel(options.Value.ActiveEmbeddingProfile);
 
@@ -28,6 +29,20 @@ internal sealed class ProfileTextEmbedder(IOptions<AiOptions> options, IServiceP
         // The configured key, not the caller's spelling: keyed services and stored data use one name per profile.
         var name = options.Value.EmbeddingProfiles.Keys.First(k => string.Equals(k, profile, StringComparison.OrdinalIgnoreCase));
         return new EmbeddingModel(name, settings.Model, settings.Dimensions, settings.QueryPrefix, settings.DocumentPrefix);
+    }
+
+    public async Task<ReadOnlyMemory<float>> EmbedQueryAsync(EmbeddingModel model, string query, CancellationToken cancellationToken)
+    {
+        var text = model.FormatQuery(query);
+        var key = QueryEmbeddingCache.Key(model, text);
+        if (queryCache.TryGet(key, out var cached) && cached is not null)
+        {
+            return cached;
+        }
+
+        var vector = (await EmbedAsync(model, [text], cancellationToken))[0];
+        queryCache.Set(key, vector.ToArray());
+        return vector;
     }
 
     public async Task<IReadOnlyList<ReadOnlyMemory<float>>> EmbedAsync(

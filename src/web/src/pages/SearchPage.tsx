@@ -4,6 +4,7 @@ import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { api } from "@/api/client";
+import { problemStatus } from "@/api/problem";
 import type { SearchItem, SearchMode, SearchRequest, UnderstoodQuery } from "@/api/types";
 import { EmptyState, ErrorState, PageTitle } from "@/components/StatusMessages";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -175,7 +176,9 @@ export function SearchPage() {
         ) : search.isError ? (
           <ErrorState
             message={
-              mode === "semantic" ? t("search.semanticUnavailable") : t("common.errorGeneric")
+              problemStatus(search.error) === 429
+                ? t("search.rateLimited")
+                : t("common.errorGeneric")
             }
             onRetry={() => void search.refetch()}
           />

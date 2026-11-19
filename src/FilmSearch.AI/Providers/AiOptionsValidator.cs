@@ -22,10 +22,32 @@ internal sealed class AiOptionsValidator : IValidateOptions<AiOptions>
             errors.Add($"AI:ActiveEmbeddingProfile '{options.ActiveEmbeddingProfile}' is not one of AI:EmbeddingProfiles ({Names(options.EmbeddingProfiles.Keys)}).");
         }
 
+        if (options.FallbackChatProfileName is { } fallback)
+        {
+            if (!options.ChatProfiles.TryGetValue(fallback, out var fallbackProfile))
+            {
+                errors.Add($"AI:FallbackChatProfile '{fallback}' is not one of AI:ChatProfiles ({Names(options.ChatProfiles.Keys)}).");
+            }
+            else if (Same(fallback, options.ActiveChatProfile))
+            {
+                errors.Add("AI:FallbackChatProfile must differ from AI:ActiveChatProfile.");
+            }
+            else if (!fallbackProfile.SupportsTools)
+            {
+                errors.Add($"AI:FallbackChatProfile '{fallback}' must support tools: the assistant gives it the same tools.");
+            }
+        }
+
+        if (options.QueryEmbeddingCacheMinutes is < 0 or > 7 * 24 * 60 || options.QueryEmbeddingCacheMaxEntries is < 0 or > 1_000_000)
+        {
+            errors.Add("AI:QueryEmbeddingCacheMinutes (0–10080) or AI:QueryEmbeddingCacheMaxEntries (0–1000000) is out of range.");
+        }
+
         foreach (var (profileName, profile) in options.ChatProfiles)
         {
             var path = $"AI:ChatProfiles:{profileName}";
-            ValidateConnection(errors, path, profile, isActive: Same(profileName, options.ActiveChatProfile));
+            var isUsed = Same(profileName, options.ActiveChatProfile) || Same(profileName, options.FallbackChatProfileName ?? "");
+            ValidateConnection(errors, path, profile, isActive: isUsed);
 
             if (profile.Temperature is < 0 or > 2)
             {
@@ -83,9 +105,19 @@ internal sealed class AiOptionsValidator : IValidateOptions<AiOptions>
             errors.Add($"{path}:MaxRetries must be between 0 and 10.");
         }
 
+        if (profile.RetryDelayMs is < 1 or > 60_000)
+        {
+            errors.Add($"{path}:RetryDelayMs must be between 1 and 60000.");
+        }
+
+        if (profile.CircuitBreakSeconds is < 1 or > 3600)
+        {
+            errors.Add($"{path}:CircuitBreakSeconds must be between 1 and 3600.");
+        }
+
         if (isActive && string.IsNullOrWhiteSpace(profile.ApiKey))
         {
-            errors.Add($"{path}:ApiKey is required for the active profile. Set it with "
+            errors.Add($"{path}:ApiKey is required for the active and the fallback profile. Set it with "
                 + $"`dotnet user-secrets set {path}:ApiKey <key> --project src/FilmSearch.Api`.");
         }
     }

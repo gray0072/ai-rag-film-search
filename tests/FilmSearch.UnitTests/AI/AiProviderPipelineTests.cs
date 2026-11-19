@@ -97,10 +97,13 @@ public sealed class AiProviderPipelineTests
     public async Task Streaming_response_records_token_metrics_from_the_last_chunk()
     {
         var handler = new FakeProviderHandler { Respond = FakeProviderHandler.StreamResponse };
-        using var host = AiTestHost.Build(handler, new() { ["AI:ActiveChatProfile"] = "openrouter" });
+        // Meters of this host only: other tests stream through priced profiles in parallel.
+        using var meters = new FilmSearch.UnitTests.Assistant.TestMeterFactory();
+        using var host = AiTestHost.Build(
+            handler, new() { ["AI:ActiveChatProfile"] = "openrouter" }, services => services.AddSingleton<IMeterFactory>(meters));
         var chat = host.Services.GetRequiredService<IChatClient>();
-        using var tokens = new MeasurementRecorder<long>("ai.tokens");
-        using var cost = new MeasurementRecorder<double>("ai.cost_usd");
+        using var tokens = new OwnedMeasurements(meters, "ai.tokens");
+        using var cost = new OwnedMeasurements(meters, "ai.cost_usd");
 
         var text = "";
         await foreach (var update in chat.GetStreamingResponseAsync("Hi", cancellationToken: Ct))
@@ -186,52 +189,4 @@ public sealed class AiProviderPipelineTests
         var exception = Should.Throw<OptionsValidationException>(() => host.Services.GetRequiredService<IOptions<AiOptions>>().Value);
         exception.Message.ShouldContain("AI:ChatProfiles:openrouter:ApiKey is required");
     }
-}
-
-/// <summary>Collects measurements of one FilmSearch instrument while it is alive.</summary>
-internal sealed class MeasurementRecorder<T> : IDisposable
-    where T : struct
-{
-    private readonly MeterListener _listener = new();
-
-    public MeasurementRecorder(string instrument)
-    {
-        _listener.InstrumentPublished = (i, listener) =>
-        {
-            if (i.Meter.Name == AiMetrics.MeterName && i.Name == instrument)
-            {
-                listener.EnableMeasurementEvents(i);
-            }
-        };
-        _listener.SetMeasurementEventCallback<T>((_, value, tags, _) =>
-        {
-            var copy = new Dictionary<string, object?>();
-            foreach (var tag in tags)
-            {
-                copy[tag.Key] = tag.Value;
-            }
-
-            lock (_values)
-            {
-                _values.Add((value, copy));
-            }
-        });
-        _listener.Start();
-    }
-
-    private readonly List<(T Value, Dictionary<string, object?> Tags)> _values = [];
-
-    /// <summary>A snapshot: the listener sees the whole process, and other test classes record measurements in parallel.</summary>
-    public List<(T Value, Dictionary<string, object?> Tags)> Values
-    {
-        get
-        {
-            lock (_values)
-            {
-                return [.. _values];
-            }
-        }
-    }
-
-    public void Dispose() => _listener.Dispose();
 }

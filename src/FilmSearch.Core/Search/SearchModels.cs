@@ -44,7 +44,7 @@ public sealed record SearchResult(IReadOnlyList<SearchItem> Items, int Page, int
     /// <summary>Result of query understanding when it was requested.</summary>
     public UnderstoodQuery? Understood { get; init; }
 
-    /// <summary>Hybrid search returned keyword results only because the query could not be embedded (provider down).</summary>
+    /// <summary>Semantic or hybrid search returned keyword results only because the query could not be embedded (provider down).</summary>
     public bool Degraded { get; init; }
 }
 

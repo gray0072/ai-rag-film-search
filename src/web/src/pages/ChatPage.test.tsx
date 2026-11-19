@@ -117,6 +117,7 @@ describe("ChatPage", () => {
         usage: { inputTokens: 10, outputTokens: 5 },
         model: "gemma",
         latencyMs: 900,
+        fallback: false,
       },
     );
     stream.close();
@@ -179,6 +180,7 @@ describe("ChatPage", () => {
             usage: { inputTokens: 1, outputTokens: 1 },
             model: "gemma",
             latencyMs: 1,
+            fallback: false,
           },
         ]),
         [
@@ -398,6 +400,48 @@ describe("ChatPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Message to the assistant" })).toHaveValue("");
   });
+
+  it("explains the rate limit and gives the text back", async () => {
+    mockApi(
+      chatRoutes(
+        Response.json(
+          { status: 429, title: "Too many requests.", code: "rateLimited", retryAfterSeconds: 3 },
+          {
+            status: 429,
+            headers: { "Content-Type": "application/problem+json", "Retry-After": "3" },
+          },
+        ),
+        [],
+      ),
+    );
+    renderApp("/chat");
+    await ask("One more?");
+
+    expect(
+      await screen.findByText("You are sending messages too fast. Wait a moment and try again."),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("textbox", { name: "Message to the assistant" })).toHaveValue(
+        "One more?",
+      );
+    });
+  });
+
+  it("marks an answer of the backup model", async () => {
+    mockApi({
+      "GET /api/cart": aCart(),
+      "GET /api/chat/conversations": [created],
+      "GET /api/chat/conversations/:id": aConversation([
+        userMessage,
+        { ...answerMessage, fallback: true },
+      ]),
+    });
+    renderApp(`/chat/${conversationId}`);
+
+    expect(
+      await screen.findByText("Answered by the backup AI model: the main one was not available."),
+    ).toBeInTheDocument();
+  });
 });
 
 describe("Chat drawer", () => {
@@ -422,6 +466,7 @@ describe("Chat drawer", () => {
             usage: { inputTokens: 1, outputTokens: 1 },
             model: "gemma",
             latencyMs: 1,
+            fallback: false,
           },
         ]),
       ),

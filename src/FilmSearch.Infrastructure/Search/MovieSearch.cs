@@ -13,6 +13,8 @@ namespace FilmSearch.Infrastructure.Search;
 /// <see cref="IMovieSearch"/>: optional query understanding, then the retriever(s) of the requested mode, then the movies
 /// through <see cref="ICatalogReader"/> in the requested locale, keeping the ranking order.
 /// Keyword mode from I04, semantic mode and similar movies from I06, hybrid mode and query understanding from I07.
+/// When the query cannot be embedded (provider down), semantic and hybrid search return the keyword results with
+/// <see cref="SearchResult.Degraded"/> (I19): search keeps working without the AI provider.
 /// </summary>
 internal sealed partial class MovieSearch(
     KeywordRetriever keyword,
@@ -149,8 +151,12 @@ internal sealed partial class MovieSearch(
     {
         // The whole list is at most Search:Semantic:MaxResults long: it is fetched at once and paged in memory.
         // "Movies like X" always blends vectors here: one vector list keeps the score a real similarity.
-        var vector = await semantic.EmbedQueryAsync(plan.Text, cancellationToken);
-        vector = await BlendAsync(vector, plan.SimilarMovieIds, cancellationToken);
+        if (await TryEmbedAsync(plan.Text, cancellationToken) is not { } embedded)
+        {
+            return await KeywordAsync(query, plan, skip, cancellationToken) with { Degraded = true };
+        }
+
+        var vector = await BlendAsync(embedded, plan.SimilarMovieIds, cancellationToken);
         var hits = await semantic.NearestAsync(vector, plan.Filter, semantic.MaxResults, cancellationToken);
         var page = hits.Skip(skip).Take(query.PageSize).ToList();
         var items = await ToItemsAsync(page, h => h.MovieId, h => h.Similarity, VectorDebug, query.Locale, query.Debug, cancellationToken);
@@ -233,7 +239,7 @@ internal sealed partial class MovieSearch(
         return new SearchResult(items, query.Page, query.PageSize, fused.Count) { Degraded = vector is null };
     }
 
-    /// <summary>Null when the embedding provider is down: hybrid search then returns the keyword results (degraded).</summary>
+    /// <summary>Null when the embedding provider is down: search then returns the keyword results (degraded).</summary>
     private async Task<ReadOnlyMemory<float>?> TryEmbedAsync(string text, CancellationToken cancellationToken)
     {
         try
@@ -277,7 +283,7 @@ internal sealed partial class MovieSearch(
             .Select(h => new SearchItem(byId[movieId(h)], score(h), debug ? debugOf(h) : null))];
     }
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Hybrid search falls back to keyword results: the query could not be embedded")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Search falls back to keyword results: the query could not be embedded")]
     private static partial void LogEmbeddingFailed(ILogger logger, Exception exception);
 
     private sealed record SearchPlan(string Text, MovieFilter Filter, IReadOnlyList<Guid> SimilarMovieIds, UnderstoodQuery? Understood);

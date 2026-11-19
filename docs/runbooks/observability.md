@@ -62,6 +62,16 @@ POST /api/chat/conversations/{id}/messages        HTTP request (ASP.NET Core)
 | `search.requests`, `search.latency` | mode, understand, degraded | Search load and speed; `degraded=true` means the embedding provider is down |
 | `payments.webhooks` | provider, type, result | `rejected` = bad signatures, `error` = processing failures (the provider retries) |
 | `orders.status_changes` | from, to | Orders that are created but never get to `paid` |
+| `cache.lookups`, `cache.entries` | cache (`query_embedding`, `query_understanding`), result (hit/miss) | Hit rate = hit / (hit + miss). A low rate on `query_understanding` means mostly unique queries; every miss is a model call |
+| `ai.fallbacks` | from, to, operation | The active chat profile failed and the fallback answered (and cost money, if it is a cloud profile) |
+
+Other meters: `resilience.polly.strategy.events` (meter `Polly`; tags `pipeline.name` such as `ai-chat-local-…`, `event.name`: `OnRetry`, `OnCircuitOpened`, `OnCircuitClosed`, `OnTimeout`) shows retries and the circuit breaker of each AI profile and of payments. `aspnetcore.rate_limiting.requests` (policy, result) shows requests refused by the rate limits.
+
+## The AI provider is down (I19)
+
+- **Search** keeps working. Semantic and hybrid search return keyword results with `degraded: true`: `search.requests{degraded=true}`, and the warning "Search falls back to keyword results". Queries that were embedded before the outage still have their cached vectors and stay semantic.
+- **Chat** without a fallback profile: the turn ends with `error: providerUnavailable`, and `assistant.turns{outcome=providerUnavailable}` goes up. With `AI:FallbackChatProfile` set, the fallback answers, and `ai.fallbacks` counts the switches. The answer is marked in the UI, and `assistant.messages.fallback` is true.
+- After 3 failed attempts within a minute, the profile's circuit opens for `CircuitBreakSeconds`. Calls then fail at once instead of waiting for timeouts (`OnCircuitOpened` in the Polly events, "The circuit is now open" in the logs). LM Studio stuck on a request from a killed process: `lms unload --all`, then load again.
 
 ## Budgets (NFR-5)
 

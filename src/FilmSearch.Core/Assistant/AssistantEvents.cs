@@ -86,8 +86,8 @@ public sealed record ConfirmationRequiredEvent(Guid ConfirmationId, string Kind,
 /// <summary>What the user confirms: the cart lines and the total computed by the server.</summary>
 public sealed record ConfirmationSummary(IReadOnlyList<CartLine> Items, long TotalMinor, string Currency);
 
-/// <summary>The answer is complete and stored.</summary>
-public sealed record MessageCompletedEvent(Guid MessageId, TokenUsage Usage, string Model, long LatencyMs) : AssistantEvent
+/// <summary>The answer is complete and stored. <paramref name="Fallback"/> is true when the fallback chat profile wrote it because the active one failed (I19).</summary>
+public sealed record MessageCompletedEvent(Guid MessageId, TokenUsage Usage, string Model, long LatencyMs, bool Fallback = false) : AssistantEvent
 {
     public const string Name = "message.completed";
 

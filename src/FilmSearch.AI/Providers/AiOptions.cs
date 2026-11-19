@@ -17,6 +17,19 @@ public sealed class AiOptions
     /// <summary>Name of the embedding profile behind the unkeyed <c>IEmbeddingGenerator</c>.</summary>
     public string ActiveEmbeddingProfile { get; set; } = "";
 
+    /// <summary>
+    /// Chat profile that answers when the active one fails before it has streamed anything (provider down, timeout, open
+    /// circuit; I19). Empty: no fallback. It must support tools, since the assistant gives it the same tools. There is
+    /// no embedding fallback: vectors of another model are not comparable with the stored ones (search degrades to keyword).
+    /// </summary>
+    public string? FallbackChatProfile { get; set; }
+
+    /// <summary>Query vectors are cached per profile, model and normalized query text (I19). 0 turns the cache off.</summary>
+    public int QueryEmbeddingCacheMinutes { get; set; } = 24 * 60;
+
+    /// <summary>Most cached query vectors (a 768-dimension vector is 3 KB).</summary>
+    public int QueryEmbeddingCacheMaxEntries { get; set; } = 10_000;
+
     public Dictionary<string, ChatProfileOptions> ChatProfiles { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public Dictionary<string, EmbeddingProfileOptions> EmbeddingProfiles { get; set; } = new(StringComparer.OrdinalIgnoreCase);
@@ -51,6 +64,9 @@ public sealed class AiOptions
             : throw new InvalidOperationException($"AI embedding profile '{name}' is not configured (AI:EmbeddingProfiles).");
 
     public ModelPricing? FindPricing(string model) => Pricing.GetValueOrDefault(model);
+
+    /// <summary>The fallback chat profile name, or null when none is configured.</summary>
+    public string? FallbackChatProfileName => string.IsNullOrWhiteSpace(FallbackChatProfile) ? null : FallbackChatProfile;
 }
 
 /// <summary>Connection settings shared by chat and embedding profiles: any OpenAI-compatible API.</summary>
@@ -65,11 +81,23 @@ public abstract class AiProfileOptions
     /// <summary>API key. LM Studio accepts any non-empty value; cloud keys come from user secrets.</summary>
     public string? ApiKey { get; set; }
 
-    /// <summary>Network timeout of one attempt. Local models on a laptop are slow, so the default is generous.</summary>
+    /// <summary>Timeout of one attempt. Local models on a laptop are slow, so the default is generous.</summary>
     public int TimeoutSeconds { get; set; } = 120;
 
-    /// <summary>Retries of transient HTTP failures (5xx, 408, 429, connection errors).</summary>
+    /// <summary>
+    /// Retries of failures where the request did not reach the model or was refused at once: connection errors, 429,
+    /// 502, 503, 504. Timeouts and 500 are not retried (I19): the provider may still be working on the first request.
+    /// </summary>
     public int MaxRetries { get; set; } = 2;
+
+    /// <summary>Base delay of the exponential retry backoff (with jitter); a <c>Retry-After</c> header wins.</summary>
+    public int RetryDelayMs { get; set; } = 1000;
+
+    /// <summary>
+    /// Seconds the circuit breaker of this profile stays open after half of at least 3 attempts in a minute failed
+    /// (connection errors, timeouts, 408, 429, 5xx). While it is open, calls fail at once and the fallback profile answers.
+    /// </summary>
+    public int CircuitBreakSeconds { get; set; } = 30;
 }
 
 public sealed class ChatProfileOptions : AiProfileOptions

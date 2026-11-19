@@ -24,13 +24,19 @@ public sealed class AiMetrics
 
     private readonly Counter<long> _tokens;
     private readonly Counter<double> _cost;
+    private readonly Counter<long> _fallbacks;
 
     public AiMetrics(IMeterFactory meterFactory)
     {
         var meter = meterFactory.Create(MeterName);
         _tokens = meter.CreateCounter<long>("ai.tokens", unit: "{token}", description: "Tokens sent to and received from AI models.");
         _cost = meter.CreateCounter<double>("ai.cost_usd", unit: "USD", description: "Estimated cost of AI calls.");
+        _fallbacks = meter.CreateCounter<long>(
+            "ai.fallbacks", unit: "{call}", description: "Chat calls the fallback profile answered because the active profile failed (I19).");
     }
+
+    internal void RecordFallback(string fromProfile, string toProfile, string operation) =>
+        _fallbacks.Add(1, new("from", fromProfile), new("to", toProfile), new("operation", operation));
 
     internal void Record(AiUsage usage)
     {

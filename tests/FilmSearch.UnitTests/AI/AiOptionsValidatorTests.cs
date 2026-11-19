@@ -42,6 +42,32 @@ public sealed class AiOptionsValidatorTests
         failures.ShouldContain(f => f.Contains("AI:ActiveEmbeddingProfile 'cloud'", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("cloud", "AI:FallbackChatProfile 'cloud' is not one of AI:ChatProfiles")]
+    [InlineData("LOCAL", "AI:FallbackChatProfile must differ from AI:ActiveChatProfile")]
+    [InlineData("openrouter", "AI:ChatProfiles:openrouter:ApiKey is required for the active and the fallback profile")]
+    public void Fallback_profile_must_exist_differ_from_the_active_one_and_have_a_key(string fallback, string expected)
+    {
+        var options = Valid();
+        options.FallbackChatProfile = fallback;
+
+        Failures(options).ShouldContain(f => f.Contains(expected, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Fallback_profile_must_support_tools()
+    {
+        var options = Valid();
+        options.ChatProfiles["openrouter"].ApiKey = "key";
+        options.ChatProfiles["openrouter"].SupportsTools = false;
+        options.FallbackChatProfile = "openrouter";
+
+        Failures(options).ShouldContain(f => f.Contains("must support tools", StringComparison.Ordinal));
+
+        options.ChatProfiles["openrouter"].SupportsTools = true;
+        Validator.Validate(null, options).Succeeded.ShouldBeTrue();
+    }
+
     [Fact]
     public void Profile_names_are_case_insensitive()
     {

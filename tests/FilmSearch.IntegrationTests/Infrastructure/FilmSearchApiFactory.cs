@@ -19,12 +19,15 @@ namespace FilmSearch.IntegrationTests.Infrastructure;
 /// chat profile by <see cref="Chat"/> (a <see cref="ScriptedChatClient"/>), so no test calls a real model. <paramref name="settings"/> are extra configuration values.
 /// Fake payment webhooks go through the TestServer handler and are recorded in <see cref="Webhooks"/>; Stripe API calls
 /// (when a test configures Stripe) are answered by <see cref="StripeApi"/>; <paramref name="time"/> replaces the clock of the whole app.
+/// Rate limiting is off (tests send many requests from one client) unless <paramref name="settings"/> turn it on;
+/// <paramref name="configureServices"/> runs last (e.g. a failing client for one profile: a keyed registration wins over AnyKey).
 /// </summary>
 public sealed class FilmSearchApiFactory(
     PostgresFixture postgres,
     string? connectionString = null,
     IReadOnlyDictionary<string, string?>? settings = null,
-    TimeProvider? time = null) : WebApplicationFactory<Program>
+    TimeProvider? time = null,
+    Action<IServiceCollection>? configureServices = null) : WebApplicationFactory<Program>
 {
     public ScriptedChatClient Chat { get; } = new();
 
@@ -48,6 +51,7 @@ public sealed class FilmSearchApiFactory(
         builder.UseSetting("Payments:Fake:WebhookBaseUrl", "http://localhost");
         builder.UseSetting("Payments:Fake:WebhookDelayMinMs", "0");
         builder.UseSetting("Payments:Fake:WebhookDelayMaxMs", "0");
+        builder.UseSetting("RateLimiting:Enabled", "false");
         foreach (var (key, value) in settings ?? new Dictionary<string, string?>())
         {
             builder.UseSetting(key, value);
@@ -73,6 +77,8 @@ public sealed class FilmSearchApiFactory(
             {
                 services.AddSingleton(time);
             }
+
+            configureServices?.Invoke(services);
         });
     }
 }

@@ -28,7 +28,7 @@
     "results": "Sökresultat",
     "empty": "Inget hittades. Prova andra ord eller ta bort några filter.",
     "degraded": "Semantisk sökning är inte tillgänglig just nu, så detta är bara resultat från nyckelord.",
-    "semanticUnavailable": "Semantisk sökning är inte tillgänglig just nu. Prova nyckelords- eller hybridläget.",
+    "rateLimited": "För många sökningar på kort tid. Vänta en stund och försök igen.",
     "understand": "Förstå frågan (AI)",
     "understoodAs": "Söker efter ”{{query}}”.",
     "understoodFallback": "Frågan kunde inte tolkas, så den söks som den är skriven.",
@@ -273,6 +273,7 @@
         "notFound": "Beställningen hittades inte."
       }
     },
+    "fallbackAnswer": "Besvarat av reservmodellen för AI: huvudmodellen var inte tillgänglig.",
     "feedback": {
       "up": "Bra svar",
       "down": "Dåligt svar",
@@ -285,7 +286,8 @@
       "dailyBudgetExceeded": "Du har använt assistenten mycket i dag. Försök igen i morgon.",
       "toolsNotSupported": "Den valda AI-modellen kan inte söka i katalogen, så assistenten är avstängd.",
       "internalError": "Något gick fel när svaret skrevs.",
-      "connectionLost": "Anslutningen bröts innan svaret var klart."
+      "connectionLost": "Anslutningen bröts innan svaret var klart.",
+      "rateLimited": "Du skickar meddelanden för snabbt. Vänta en stund och försök igen."
     }
   },
   "errors": {
