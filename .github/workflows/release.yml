@@ -39,11 +39,10 @@ jobs:
       publish: ${{ steps.meta.outputs.publish }}
     env:
       COMPOSE_FILE: compose.yaml:compose.build.yaml
-      # The runner has no OpenRouter key: the chat profile points at an unreachable LM Studio, so search falls back from
-      # query understanding and the assistant test is skipped. Embeddings run in Ollama as on the server.
+      # The runner has no OpenRouter key: both profiles point at an unreachable LM Studio, so search falls back to
+      # keyword results without query understanding and the assistant test is skipped.
       CHAT_PROFILE: local
-      EMBEDDING_PROFILE: ollama
-      COMPOSE_PROFILES: ollama
+      EMBEDDING_PROFILE: local
       POSTGRES_PASSWORD: ci0123456789abcdef
       ADMIN_EMAIL: admin@filmsearch.local
       ADMIN_PASSWORD: Ci-Admin-Password-1234

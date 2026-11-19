@@ -30,25 +30,31 @@ public sealed class DemoConfigurationTests
         configuration.GetSection(AiOptions.SectionName).Get<AiOptions>()!;
 
     [Fact]
-    public void The_demo_uses_OpenRouter_chat_and_local_embeddings_without_prompt_content_in_telemetry()
+    public void The_demo_uses_OpenRouter_chat_and_embeddings_without_prompt_content_in_telemetry()
     {
         var ai = Ai(Demo());
 
         new AiOptionsValidator().Validate(null, ai).Succeeded.ShouldBeTrue();
         ai.ActiveChatProfile.ShouldBe("openrouter");
-        ai.ActiveEmbeddingProfile.ShouldBe("ollama");
-        ai.GetEmbeddingProfile("ollama").Endpoint.ShouldBe("http://ollama:11434/v1");
+        ai.ActiveEmbeddingProfile.ShouldBe("openrouter");
+        ai.GetEmbeddingProfile("openrouter").Dimensions.ShouldBe(1024);
         ai.EnableSensitiveData.ShouldBeFalse();
         ai.LogRawHttp.ShouldBeFalse();
     }
 
     [Fact]
-    public void The_OpenRouter_embedding_profile_is_valid_too()
+    public void LM_Studio_on_the_Docker_host_is_valid_without_a_key()
     {
-        var ai = Ai(Demo(("AI:ActiveEmbeddingProfile", "openrouter")));
+        var ai = Ai(Demo(
+            ("AI:ActiveChatProfile", "local"),
+            ("AI:ActiveEmbeddingProfile", "local"),
+            ("AI:ChatProfiles:openrouter:ApiKey", ""),
+            ("AI:EmbeddingProfiles:openrouter:ApiKey", ""),
+            ("AI:ChatProfiles:local:Endpoint", "http://host.docker.internal:1234/v1"),
+            ("AI:EmbeddingProfiles:local:Endpoint", "http://host.docker.internal:1234/v1")));
 
         new AiOptionsValidator().Validate(null, ai).Succeeded.ShouldBeTrue();
-        ai.GetEmbeddingProfile("openrouter").Dimensions.ShouldBe(1024);
+        ai.GetEmbeddingProfile("local").Dimensions.ShouldBe(768);
     }
 
     [Fact]

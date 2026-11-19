@@ -11,9 +11,12 @@ x-dotnet-env: &dotnet-env
   DOTNET_ENVIRONMENT: Demo
   ConnectionStrings__filmsearch: Host=postgres;Database=filmsearch;Username=filmsearch;Password=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env};GSS Encryption Mode=Disable
   AI__ActiveChatProfile: ${CHAT_PROFILE:-openrouter}
-  AI__ActiveEmbeddingProfile: ${EMBEDDING_PROFILE:-ollama}
+  AI__ActiveEmbeddingProfile: ${EMBEDDING_PROFILE:-openrouter}
   AI__ChatProfiles__openrouter__ApiKey: ${OPENROUTER_API_KEY:-}
   AI__EmbeddingProfiles__openrouter__ApiKey: ${OPENROUTER_API_KEY:-}
+  # Profile `local` (CHAT_PROFILE / EMBEDDING_PROFILE=local): LM Studio on the Docker host, for local runs.
+  AI__ChatProfiles__local__Endpoint: ${LMSTUDIO_URL:-http://host.docker.internal:1234/v1}
+  AI__EmbeddingProfiles__local__Endpoint: ${LMSTUDIO_URL:-http://host.docker.internal:1234/v1}
   Commerce__WebBaseUrl: ${PUBLIC_URL:-https://localhost}
   Payments__Provider: ${PAYMENTS_PROVIDER:-Fake}
   Stripe__SecretKey: ${STRIPE_SECRET_KEY:-}
@@ -39,34 +42,6 @@ services:
       timeout: 5s
       retries: 20
 
-  # Local embeddings (the default): EmbeddingGemma, the model of development and of the search evaluation, on the CPU.
-  ollama:
-    image: ollama/ollama:0.40.16
-    profiles: [ollama]
-    restart: unless-stopped
-    environment:
-      # Keep the model in memory: the first search after an idle hour should not wait for a load.
-      OLLAMA_KEEP_ALIVE: "-1"
-    volumes:
-      - ollama-data:/root/.ollama
-    healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-
-  # Downloads the embedding model once (it stays in the volume), then exits.
-  ollama-pull:
-    image: ollama/ollama:0.40.16
-    profiles: [ollama]
-    restart: "no"
-    environment:
-      OLLAMA_HOST: ollama:11434
-    entrypoint: ["ollama", "pull", "embeddinggemma:300m"]
-    depends_on:
-      ollama:
-        condition: service_healthy
-
   # Schema migrations: the Worker image with the `migrate` command, run to completion before the API and the Worker start.
   migrate:
     image: ${IMAGE_PREFIX:-filmsearch}-worker:${FILMSEARCH_TAG:-local}
@@ -89,6 +64,9 @@ services:
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       Auth__Admin__Email: ${ADMIN_EMAIL:-}
       Auth__Admin__Password: ${ADMIN_PASSWORD:-}
+    # host.docker.internal on Linux too (Docker Desktop has it built in): LM Studio of the `local` profile.
+    extra_hosts:
+      - host.docker.internal:host-gateway
     volumes:
       - dataprotection-keys:/var/lib/filmsearch/keys
     depends_on:
@@ -103,16 +81,14 @@ services:
     environment:
       <<: *dotnet-env
       OTEL_SERVICE_NAME: worker
+    # host.docker.internal on Linux too (Docker Desktop has it built in): LM Studio of the `local` profile.
+    extra_hosts:
+      - host.docker.internal:host-gateway
     depends_on:
       postgres:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
-      # The Worker runs the embedding reindex the API queues on startup: on a fresh server the model must be pulled
-      # first (a missing model is a permanent 404 and fails the job). Not required without the ollama profile.
-      ollama-pull:
-        condition: service_completed_successfully
-        required: false
 
   # Caddy: HTTPS (Let's Encrypt), the static web app and the reverse proxy to the API.
   web:
@@ -141,7 +117,6 @@ services:
 
 volumes:
   postgres-data:
-  ollama-data:
   dataprotection-keys:
   caddy-data:
   caddy-config:

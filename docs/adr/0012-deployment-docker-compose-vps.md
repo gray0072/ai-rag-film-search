@@ -44,6 +44,12 @@ Embeddings without LM Studio:
 ## Decision
 Option 2 with migrations b and both embedding options, i by default (the owner's choice).
 
+**Revised 2026-11-19 (S23, owner's decision):** Ollama is removed; the project uses only LM Studio or OpenRouter. The
+demo embeds with option ii (OpenRouter, Qwen3-Embedding-8B), which also scored better. For local runs of the stack the
+`local` profiles point at LM Studio on the Docker host (`host.docker.internal:1234`). The server needs no model and
+less memory; the price is a network call per query (search falls back to keyword results when it fails, I19). The
+text below is the original decision.
+
 - `deploy/`: `compose.yaml` (postgres, ollama + ollama-pull, migrate, api, worker, web, optional dashboard),
   `compose.build.yaml` (build from source), `.env.example`, `Caddyfile`, Dockerfiles, `deploy.sh` / `backup.sh` /
   `restore.sh` and a runbook ([deploy/README.md](../../deploy/README.md)).
@@ -72,7 +78,7 @@ Option 2 with migrations b and both embedding options, i by default (the owner's
 - Harder: one host is a single point of failure; backups are dumps on the same disk unless copied off; OS, Docker and
   image updates are ours. A deploy restarts the API (seconds of held requests, Caddy waits up to 30 s).
 - No public URL yet (owner's decision for I20): the deploy job is skipped until the `demo` environment is configured.
-- Watch: memory of Ollama on a small VM; the reindex time on few vCPUs; OpenRouter spend (cost metrics of I18).
+- Watch: the reindex time on few vCPUs; OpenRouter spend (cost metrics of I18).
 - Reversal: the images and the configuration are platform-neutral, so Azure Container Apps or Kubernetes can run the
   same images later (managed PostgreSQL with pgvector, the `migrate` command as a job, Caddy replaced by the
   platform's ingress).

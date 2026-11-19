@@ -142,7 +142,10 @@ Shipping an AI app: configuration per environment, secrets, migrations in deploy
 - Copy the dumps off the server (object storage or another host) and schedule `backup.sh` (cron).
 - A Content-Security-Policy header (first check what Radix and Tailwind inject).
 - Query understanding is outside the token budgets. Count its tokens towards the service budget if the demo is abused.
-- Try Qwen3-Embedding-0.6B locally (Ollama) as a better local model, and tune `Hybrid:RrfK` for Qwen3.
+- Try Qwen3-Embedding-0.6B locally (LM Studio) as a better local model, and tune `Hybrid:RrfK` for Qwen3.
+- **Done after I20 (S23):** Ollama removed (owner's decision: only LM Studio or OpenRouter). The demo embeds on
+  OpenRouter (Qwen3-Embedding-8B); `CHAT_PROFILE` / `EMBEDDING_PROFILE=local` use LM Studio on the Docker host; the
+  release runner runs with both profiles unreachable (keyword search). ADR-0012 has a revision note.
 - Dependabot for the Docker images and the npm / NuGet packages (spec 10 §4).
 
 Session: [S22](../../prompts/sessions/2026-11-19_S22_deployment.md).
