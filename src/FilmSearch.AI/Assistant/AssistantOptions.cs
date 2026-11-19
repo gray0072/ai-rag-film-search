@@ -20,6 +20,12 @@ public sealed class AssistantOptions
     /// <summary>Token budget of one conversation (input + output of all calls). A turn past it is refused.</summary>
     public long MaxConversationTokens { get; set; } = 300_000;
 
+    /// <summary>
+    /// Token budget of one owner (anonymous session or user) over all conversations in the last 24 hours, so that new
+    /// conversations do not get around <see cref="MaxConversationTokens"/>. Counts the tokens stored with answers.
+    /// </summary>
+    public long MaxOwnerTokensPerDay { get; set; } = 1_000_000;
+
     /// <summary>Movies <c>search_movies</c> returns when the model does not set a limit (at most 10).</summary>
     public int SearchResultLimit { get; set; } = 6;
 

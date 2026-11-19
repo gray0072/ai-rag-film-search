@@ -19,6 +19,7 @@ internal sealed partial class CheckoutService(
     PaymentGateways gateways,
     IOptions<CommerceOptions> options,
     TimeProvider time,
+    CommerceMetrics metrics,
     ILogger<CheckoutService> logger) : ICheckoutService
 {
     private const int MaxListedOrders = 100;
@@ -95,6 +96,7 @@ internal sealed partial class CheckoutService(
             return new CreateOrderResult(OrderView.From(winner), Replayed: true);
         }
 
+        metrics.RecordStatusChange(null, order.Status);
         LogOrderCreated(logger, order.Id, order.Items.Count, order.TotalMinor, order.Currency);
         return new CreateOrderResult(OrderView.From(order), Replayed: false);
     }
@@ -124,9 +126,11 @@ internal sealed partial class CheckoutService(
                 if (order.Status is OrderStatus.PendingPayment or OrderStatus.Failed)
                 {
                     // Past its expiry time but the job has not run yet.
+                    var unpaid = order.Status;
                     order.Expire(now);
                     await db.SaveChangesAsync(ct);
                     await transaction.CommitAsync(ct);
+                    metrics.RecordStatusChange(unpaid, order.Status);
                 }
 
                 throw new CommerceException(CommerceError.OrderNotPayable, $"Order {orderId} is {StatusText(order.Status)} and cannot be paid.");
@@ -145,7 +149,8 @@ internal sealed partial class CheckoutService(
                 return new CheckoutStart(order.Id, open.CheckoutUrl, order.ExpiresAt);
             }
 
-            order.RetryPayment(now, options.Value.PaymentTimeout);
+            var statusBefore = order.Status;
+            var retried = order.RetryPayment(now, options.Value.PaymentTimeout);
 
             // A new attempt replaces the old sessions: close them, so an old page cannot be paid as well.
             foreach (var old in payments.Where(p => p.Status is PaymentStatus.Pending or PaymentStatus.Failed))
@@ -188,6 +193,10 @@ internal sealed partial class CheckoutService(
 
             await db.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
+            if (retried)
+            {
+                metrics.RecordStatusChange(statusBefore, order.Status);
+            }
 
             LogCheckoutStarted(logger, order.Id, attempt, gateway.Provider, session.SessionId);
             return new CheckoutStart(order.Id, session.CheckoutUrl, order.ExpiresAt);

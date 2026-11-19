@@ -34,4 +34,12 @@ var web = builder.AddViteApp("web", "../web")
 api.WithEnvironment("Commerce__WebBaseUrl", web.GetEndpoint("http"));
 worker.WithEnvironment("Commerce__WebBaseUrl", web.GetEndpoint("http"));
 
+// Optional LLM trace viewer (I18): `dotnet user-secrets set Langfuse:Enabled true --project src/FilmSearch.AppHost`.
+// The API sends its AI traces and the users' answer ratings there; the Aspire dashboard keeps getting everything.
+if (bool.TryParse(builder.Configuration["Langfuse:Enabled"], out var langfuseEnabled) && langfuseEnabled)
+{
+    var langfuse = builder.AddLangfuse();
+    api.WithLangfuse(langfuse);
+}
+
 await builder.Build().RunAsync();

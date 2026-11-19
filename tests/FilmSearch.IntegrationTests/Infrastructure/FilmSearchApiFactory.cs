@@ -1,4 +1,5 @@
 using FilmSearch.AI.Providers;
+using FilmSearch.AI.Telemetry;
 using FilmSearch.Api.Modules.Commerce.FakeGateway;
 using FilmSearch.Infrastructure.Commerce.StripeGateway;
 using FilmSearch.Infrastructure.Persistence;
@@ -31,6 +32,9 @@ public sealed class FilmSearchApiFactory(
 
     public FakeStripeApi StripeApi { get; } = new();
 
+    /// <summary>Feedback scores that would go to Langfuse (I18).</summary>
+    public RecordingFeedbackScoreSink FeedbackScores { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
@@ -55,6 +59,7 @@ public sealed class FilmSearchApiFactory(
             services.AddKeyedSingleton<IEmbeddingGenerator<string, Embedding<float>>>(KeyedService.AnyKey, (sp, key) =>
                 new HashingEmbeddingGenerator(sp.GetRequiredService<IOptions<AiOptions>>().Value.GetEmbeddingProfile((string)key!).Dimensions));
             services.AddKeyedSingleton<IChatClient>(KeyedService.AnyKey, Chat);
+            services.AddSingleton<IFeedbackScoreSink>(FeedbackScores);
 
             // The lambda runs when the client is created, after the server has started.
             services.AddHttpClient(FakeWebhookDispatcher.HttpClientName)

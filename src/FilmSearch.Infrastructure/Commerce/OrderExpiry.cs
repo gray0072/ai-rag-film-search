@@ -16,6 +16,7 @@ public sealed partial class OrderExpiryJob(
     AppDbContext db,
     PaymentGateways gateways,
     TimeProvider time,
+    CommerceMetrics metrics,
     ILogger<OrderExpiryJob> logger)
 {
     private const int BatchSize = 100;
@@ -40,6 +41,7 @@ public sealed partial class OrderExpiryJob(
                 break;
             }
 
+            var previous = due.ToDictionary(o => o.Id, o => o.Status);
             foreach (var order in due)
             {
                 order.Expire(now);
@@ -53,6 +55,11 @@ public sealed partial class OrderExpiryJob(
             {
                 // A webhook changed one of the orders: reload the batch.
                 continue;
+            }
+
+            foreach (var order in due)
+            {
+                metrics.RecordStatusChange(previous[order.Id], order.Status);
             }
 
             expired += due.Count;

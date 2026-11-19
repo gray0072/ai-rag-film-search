@@ -209,6 +209,17 @@ internal sealed class InMemoryConversationStore : IConversationStore
 
     public Task<FeedbackResult> SaveFeedbackAsync(Guid messageId, int rating, string? comment, CancellationToken cancellationToken) =>
         throw new NotSupportedException();
+
+    /// <summary>Tokens of answers in other conversations of the owner (the daily budget, NFR-5).</summary>
+    public long OtherConversationTokens { get; set; }
+
+    public Task<long> GetOwnerTokensSinceAsync(DateTimeOffset since, CancellationToken cancellationToken) =>
+        Task.FromResult(OtherConversationTokens + Messages
+            .Where(m => m.Role == MessageRole.Assistant && m.CreatedAt >= since)
+            .Sum(m => (m.InputTokens ?? 0) + (m.OutputTokens ?? 0)));
+
+    public Task<string?> GetTraceIdAsync(Guid messageId, CancellationToken cancellationToken) =>
+        Task.FromResult(Messages.SingleOrDefault(m => m.Id == messageId)?.TraceId);
 }
 
 /// <summary>Returns <see cref="Results"/> for every query and records the queries.</summary>

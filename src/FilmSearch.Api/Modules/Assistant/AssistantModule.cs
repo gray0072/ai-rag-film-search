@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using FilmSearch.AI.Assistant;
 using FilmSearch.AI.Providers;
+using FilmSearch.AI.Telemetry;
 using FilmSearch.Api.Localization;
 using FilmSearch.Api.Modules.Commerce;
 using FilmSearch.Core.Assistant;
@@ -23,6 +24,7 @@ public static class AssistantModule
     {
         builder.Services.AddAssistantInfrastructure();
         builder.Services.AddAssistant(builder.Configuration);
+        builder.Services.AddLangfuseScores(builder.Configuration);
         return builder;
     }
 
@@ -182,10 +184,24 @@ public static class AssistantModule
         Guid messageId,
         MessageFeedbackRequest request,
         IConversationStore store,
+        AssistantMetrics metrics,
+        IFeedbackScoreSink scores,
         CancellationToken cancellationToken)
     {
         var comment = string.IsNullOrWhiteSpace(request.Comment) ? null : request.Comment.Trim();
-        return await store.SaveFeedbackAsync(messageId, request.Rating!.Value, comment, cancellationToken) switch
+        var rating = request.Rating!.Value;
+        var result = await store.SaveFeedbackAsync(messageId, rating, comment, cancellationToken);
+        if (result == FeedbackResult.Saved)
+        {
+            // Online quality signal: a metric, and a score on the turn's trace in Langfuse when it is on (I18).
+            metrics.RecordFeedback(rating);
+            if (await store.GetTraceIdAsync(messageId, cancellationToken) is { } traceId)
+            {
+                scores.Enqueue(new FeedbackScore(traceId, messageId, rating, comment));
+            }
+        }
+
+        return result switch
         {
             FeedbackResult.Saved => TypedResults.NoContent(),
             FeedbackResult.NotAnAnswer => TypedResults.ValidationProblem(new Dictionary<string, string[]>

@@ -67,6 +67,8 @@ internal sealed partial class AgentLoop(
     IReadOnlyList<AssistantTool> tools,
     IList<AITool> declarations,
     int maxToolIterations,
+    AssistantMetrics metrics,
+    bool recordContent,
     ILogger logger)
 {
     /// <summary>Sent as a user message when the tool budget of the turn is used up (not stored).</summary>
@@ -166,6 +168,12 @@ internal sealed partial class AgentLoop(
         activity?.SetTag("gen_ai.operation.name", "execute_tool");
         activity?.SetTag("gen_ai.tool.name", call.Name);
         activity?.SetTag("gen_ai.tool.call.id", call.CallId);
+        activity?.SetTag("gen_ai.tool.type", "function");
+        if (recordContent && activity is not null)
+        {
+            // Development only (AI:EnableSensitiveData): arguments and results carry user text and catalog data.
+            TraceContent.SetInput(activity, "gen_ai.tool.call.arguments", JsonSerializer.Serialize(call.Arguments, ToolJson.Options));
+        }
 
         ToolOutcome outcome;
         var tool = tools.FirstOrDefault(t => t.Name == call.Name);
@@ -196,6 +204,13 @@ internal sealed partial class AgentLoop(
             activity?.SetStatus(ActivityStatusCode.Error, outcome.Result);
         }
 
+        activity?.SetTag("filmsearch.tool.ok", outcome.Ok);
+        if (recordContent && activity is not null)
+        {
+            TraceContent.SetOutput(activity, "gen_ai.tool.call.result", outcome.Result);
+        }
+
+        metrics.RecordToolCall(call.Name, outcome.Ok);
         return outcome;
     }
 

@@ -56,6 +56,7 @@ internal sealed partial class AssistantChat(
     {
         if (!locks.TryEnter(conversation.Id))
         {
+            metrics.RecordTurn(AssistantErrorCodes.ConversationBusy, null, TimeSpan.Zero);
             yield return new ErrorEvent(AssistantErrorCodes.ConversationBusy, "The previous answer of this conversation is still being written.");
             yield break;
         }
@@ -84,7 +85,17 @@ internal sealed partial class AssistantChat(
     /// <summary>Runs the turn and ends the channel; failures become the last event. Never throws.</summary>
     private async Task ProduceAsync(Turn turn, ChannelWriter<AssistantEvent> writer, CancellationToken cancellationToken)
     {
-        void Emit(AssistantEvent item) => writer.TryWrite(item);
+        // The outcome metric follows the last event: completed → answered, error → its code.
+        void Emit(AssistantEvent item)
+        {
+            turn.Outcome = item switch
+            {
+                MessageCompletedEvent => AssistantMetrics.Answered,
+                ErrorEvent error => error.Code,
+                _ => turn.Outcome,
+            };
+            writer.TryWrite(item);
+        }
 
         try
         {
@@ -94,6 +105,7 @@ internal sealed partial class AssistantChat(
         {
             // The client disconnected: the model call is cancelled; nobody is left to read an error event.
             LogCancelled(logger, turn.Conversation.Id);
+            turn.Outcome = AssistantMetrics.Cancelled;
             await SaveSpentUsageAsync(turn);
         }
         catch (Exception ex) when (AiProviderErrors.IsProviderFailure(ex, cancellationToken))
@@ -110,6 +122,7 @@ internal sealed partial class AssistantChat(
         }
         finally
         {
+            metrics.RecordTurn(turn.Outcome, turn.PromptId, time.GetElapsedTime(turn.StartedAt));
             writer.TryComplete();
         }
     }
@@ -128,18 +141,38 @@ internal sealed partial class AssistantChat(
             return;
         }
 
+        // Budgets (NFR-5) are checked before any model call: a refused turn costs nothing.
         if (conversation.TotalTokens >= settings.MaxConversationTokens)
         {
+            LogBudgetExceeded(logger, conversation.Id, "conversation", conversation.TotalTokens, settings.MaxConversationTokens);
             emit(new ErrorEvent(AssistantErrorCodes.BudgetExceeded, "This conversation is too long. Please start a new one."));
             return;
         }
 
+        var ownerTokens = await store.GetOwnerTokensSinceAsync(time.GetUtcNow().AddDays(-1), cancellationToken);
+        if (ownerTokens >= settings.MaxOwnerTokensPerDay)
+        {
+            LogBudgetExceeded(logger, conversation.Id, "daily", ownerTokens, settings.MaxOwnerTokensPerDay);
+            emit(new ErrorEvent(AssistantErrorCodes.DailyBudgetExceeded, "You have used the assistant a lot today. Please try again tomorrow."));
+            return;
+        }
+
         var prompt = prompts.Get(PromptName, settings.PromptVersion);
+        turn.PromptId = prompt.Id;
+        var recordContent = ai.EnableSensitiveData;
         using var activity = Activities.StartActivity("invoke_agent assistant");
         activity?.SetTag("gen_ai.operation.name", "invoke_agent");
         activity?.SetTag("gen_ai.agent.name", "assistant");
         activity?.SetTag(ConversationTag, conversation.Id.ToString());
         activity?.SetTag(PromptTag, prompt.Id);
+        // Langfuse groups the traces of one conversation into a session and shows the turn under this name.
+        activity?.SetTag("langfuse.session.id", conversation.Id.ToString());
+        activity?.SetTag("langfuse.user.id", conversation.OwnerId.ToString());
+        activity?.SetTag("langfuse.trace.name", "assistant turn");
+        if (recordContent && activity is not null)
+        {
+            TraceContent.SetInput(activity, "filmsearch.assistant.user_message", turn.Text);
+        }
 
         // Context: recent turns as they are, older ones folded into the rolling summary.
         var stored = await store.GetMessagesAsync(conversation.Id, conversation.SummarizedThroughSeq, cancellationToken);
@@ -188,7 +221,7 @@ internal sealed partial class AssistantChat(
             declarations.Add(await tool.GetDeclarationAsync(cancellationToken));
         }
 
-        var loop = new AgentLoop(chat, toolList, declarations, settings.MaxToolIterations, logger);
+        var loop = new AgentLoop(chat, toolList, declarations, settings.MaxToolIterations, metrics, recordContent, logger);
         try
         {
             await loop.RunAsync(messages, new ToolContext(conversation.Id, turn.Locale, answerId), turn.State, emit, cancellationToken);
@@ -197,6 +230,13 @@ internal sealed partial class AssistantChat(
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             throw;
+        }
+        finally
+        {
+            if (turn.State.IterationLimitHit)
+            {
+                metrics.RecordIterationLimitHit(prompt.Id);
+            }
         }
 
         // Store the turn. The answer is complete, so it is stored even if the client has just disconnected.
@@ -224,6 +264,8 @@ internal sealed partial class AssistantChat(
             LatencyMs = latencyMs,
             PromptVersion = prompt.Id,
             MovieIds = state.MovieIds,
+            // The turn span, or the request span when nobody listens to FilmSearch.AI: feedback → message → trace.
+            TraceId = (activity ?? Activity.Current)?.TraceId.ToHexString(),
             CreatedAt = finishedAt,
         });
         conversation.AddUsage(state.InputTokens, state.OutputTokens, cost);
@@ -243,6 +285,18 @@ internal sealed partial class AssistantChat(
         activity?.SetTag("filmsearch.assistant.model_calls", state.ModelCalls);
         activity?.SetTag("filmsearch.assistant.tool_calls", state.ToolRounds.Count(m => m.Role == ChatRole.Tool));
         activity?.SetTag("filmsearch.assistant.iteration_limit_hit", state.IterationLimitHit);
+        activity?.SetTag("gen_ai.usage.input_tokens", state.InputTokens);
+        activity?.SetTag("gen_ai.usage.output_tokens", state.OutputTokens);
+        if (cost is { } turnCost)
+        {
+            activity?.SetTag(AiMetrics.CostTag, (double)turnCost);
+        }
+
+        if (recordContent && activity is not null)
+        {
+            TraceContent.SetOutput(activity, "filmsearch.assistant.answer", state.Text.ToString());
+            TraceContent.SetTraceInputOutput(activity, turn.Text, state.Text.ToString());
+        }
         LogAnswered(logger, conversation.Id, prompt.Id, model, state.ModelCalls, state.InputTokens, state.OutputTokens, latencyMs);
 
         emit(new MessageCompletedEvent(answerId, new TokenUsage(state.InputTokens, state.OutputTokens), model, latencyMs));
@@ -333,7 +387,16 @@ internal sealed partial class AssistantChat(
     private sealed record Turn(Conversation Conversation, string Text, string Locale, TurnState State, long StartedAt)
     {
         public bool Saved { get; set; }
+
+        /// <summary>Prompt id of the turn, once it is chosen (metrics tag).</summary>
+        public string? PromptId { get; set; }
+
+        /// <summary>Outcome for <c>assistant.turns</c>; a turn that ends without an event counts as an internal error.</summary>
+        public string Outcome { get; set; } = AssistantErrorCodes.InternalError;
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Conversation {ConversationId}: {Budget} token budget used ({Tokens} of {Limit}); the turn is refused without a model call")]
+    private static partial void LogBudgetExceeded(ILogger logger, Guid conversationId, string budget, long tokens, long limit);
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Conversation {ConversationId}: answered with prompt {PromptId}, model {Model}, {ModelCalls} model call(s), {InputTokens} input / {OutputTokens} output tokens, {LatencyMs} ms")]

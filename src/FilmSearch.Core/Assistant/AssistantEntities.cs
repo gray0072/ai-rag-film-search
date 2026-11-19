@@ -98,6 +98,9 @@ public sealed class ConversationMessage
     /// <summary>Movies shown as cards with the answer, in order. Cards are built from the catalog when the message is read.</summary>
     public List<Guid> MovieIds { get; set; } = [];
 
+    /// <summary>OpenTelemetry trace id (32 hex characters) of the turn that wrote the answer: the link from feedback to the trace (I18).</summary>
+    public string? TraceId { get; set; }
+
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>A message the user sees: a user message or an answer (not a tool round).</summary>

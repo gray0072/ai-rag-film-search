@@ -93,4 +93,17 @@ internal sealed class ConversationStore(AppDbContext db, IOwnerContext owner, Ti
 
         return FeedbackResult.Saved;
     }
+
+    public async Task<long> GetOwnerTokensSinceAsync(DateTimeOffset since, CancellationToken cancellationToken) =>
+        await db.Set<ConversationMessage>()
+            .Where(m => m.Role == MessageRole.Assistant && m.CreatedAt >= since && m.InputTokens != null)
+            .Where(m => db.Set<Conversation>().Any(c => c.Id == m.ConversationId && c.OwnerId == owner.OwnerId))
+            .SumAsync(m => (m.InputTokens ?? 0) + (m.OutputTokens ?? 0), cancellationToken);
+
+    public Task<string?> GetTraceIdAsync(Guid messageId, CancellationToken cancellationToken) =>
+        db.Set<ConversationMessage>()
+            .Where(m => m.Id == messageId)
+            .Where(m => db.Set<Conversation>().Any(c => c.Id == m.ConversationId && c.OwnerId == owner.OwnerId))
+            .Select(m => m.TraceId)
+            .SingleOrDefaultAsync(cancellationToken);
 }

@@ -39,6 +39,8 @@ public static class CommerceInfrastructureExtensions
         services.AddScoped<IOwnerMergeHandler, CommerceOwnerMergeHandler>();
         services.AddScoped<IPaymentWebhookProcessor, PaymentWebhookProcessor>();
         services.AddSingleton<PaymentGateways>();
+        services.AddMetrics();
+        services.AddSingleton<CommerceMetrics>();
 
         services.AddScoped<OrderExpiryJob>();
 

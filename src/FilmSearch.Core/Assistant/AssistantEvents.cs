@@ -117,6 +117,9 @@ public static class AssistantErrorCodes
     /// <summary>The conversation used its token budget (NFR-5).</summary>
     public const string BudgetExceeded = "budgetExceeded";
 
+    /// <summary>The owner used the assistant token budget of the last 24 hours, over all conversations (NFR-5, I18).</summary>
+    public const string DailyBudgetExceeded = "dailyBudgetExceeded";
+
     /// <summary>The active chat profile cannot call tools, so answers could not be grounded in the catalog.</summary>
     public const string ToolsNotSupported = "toolsNotSupported";
 

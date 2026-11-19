@@ -42,6 +42,7 @@ public static partial class PaymentWebhookEndpoints
         var body = await reader.ReadToEndAsync(cancellationToken);
         var headers = request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString(), StringComparer.OrdinalIgnoreCase);
         var logger = loggers.CreateLogger(typeof(PaymentWebhookEndpoints));
+        var metrics = request.HttpContext.RequestServices.GetRequiredService<CommerceMetrics>();
 
         ParsedWebhook parsed;
         try
@@ -51,16 +52,30 @@ public static partial class PaymentWebhookEndpoints
         catch (Exception ex) when (ex is WebhookSignatureException or FormatException)
         {
             LogRejected(logger, gateway.Provider, ex.Message);
+            metrics.RecordWebhook(gateway.Provider, "unknown", CommerceMetrics.Rejected);
             return TypedResults.Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid webhook.", detail: ex.Message);
         }
 
         if (parsed.Event is null)
         {
             LogIgnored(logger, gateway.Provider, parsed.ProviderEventId, parsed.ProviderEventType, parsed.IgnoredReason);
+            metrics.RecordWebhook(gateway.Provider, parsed.ProviderEventType, CommerceMetrics.Unhandled);
             return TypedResults.Ok(new WebhookAck(parsed.ProviderEventId, WebhookProcessingResult.Ignored));
         }
 
-        var result = await processor.ProcessAsync(gateway.Provider, parsed.Event, cancellationToken);
+        var type = CommerceMetrics.Name(parsed.Event.Type.ToString());
+        WebhookProcessingResult result;
+        try
+        {
+            result = await processor.ProcessAsync(gateway.Provider, parsed.Event, cancellationToken);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            metrics.RecordWebhook(gateway.Provider, type, CommerceMetrics.Error);
+            throw;
+        }
+
+        metrics.RecordWebhook(gateway.Provider, type, result);
         return TypedResults.Ok(new WebhookAck(parsed.ProviderEventId, result));
     }
 

@@ -69,3 +69,4 @@ Rules:
 | [S17](sessions/2026-11-18_S17_stripe-test-mode.md) | 2026-11-18 | I15 | Stripe test mode |
 | [S18](sessions/2026-11-18_S18_tmdb-sync-worker.md) | 2026-11-18 | I16 | TMDB sync and Worker |
 | [S19](sessions/2026-11-18_S19_authentication.md) | 2026-11-18 | I17 | Authentication (Identity) |
+| [S20](sessions/2026-11-19_S20_observability-cost.md) | 2026-11-19 | I18 | Observability and cost tracking |

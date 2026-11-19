@@ -21,6 +21,7 @@ namespace FilmSearch.Infrastructure.Commerce;
 internal sealed partial class PaymentWebhookProcessor(
     AppDbContext db,
     TimeProvider time,
+    CommerceMetrics metrics,
     ILogger<PaymentWebhookProcessor> logger) : IPaymentWebhookProcessor
 {
     private const int MaxConcurrencyRetries = 5;
@@ -74,7 +75,7 @@ internal sealed partial class PaymentWebhookProcessor(
             }
 
             var now = time.GetUtcNow();
-            var (result, note) = await ApplyAsync(provider, webhookEvent, now, cancellationToken);
+            var (result, note, change) = await ApplyAsync(provider, webhookEvent, now, cancellationToken);
             recorded.ProcessedAt = now;
             recorded.Error = note;
 
@@ -82,6 +83,11 @@ internal sealed partial class PaymentWebhookProcessor(
             {
                 await db.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
+                if (change is var (from, to))
+                {
+                    metrics.RecordStatusChange(from, to);
+                }
+
                 return result;
             }
             catch (DbUpdateConcurrencyException) when (attempt < MaxConcurrencyRetries)
@@ -92,7 +98,7 @@ internal sealed partial class PaymentWebhookProcessor(
         }
     }
 
-    private async Task<(WebhookProcessingResult Result, string? Note)> ApplyAsync(
+    private async Task<(WebhookProcessingResult Result, string? Note, (OrderStatus From, OrderStatus To)? Change)> ApplyAsync(
         PaymentProvider provider,
         PaymentWebhookEvent webhookEvent,
         DateTimeOffset now,
@@ -107,7 +113,7 @@ internal sealed partial class PaymentWebhookProcessor(
         if (payment is null)
         {
             LogUnknownSession(logger, provider, webhookEvent.SessionId);
-            return (WebhookProcessingResult.Ignored, "Unknown checkout session.");
+            return (WebhookProcessingResult.Ignored, "Unknown checkout session.", null);
         }
 
         var order = await db.Set<Order>()
@@ -118,7 +124,7 @@ internal sealed partial class PaymentWebhookProcessor(
         if (webhookEvent.OrderId != order.Id)
         {
             LogOrderMismatch(logger, webhookEvent.SessionId, webhookEvent.OrderId, order.Id);
-            return (WebhookProcessingResult.Ignored, $"Order id {webhookEvent.OrderId} does not match the session's order {order.Id}.");
+            return (WebhookProcessingResult.Ignored, $"Order id {webhookEvent.OrderId} does not match the session's order {order.Id}.", null);
         }
 
         // An event of an older attempt must not fail or expire the order while a newer attempt is open.
@@ -133,7 +139,7 @@ internal sealed partial class PaymentWebhookProcessor(
                 if (webhookEvent.AmountMinor != payment.AmountMinor || !string.Equals(webhookEvent.Currency, payment.Currency, StringComparison.OrdinalIgnoreCase))
                 {
                     LogAmountMismatch(logger, order.Id, webhookEvent.AmountMinor, webhookEvent.Currency, payment.AmountMinor, payment.Currency);
-                    return (WebhookProcessingResult.Ignored, $"Amount {webhookEvent.AmountMinor} {webhookEvent.Currency} does not match {payment.AmountMinor} {payment.Currency}; needs manual review.");
+                    return (WebhookProcessingResult.Ignored, $"Amount {webhookEvent.AmountMinor} {webhookEvent.Currency} does not match {payment.AmountMinor} {payment.Currency}; needs manual review.", null);
                 }
 
                 paymentChanged = payment.Apply(PaymentEventType.Succeeded, now);
@@ -170,9 +176,10 @@ internal sealed partial class PaymentWebhookProcessor(
                 throw new FormatException($"Unknown payment event type '{webhookEvent.Type}'.");
         }
 
+        (OrderStatus, OrderStatus)? change = orderChanged ? (previousStatus, order.Status) : null;
         return paymentChanged || orderChanged
-            ? (WebhookProcessingResult.Applied, null)
-            : (WebhookProcessingResult.Ignored, $"No change: payment {payment.Status}, order {order.Status}.");
+            ? (WebhookProcessingResult.Applied, null, change)
+            : (WebhookProcessingResult.Ignored, $"No change: payment {payment.Status}, order {order.Status}.", null);
     }
 
     /// <summary>Bought and rented movies leave the owner's cart in the same transaction as the payment.</summary>

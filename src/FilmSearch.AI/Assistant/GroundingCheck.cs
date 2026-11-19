@@ -1,8 +1,6 @@
-using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using FilmSearch.AI.Telemetry;
 
 namespace FilmSearch.AI.Assistant;
 
@@ -161,34 +159,4 @@ internal static partial class GroundingCheck
 
     [GeneratedRegex(@"^\d+\s*(min\w*|minut\w*|минут\w*|мин\.?|h|hours?|ч\.?|час\w*|tim\w*)$", RegexOptions.IgnoreCase)]
     private static partial Regex Runtime();
-}
-
-/// <summary>Metrics of the assistant (meter <c>FilmSearch</c>, spec 10 §3).</summary>
-public sealed class AssistantMetrics
-{
-    private readonly Counter<long> _titles;
-
-    public AssistantMetrics(IMeterFactory meterFactory)
-    {
-        var meter = meterFactory.Create(AiMetrics.MeterName);
-        _titles = meter.CreateCounter<long>(
-            "assistant.grounding.titles",
-            unit: "{title}",
-            description: "Movie titles named in assistant answers; grounded=false when no tool returned the movie (possible hallucination).");
-    }
-
-    internal void RecordGrounding(GroundingResult result, string promptId)
-    {
-        var prompt = new KeyValuePair<string, object?>("prompt", promptId);
-        var grounded = result.Titles.Count - result.Unknown.Count;
-        if (grounded > 0)
-        {
-            _titles.Add(grounded, prompt, new("grounded", true));
-        }
-
-        if (result.Unknown.Count > 0)
-        {
-            _titles.Add(result.Unknown.Count, prompt, new("grounded", false));
-        }
-    }
 }

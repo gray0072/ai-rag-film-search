@@ -13,7 +13,7 @@ Stack: .NET 10, ASP.NET Core, EF Core, PostgreSQL + pgvector, .NET Aspire, Micro
 
 ## Status
 
-The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); hybrid search (keyword + semantic fused with RRF, the default mode) and LLM query understanding that turns free text into filters with structured output, retry and fallback (I07); cart, orders and a fake payment provider (I09), the store UI (I10) and Stripe Checkout in test mode with signed webhooks (I15); the assistant chat API: conversations, answers streamed over SSE, an own agent loop with a `search_movies` tool so recommendations come only from the catalog, rolling summary, token usage and cost per message, feedback (I11); a Worker process with a job queue in PostgreSQL that imports movies from TMDB (lists or ids, rate-limited, idempotent) and keeps embeddings fresh, and runs order expiry (I16); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
+The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); hybrid search (keyword + semantic fused with RRF, the default mode) and LLM query understanding that turns free text into filters with structured output, retry and fallback (I07); cart, orders and a fake payment provider (I09), the store UI (I10) and Stripe Checkout in test mode with signed webhooks (I15); the assistant chat API: conversations, answers streamed over SSE, an own agent loop with a `search_movies` tool so recommendations come only from the catalog, rolling summary, token usage and cost per message, feedback (I11); a Worker process with a job queue in PostgreSQL that imports movies from TMDB (lists or ids, rate-limited, idempotent) and keeps embeddings fresh, and runs order expiry (I16); accounts with login and an admin role (I17); observability: metrics for search, assistant, payments and orders, a span per agent and search stage, the trace id stored with each answer, a daily token budget per owner, and optional Langfuse with user ratings as scores (I18); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
 
 ## Documentation
 
@@ -112,6 +112,16 @@ dotnet user-secrets set AI:ActiveChatProfile openrouter --project src/FilmSearch
 ```
 
 `/health` reports `Degraded` (not `Unhealthy`) when LM Studio is off: the store works without AI, and semantic search returns 503. To try another embedding model: reindex with its profile (`{ "profile": "nomic" }`), switch `AI:ActiveEmbeddingProfile`, then delete the old model's vectors ([spec 08 §4](docs/spec/08-data-ingestion.md#4-embeddings-pipeline)). To try chat, streaming, tools, JSON output and embeddings from the console, or to benchmark another model: [tools/ai-playground](tools/ai-playground/README.md).
+
+### Observability
+
+The Aspire dashboard (login URL in the AppHost console) shows logs, traces and metrics. A chat turn is one trace: request → agent → each model call with its tokens and cost → each tool → search stages → database queries. An optional self-hosted [Langfuse](https://langfuse.com) shows the same AI traces as LLM traces: sessions per conversation, generations, and user ratings as scores. To switch it on (six containers, the images are about 2 GB):
+
+```bash
+dotnet user-secrets set Langfuse:Enabled true --project src/FilmSearch.AppHost
+```
+
+Then run the AppHost and open http://localhost:3000. Log in as `admin@filmsearch.local`. The password is the generated `Parameters:langfuse-admin-password` in the AppHost user secrets. To find a slow, expensive or badly rated turn, see [docs/runbooks/observability.md](docs/runbooks/observability.md).
 
 ### Payments: Stripe test mode
 

@@ -32,6 +32,7 @@ internal sealed class KeywordRetriever(AppDbContext db)
 
     public async Task<KeywordHits> SearchAsync(string text, MovieFilter filter, int skip, int take, CancellationToken cancellationToken)
     {
+        using var activity = SearchTelemetry.Activities.StartActivity("search.keyword");
         var normalized = KeywordQuery.Normalize(text);
         var hits = await SearchAsync(normalized, filter, skip, take, MatchAll, cancellationToken);
         if (hits.Total == 0 && KeywordQuery.AnyWord(normalized) is { } anyWord)
@@ -39,6 +40,9 @@ internal sealed class KeywordRetriever(AppDbContext db)
             hits = await SearchAsync(anyWord, filter, skip, take, MatchAny, cancellationToken);
         }
 
+        activity?.SetTag("filmsearch.search.match", hits.Match);
+        activity?.SetTag("filmsearch.search.hits", hits.Hits.Count);
+        activity?.SetTag("filmsearch.search.total", hits.Total);
         return hits;
     }
 

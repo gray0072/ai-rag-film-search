@@ -22,6 +22,7 @@ public static class AssistantServiceCollectionExtensions
             .Validate(o => o.HistoryMaxMessages is >= 2 and <= 200, "Assistant:HistoryMaxMessages must be between 2 and 200.")
             .Validate(o => o.HistoryTokenBudget is >= 200 and <= 200_000, "Assistant:HistoryTokenBudget must be between 200 and 200000.")
             .Validate(o => o.MaxConversationTokens >= 1000, "Assistant:MaxConversationTokens must be at least 1000.")
+            .Validate(o => o.MaxOwnerTokensPerDay >= o.MaxConversationTokens, "Assistant:MaxOwnerTokensPerDay must be at least Assistant:MaxConversationTokens.")
             .Validate(o => o.SearchResultLimit is >= 1 and <= SearchMoviesTool.MaxLimit, "Assistant:SearchResultLimit must be between 1 and 10.")
             .Validate(o => o.SummaryMaxOutputTokens is >= 50 and <= 4000, "Assistant:SummaryMaxOutputTokens must be between 50 and 4000.")
             .Validate(o => o.ConfirmationTtlMinutes is >= 1 and <= 120, "Assistant:ConfirmationTtlMinutes must be between 1 and 120.")

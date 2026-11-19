@@ -30,6 +30,7 @@ const errorKeys = {
   providerUnavailable: "chat.errors.providerUnavailable",
   conversationBusy: "chat.errors.conversationBusy",
   budgetExceeded: "chat.errors.budgetExceeded",
+  dailyBudgetExceeded: "chat.errors.dailyBudgetExceeded",
   toolsNotSupported: "chat.errors.toolsNotSupported",
   internalError: "chat.errors.internalError",
   connectionLost: "chat.errors.connectionLost",

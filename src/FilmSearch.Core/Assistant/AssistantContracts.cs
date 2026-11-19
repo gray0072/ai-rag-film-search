@@ -29,6 +29,12 @@ public interface IConversationStore
 
     /// <summary>Saves or replaces the feedback on an answer of the owner.</summary>
     Task<FeedbackResult> SaveFeedbackAsync(Guid messageId, int rating, string? comment, CancellationToken cancellationToken);
+
+    /// <summary>Tokens (input + output) of the owner's answers created at or after <paramref name="since"/>, over all conversations (NFR-5).</summary>
+    Task<long> GetOwnerTokensSinceAsync(DateTimeOffset since, CancellationToken cancellationToken);
+
+    /// <summary>Trace id of an answer of the owner, or null (unknown message, another owner's, or written without tracing).</summary>
+    Task<string?> GetTraceIdAsync(Guid messageId, CancellationToken cancellationToken);
 }
 
 public enum FeedbackResult

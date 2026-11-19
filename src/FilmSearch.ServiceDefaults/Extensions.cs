@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
@@ -77,10 +78,28 @@ public static class Extensions
     {
         // The AppHost sets OTEL_EXPORTER_OTLP_ENDPOINT to the Aspire dashboard.
         var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        var langfuse = LangfuseExport.CreateOptions(builder.Configuration);
+        if (langfuse is null)
+        {
+            if (useOtlpExporter)
+            {
+                builder.Services.AddOpenTelemetry().UseOtlpExporter();
+            }
+
+            return builder;
+        }
+
+        // UseOtlpExporter cannot be combined with a second exporter, so with Langfuse every signal gets its own
+        // exporter (they read the same OTEL_EXPORTER_OTLP_* variables) and traces get one more for Langfuse.
+        var otel = builder.Services.AddOpenTelemetry();
         if (useOtlpExporter)
         {
-            builder.Services.AddOpenTelemetry().UseOtlpExporter();
+            builder.Logging.AddOpenTelemetry(logging => logging.AddOtlpExporter());
+            otel.WithMetrics(metrics => metrics.AddOtlpExporter());
+            otel.WithTracing(tracing => tracing.AddOtlpExporter());
         }
+
+        otel.WithTracing(tracing => tracing.AddProcessor(LangfuseExport.CreateProcessor(langfuse)));
 
         return builder;
     }

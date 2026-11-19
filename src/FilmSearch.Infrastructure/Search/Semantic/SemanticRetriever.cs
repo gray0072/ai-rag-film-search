@@ -39,7 +39,10 @@ internal sealed class SemanticRetriever(AppDbContext db, ITextEmbedder embedder,
     /// <exception cref="AiProviderUnavailableException">The embedding provider failed.</exception>
     public async Task<ReadOnlyMemory<float>> EmbedQueryAsync(string text, CancellationToken cancellationToken)
     {
+        // The provider call is a GenAI embeddings span inside this one.
+        using var activity = SearchTelemetry.Activities.StartActivity("search.embed_query");
         var model = embedder.Active;
+        activity?.SetTag("filmsearch.search.embedding_model", model.Model);
         var vectors = await embedder.EmbedAsync(model, [model.FormatQuery(text)], cancellationToken);
         return vectors[0];
     }
@@ -87,6 +90,9 @@ internal sealed class SemanticRetriever(AppDbContext db, ITextEmbedder embedder,
         int limit,
         CancellationToken cancellationToken)
     {
+        using var activity = SearchTelemetry.Activities.StartActivity("search.vector");
+        activity?.SetTag("filmsearch.search.embedding_model", model.Model);
+        activity?.SetTag("filmsearch.search.limit", limit);
         var strategy = db.Database.CreateExecutionStrategy();
         var rows = await strategy.ExecuteAsync(async ct =>
         {
@@ -114,13 +120,15 @@ internal sealed class SemanticRetriever(AppDbContext db, ITextEmbedder embedder,
             return result;
         }, cancellationToken);
 
-        return [.. rows
+        IReadOnlyList<VectorHit> hits = [.. rows
             .GroupBy(r => r.MovieId)
             .Select(g => (MovieId: g.Key, Distance: g.Min(r => r.Distance)))
             .OrderBy(x => x.Distance)
             .ThenBy(x => x.MovieId)
             .Take(limit)
             .Select((x, i) => new VectorHit(x.MovieId, i + 1, Math.Round(1 - x.Distance, 6)))];
+        activity?.SetTag("filmsearch.search.hits", hits.Count);
+        return hits;
     }
 
     /// <summary>

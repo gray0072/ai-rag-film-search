@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FilmSearch.Core.Catalog;
 using FilmSearch.Core.Search;
 using FilmSearch.Infrastructure.Search.Hybrid;
@@ -19,6 +20,8 @@ internal sealed partial class MovieSearch(
     ICatalogReader catalog,
     IQueryUnderstanding understanding,
     IOptions<HybridSearchOptions> hybridOptions,
+    SearchMetrics metrics,
+    TimeProvider time,
     ILogger<MovieSearch> logger) : IMovieSearch
 {
     public bool Supports(SearchMode mode) => Enum.IsDefined(mode);
@@ -34,16 +37,36 @@ internal sealed partial class MovieSearch(
             throw new NotSupportedException($"Search mode {query.Mode} is not implemented.");
         }
 
-        var plan = await PlanAsync(query, cancellationToken);
-        var skip = (query.Page - 1) * query.PageSize;
-        var result = query.Mode switch
-        {
-            SearchMode.Semantic => await SemanticAsync(query, plan, skip, cancellationToken),
-            SearchMode.Hybrid => await HybridAsync(query, plan, skip, cancellationToken),
-            _ => await KeywordAsync(query, plan, skip, cancellationToken),
-        };
+        var startedAt = time.GetTimestamp();
+        var mode = SearchMetrics.ModeName(query.Mode);
+        using var activity = SearchTelemetry.Activities.StartActivity($"search {mode}");
+        activity?.SetTag("filmsearch.search.mode", mode);
+        activity?.SetTag("filmsearch.search.understand", query.Understand);
+        activity?.SetTag("filmsearch.search.page", query.Page);
 
-        return result with { AppliedFilter = plan.Filter, Understood = plan.Understood };
+        try
+        {
+            var plan = await PlanAsync(query, cancellationToken);
+            var skip = (query.Page - 1) * query.PageSize;
+            var result = query.Mode switch
+            {
+                SearchMode.Semantic => await SemanticAsync(query, plan, skip, cancellationToken),
+                SearchMode.Hybrid => await HybridAsync(query, plan, skip, cancellationToken),
+                _ => await KeywordAsync(query, plan, skip, cancellationToken),
+            };
+
+            activity?.SetTag("filmsearch.search.results", result.Items.Count);
+            activity?.SetTag("filmsearch.search.total", result.Total);
+            activity?.SetTag("filmsearch.search.degraded", result.Degraded);
+            metrics.Record(query.Mode, query.Understand, result.Degraded, time.GetElapsedTime(startedAt));
+
+            return result with { AppliedFilter = plan.Filter, Understood = plan.Understood };
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            throw;
+        }
     }
 
     public async Task<IReadOnlyList<SearchItem>?> FindSimilarAsync(
@@ -76,8 +99,12 @@ internal sealed partial class MovieSearch(
             return new SearchPlan(query.Text, query.Filter, [], null);
         }
 
+        // The model call of query understanding is a GenAI chat span inside this one (cached queries have none).
+        using var activity = SearchTelemetry.Activities.StartActivity("search.understand");
         var understood = await understanding.UnderstandAsync(query.Text, cancellationToken);
         var similarIds = await ResolveTitlesAsync(understood.SimilarToTitles, cancellationToken);
+        activity?.SetTag("filmsearch.search.similar_titles", understood.SimilarToTitles.Count);
+        activity?.SetTag("filmsearch.search.similar_resolved", similarIds.Count);
         var filter = understood.Filters.MergeInto(query.Filter) with
         {
             ExcludedMovieIds = [.. query.Filter.ExcludedMovieIds.Union(similarIds)],
@@ -169,7 +196,15 @@ internal sealed partial class MovieSearch(
             }
         }
 
-        var fused = ReciprocalRankFusion.Fuse(lists, options.RrfK);
+        IReadOnlyList<FusedHit> fused;
+        using (var fusion = SearchTelemetry.Activities.StartActivity("search.fusion"))
+        {
+            fused = ReciprocalRankFusion.Fuse(lists, options.RrfK);
+            fusion?.SetTag("filmsearch.search.lists", lists.Count);
+            fusion?.SetTag("filmsearch.search.rrf_k", options.RrfK);
+            fusion?.SetTag("filmsearch.search.fused", fused.Count);
+        }
+
         var keywordById = keywordHits.Hits.ToDictionary(h => h.MovieId);
         var vectorById = vectorHits.ToDictionary(h => h.MovieId);
         var page = fused.Skip(skip).Take(query.PageSize).ToList();

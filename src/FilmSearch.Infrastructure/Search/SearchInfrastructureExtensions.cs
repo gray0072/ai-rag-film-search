@@ -20,6 +20,8 @@ public static class SearchInfrastructureExtensions
     {
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<IMovieSearch, MovieSearch>();
+        services.AddMetrics();
+        services.AddSingleton<SearchMetrics>();
 
         // Keyword search (I04)
         services.AddScoped<KeywordRetriever>();

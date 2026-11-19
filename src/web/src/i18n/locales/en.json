@@ -282,6 +282,7 @@
       "providerUnavailable": "The AI model is not available right now. Please try again later.",
       "conversationBusy": "The previous answer is still being written. Wait a moment and try again.",
       "budgetExceeded": "This conversation is too long. Please start a new one.",
+      "dailyBudgetExceeded": "You have used the assistant a lot today. Please try again tomorrow.",
       "toolsNotSupported": "The selected AI model cannot search the catalog, so the assistant is off.",
       "internalError": "Something went wrong while writing the answer.",
       "connectionLost": "The connection was lost before the answer was complete."

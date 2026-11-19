@@ -46,6 +46,7 @@ internal sealed class ConversationMessageConfiguration : IEntityTypeConfiguratio
         builder.Property(m => m.ToolCallId).HasMaxLength(200);
         builder.Property(m => m.Model).HasMaxLength(200);
         builder.Property(m => m.PromptVersion).HasMaxLength(100);
+        builder.Property(m => m.TraceId).HasMaxLength(32);
         builder.Property(m => m.EstimatedCostUsd).HasPrecision(18, 8);
         builder.Ignore(m => m.IsVisible);
 

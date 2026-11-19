@@ -228,6 +228,11 @@ namespace FilmSearch.Infrastructure.Persistence.Migrations
                         .HasColumnType("jsonb")
                         .HasColumnName("tool_calls_json");
 
+                    b.Property<string>("TraceId")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("trace_id");
+
                     b.HasKey("Id")
                         .HasName("pk_messages");
 

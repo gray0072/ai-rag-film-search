@@ -68,7 +68,7 @@ Each event: `event: <type>` and `data: <json>`. The data also carries `type` (th
 | `cart.updated` | `{ cart }` | Cart changed through a tool. |
 | `confirmation.required` | `{ confirmationId, kind: "checkout", summary: { items: [CartLine], totalMinor, currency }, expiresAt }` | UI shows the order and a **Go to payment** button; the click calls the confirmations endpoint before `expiresAt` (`Assistant:ConfirmationTtlMinutes`, 15). |
 | `message.completed` | `{ messageId, usage: { inputTokens, outputTokens }, model, latencyMs }` | End of answer. |
-| `error` | `{ code, message }` | Error. The stream ends. Codes: `providerUnavailable`, `conversationBusy` (another answer of the conversation is running), `budgetExceeded` (token budget of the conversation, NFR-5), `toolsNotSupported`, `internalError`. |
+| `error` | `{ code, message }` | Error. The stream ends. Codes: `providerUnavailable`, `conversationBusy` (another answer of the conversation is running), `budgetExceeded` (token budget of the conversation, NFR-5), `dailyBudgetExceeded` (token budget of the owner over all conversations in the last 24 hours, NFR-5, I18), `toolsNotSupported`, `internalError`. |
 
 `MovieCard`: `{ id, title, year, posterPath, genres: [name], rating, offers: [{ id, type, priceMinor, currency, rentalHours }], reason? }` (`posterPath` like the catalog: the UI builds the image URL; `reason` is reserved).
 
