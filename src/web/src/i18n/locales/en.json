@@ -14,7 +14,8 @@
     "library": "My library",
     "chat": "Assistant",
     "cart": "Cart",
-    "cartWithItems": "Cart, items: {{items}}"
+    "cartWithItems": "Cart, items: {{items}}",
+    "admin": "Admin"
   },
   "search": {
     "label": "Search movies",
@@ -308,6 +309,171 @@
       "title": "Page not found",
       "description": "The page you are looking for does not exist.",
       "backHome": "Back to the catalog"
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "nav": {
+      "label": "Admin sections",
+      "catalog": "Catalog",
+      "jobs": "Jobs",
+      "embeddings": "Search index",
+      "ai": "AI models"
+    },
+    "forbidden": {
+      "title": "No access",
+      "description": "These pages are for administrators. Sign in with an admin account."
+    },
+    "yes": "yes",
+    "no": "no",
+    "catalog": {
+      "description": "Load the seed file or import movies from TMDB. Imports run in the background in the Worker.",
+      "seed": {
+        "title": "Seed file",
+        "description": "Loads the 1000 movies of data/seed/movies.seed.json. Safe to repeat: movies are matched by their TMDB id.",
+        "submit": "Load the seed",
+        "running": "Loading… (about 10 s)",
+        "result": "Genres: {{genres}}. Movies created: {{created}}, updated: {{updated}}, unchanged: {{unchanged}}. Took {{seconds}} s.",
+        "reindexHint": "New and changed movies are found by keywords at once, by meaning only after a reindex."
+      },
+      "import": {
+        "title": "Import from TMDB",
+        "description": "The Worker reads the first pages of a TMDB list (20 movies a page) or the movies you name, saves them and embeds the new texts. About 4 movies a second.",
+        "source": "What to import",
+        "fromList": "A TMDB list",
+        "fromIds": "Exact movies",
+        "list": "List",
+        "topRated": "Top rated",
+        "popular": "Popular",
+        "pages": "Pages",
+        "ids": "TMDB ids",
+        "idsHint": "Separated by commas or spaces, e.g. 27205, 157336.",
+        "invalidIds": "Enter TMDB ids: positive whole numbers separated by commas or spaces.",
+        "submit": "Queue the import",
+        "queued": "The import is queued.",
+        "conflict": "An import is already queued or running.",
+        "openJob": "Open the job"
+      }
+    },
+    "jobs": {
+      "description": "Background jobs of the Worker, newest first. The list refreshes while a job is queued or running.",
+      "kind": {
+        "label": "Kind",
+        "all": "All",
+        "tmdbImport": "TMDB import",
+        "embeddingReindex": "Reindex"
+      },
+      "state": {
+        "queued": "Queued",
+        "running": "Running",
+        "succeeded": "Succeeded",
+        "failed": "Failed",
+        "cancelled": "Cancelled"
+      },
+      "trigger": {
+        "admin": "Admin",
+        "schedule": "Schedule",
+        "startup": "Startup"
+      },
+      "columns": {
+        "kind": "Kind",
+        "state": "State",
+        "trigger": "Started by",
+        "queuedAt": "Queued",
+        "duration": "Duration",
+        "summary": "Progress or result"
+      },
+      "list": "Jobs",
+      "empty": "No jobs yet.",
+      "cancel": "Cancel",
+      "cancelRequested": "Cancelling at the next heartbeat",
+      "details": "Details",
+      "phase": {
+        "genres": "Genres",
+        "listing": "Reading the list",
+        "movies": "Movies",
+        "embeddings": "Embeddings"
+      },
+      "importProgress": "{{phase}}: {{fetched}} of {{movies}} movies",
+      "reindexProgress": "{{processed}} of {{total}} texts",
+      "importResult": "Created {{created}}, updated {{updated}}, unchanged {{unchanged}}, failed {{failed}}",
+      "reindexResult": "Embedded {{embedded}}, unchanged {{unchanged}}",
+      "job": {
+        "back": "All jobs",
+        "title": "Job",
+        "parameters": "Parameters",
+        "progress": "Progress",
+        "result": "Result",
+        "error": "Error",
+        "attempts": "Attempts",
+        "worker": "Worker",
+        "startedAt": "Started",
+        "heartbeatAt": "Last heartbeat",
+        "finishedAt": "Finished",
+        "notFound": "This job does not exist."
+      }
+    },
+    "embeddings": {
+      "description": "Vectors are stored per model and locale. Build the vectors of a new model next to the old ones, switch the active profile, then delete the old model.",
+      "active": {
+        "title": "Active model",
+        "profile": "Profile",
+        "model": "Model",
+        "dimensions": "Dimensions"
+      },
+      "sets": {
+        "title": "Stored vectors",
+        "model": "Model",
+        "dimensions": "Dimensions",
+        "locale": "Locale",
+        "count": "Vectors",
+        "active": "active",
+        "empty": "No vectors yet: queue a reindex.",
+        "delete": "Delete {{model}}",
+        "confirmDelete": "Delete every vector of {{model}}? Using this model again needs a full reindex.",
+        "deleted": "Deleted {{deleted}} vectors of {{model}}."
+      },
+      "reindex": {
+        "title": "Reindex",
+        "description": "The Worker embeds the movie texts with the chosen profile. Only changed texts by default; a full run re-embeds every movie.",
+        "profile": "Embedding profile",
+        "onlyStale": "Only movies whose text changed",
+        "locales": "Locales",
+        "localesHint": "None checked: the configured locales. Vectors of unchecked locales of this model are deleted.",
+        "submit": "Queue the reindex",
+        "queued": "The reindex is queued.",
+        "conflict": "A reindex is already queued or running."
+      },
+      "lastJob": "Current or last reindex"
+    },
+    "ai": {
+      "description": "The profiles come from the configuration (AI:ChatProfiles, AI:EmbeddingProfiles); the operator changes them. Keys are never shown.",
+      "chatProfiles": "Chat profiles",
+      "embeddingProfiles": "Embedding profiles",
+      "columns": {
+        "name": "Profile",
+        "model": "Model",
+        "apiKey": "API key",
+        "tools": "Tools",
+        "dimensions": "Dimensions"
+      },
+      "active": "active",
+      "fallback": "fallback",
+      "test": {
+        "title": "Try a chat profile",
+        "description": "Sends one message to the model and shows the answer with its tokens and cost. The call is also a trace in the Aspire dashboard.",
+        "profile": "Chat profile",
+        "message": "Message",
+        "defaultMessage": "Recommend one movie for a rainy evening, in one sentence.",
+        "submit": "Send",
+        "sending": "Waiting for the model…",
+        "answer": "Answer of {{model}}",
+        "usage": "Input: {{input}} tokens · output: {{output}} tokens",
+        "cost": "Estimated cost: {{cost}}",
+        "noCost": "No price is configured for this model.",
+        "unavailable": "The provider did not answer.",
+        "noKey": "This profile has no API key."
+      }
     }
   }
 }

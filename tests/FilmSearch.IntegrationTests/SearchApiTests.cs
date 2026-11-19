@@ -213,6 +213,43 @@ public sealed class SearchApiTests(CatalogApiFixture fixture) : IClassFixture<Ca
     }
 
     [Fact]
+    public async Task Settings_return_the_configured_defaults_of_the_search_page()
+    {
+        using var client = fixture.CreateClient();
+        var defaults = await client.GetFromJsonAsync<JsonObject>("/api/search/settings", Ct);
+
+        defaults.ShouldNotBeNull();
+        defaults["mode"]!.GetValue<string>().ShouldBe("hybrid");
+        defaults["understand"]!.GetValue<bool>().ShouldBeTrue();
+
+        await using var configured = fixture.Factory.WithWebHostBuilder(b => b
+            .UseSetting("Search:Defaults:Mode", "Keyword")
+            .UseSetting("Search:Defaults:Understand", "false"));
+        using var configuredClient = configured.CreateClient();
+        var changed = await configuredClient.GetFromJsonAsync<JsonObject>("/api/search/settings", Ct);
+
+        changed.ShouldNotBeNull();
+        changed["mode"]!.GetValue<string>().ShouldBe("keyword");
+        changed["understand"]!.GetValue<bool>().ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task A_request_without_mode_uses_the_configured_default_mode()
+    {
+        // Semantic as the default: the result has vector ranks only. Hybrid (the built-in default) would add keyword ranks.
+        await fixture.EnsureEmbeddingsAsync();
+        await using var factory = fixture.Factory.WithWebHostBuilder(b => b.UseSetting("Search:Defaults:Mode", "Semantic"));
+        using var client = factory.CreateClient();
+
+        using var response = await client.PostAsJsonAsync("/api/search", new { query = "nolan dream", debug = true }, CatalogApiFixture.Json, Ct);
+
+        response.EnsureSuccessStatusCode();
+        var result = (await response.Content.ReadFromJsonAsync<SearchResponse>(CatalogApiFixture.Json, Ct)).ShouldNotBeNull();
+        result.Items.ShouldNotBeEmpty();
+        result.Items.ShouldAllBe(i => i.Debug!.KeywordRank == null && i.Debug.VectorRank != null);
+    }
+
+    [Fact]
     public async Task Keyword_search_is_fast_on_the_seed()
     {
         // Acceptance criterion of I04: p95 < 200 ms locally. Asserted with a wide margin (CI machines vary);

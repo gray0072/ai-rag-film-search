@@ -101,6 +101,7 @@ release (contract). A migration that cannot be written like that needs a restore
 | Traces, metrics, logs | `COMPOSE_PROFILES=dashboard` and `OTEL_EXPORTER_OTLP_ENDPOINT=http://dashboard:18889` in `.env`, `docker compose up -d`; then `ssh -L 18888:127.0.0.1:18888 <host>` and http://localhost:18888 (the login token is in `docker compose logs dashboard`) |
 | Switch the embedding model | Change the `openrouter` embedding profile (or `EMBEDDING_PROFILE`), `docker compose up -d`. The API queues a reindex with the new model on startup (Qwen3-Embedding-8B, 1024 dimensions: less than $0.01 for the catalog); until it ends, semantic results cover the movies embedded so far. The vectors of the old model stay, so switching back needs no reindex |
 | Free disk | `docker image prune -a` (keeps the images of running containers) |
+| Find what the project left | `docker ps -a --filter name=filmsearch`, `docker images --filter label=project=filmsearch` (the api, worker and web images carry `LABEL project=filmsearch`) |
 
 Secrets live only in `.env` on the server and in the GitHub environment; nothing secret is in the images
 (`.dockerignore` excludes `.env`, user secrets are not used in containers).

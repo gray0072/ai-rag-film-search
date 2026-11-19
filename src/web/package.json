@@ -18,6 +18,7 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "docs:screenshots": "node scripts/docs-screenshots.mjs",
+    "docs:screenshots:admin": "node scripts/docs-screenshots-admin.mjs",
     "gen:api": "openapi-typescript openapi/v1.json --output src/api/schema.d.ts"
   },
   "dependencies": {

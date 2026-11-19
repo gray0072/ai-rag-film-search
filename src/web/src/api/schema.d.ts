@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/search/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Defaults of the search page (Search:Defaults): the mode and whether query understanding starts switched on. */
+        get: operations["GetSearchSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/movies/{id}/similar": {
         parameters: {
             query?: never;
@@ -397,6 +414,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/ai/profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Configured chat and embedding profiles (name, model, whether an API key is set) and the active ones. Keys and endpoints are not returned. */
+        get: operations["AdminAiProfiles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/ai/chat": {
         parameters: {
             query?: never;
@@ -545,6 +579,34 @@ export interface components {
             outputTokens: number;
             /** Format: double */
             estimatedCostUsd: null | number;
+        };
+        /** @description The AI profiles of the configuration (`AI:ChatProfiles`, `AI:EmbeddingProfiles`) without endpoints and keys. */
+        AdminAiProfiles: {
+            /** @description Profile of the assistant and query understanding. */
+            activeChatProfile: string;
+            /** @description Profile that answers when the active chat profile fails; null when none. */
+            fallbackChatProfile: null | string;
+            /** @description Chat profiles by name. */
+            chatProfiles: components["schemas"]["AdminChatProfile"][];
+            /** @description Profile of the search vectors. */
+            activeEmbeddingProfile: string;
+            /** @description Embedding profiles by name. */
+            embeddingProfiles: components["schemas"]["AdminEmbeddingProfile"][];
+        };
+        /** @description A chat profile: name, model, whether its API key is set and whether it supports tools. */
+        AdminChatProfile: {
+            name: string;
+            model: string;
+            hasApiKey: boolean;
+            supportsTools: boolean;
+        };
+        /** @description An embedding profile: name, model, vector dimensions and whether its API key is set. */
+        AdminEmbeddingProfile: {
+            name: string;
+            model: string;
+            /** Format: int32 */
+            dimensions: number;
+            hasApiKey: boolean;
         };
         /** @description Body of `POST /api/admin/embeddings/reindex`. */
         AdminReindexRequest: {
@@ -1375,6 +1437,13 @@ export interface components {
              */
             degraded: boolean;
         };
+        /** @description Defaults of the search page, from `Search:Defaults`. */
+        SearchSettings: {
+            /** @description Search mode the page starts with; also the API default when a request has no mode. */
+            mode: components["schemas"]["SearchMode"];
+            /** @description Whether "Understand the query" starts switched on. */
+            understand: boolean;
+        };
         SeedResult: {
             /** Format: int32 */
             genres: number;
@@ -1507,6 +1576,26 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetSearchSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchSettings"];
                 };
             };
         };
@@ -2233,6 +2322,44 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeedResult"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    AdminAiProfiles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAiProfiles"];
                 };
             };
             /** @description Unauthorized */

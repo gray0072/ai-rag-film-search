@@ -15,11 +15,28 @@ internal static class AdminAiEndpoints
 {
     public static RouteGroupBuilder MapAdminAiEndpoints(this RouteGroupBuilder group)
     {
+        group.MapGet("/ai/profiles", GetProfiles)
+            .WithName("AdminAiProfiles")
+            .WithSummary("Configured chat and embedding profiles (name, model, whether an API key is set) and the active ones. Keys and endpoints are not returned.");
+
         group.MapPost("/ai/chat", Chat)
             .WithName("AdminAiChat")
             .WithSummary("Sends one message to a chat profile (default: the active one) and returns the answer with token usage.");
 
         return group;
+    }
+
+    private static Ok<AdminAiProfiles> GetProfiles(IOptions<AiOptions> options)
+    {
+        var ai = options.Value;
+        return TypedResults.Ok(new AdminAiProfiles(
+            ai.ActiveChatProfile,
+            ai.FallbackChatProfileName,
+            [.. ai.ChatProfiles.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase)
+                .Select(p => new AdminChatProfile(p.Key, p.Value.Model, !string.IsNullOrWhiteSpace(p.Value.ApiKey), p.Value.SupportsTools))],
+            ai.ActiveEmbeddingProfile,
+            [.. ai.EmbeddingProfiles.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase)
+                .Select(p => new AdminEmbeddingProfile(p.Key, p.Value.Model, p.Value.Dimensions, !string.IsNullOrWhiteSpace(p.Value.ApiKey)))]));
     }
 
     private static async Task<Results<Ok<AdminAiChatResponse>, ValidationProblem, ProblemHttpResult>> Chat(
@@ -90,3 +107,22 @@ public sealed record AdminAiChatResponse(
     long InputTokens,
     long OutputTokens,
     decimal? EstimatedCostUsd);
+
+/// <summary>The AI profiles of the configuration (<c>AI:ChatProfiles</c>, <c>AI:EmbeddingProfiles</c>) without endpoints and keys.</summary>
+/// <param name="ActiveChatProfile">Profile of the assistant and query understanding.</param>
+/// <param name="FallbackChatProfile">Profile that answers when the active chat profile fails; null when none.</param>
+/// <param name="ChatProfiles">Chat profiles by name.</param>
+/// <param name="ActiveEmbeddingProfile">Profile of the search vectors.</param>
+/// <param name="EmbeddingProfiles">Embedding profiles by name.</param>
+public sealed record AdminAiProfiles(
+    string ActiveChatProfile,
+    string? FallbackChatProfile,
+    IReadOnlyList<AdminChatProfile> ChatProfiles,
+    string ActiveEmbeddingProfile,
+    IReadOnlyList<AdminEmbeddingProfile> EmbeddingProfiles);
+
+/// <summary>A chat profile: name, model, whether its API key is set and whether it supports tools.</summary>
+public sealed record AdminChatProfile(string Name, string Model, bool HasApiKey, bool SupportsTools);
+
+/// <summary>An embedding profile: name, model, vector dimensions and whether its API key is set.</summary>
+public sealed record AdminEmbeddingProfile(string Name, string Model, int Dimensions, bool HasApiKey);

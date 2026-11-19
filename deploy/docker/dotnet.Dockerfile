@@ -41,6 +41,8 @@ RUN dotnet publish src/FilmSearch.Worker -c Release -o /out --no-restore
 # Chiseled images: no shell or package manager, non-root user `app` (uid 1654). "extra" adds ICU and time zones,
 # needed for the ru and sv cultures.
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION}-noble-chiseled-extra AS api
+# Every image of the project carries this label: docker images --filter label=project=filmsearch finds them.
+LABEL project=filmsearch
 WORKDIR /app
 COPY --from=publish-api /out ./
 # Data protection keys (DataProtection:KeysPath): a named volume mounted here copies this owner on first use.
@@ -50,6 +52,7 @@ EXPOSE 8080
 ENTRYPOINT ["dotnet", "FilmSearch.Api.dll"]
 
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION}-noble-chiseled-extra AS worker
+LABEL project=filmsearch
 WORKDIR /app
 COPY --from=publish-worker /out ./
 ENTRYPOINT ["dotnet", "FilmSearch.Worker.dll"]

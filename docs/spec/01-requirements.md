@@ -64,7 +64,7 @@ IDs are referenced from iteration plans and tests. `FR` = functional, `NFR` = no
 |---|---|
 | FR-USR-1 | Before auth exists: an anonymous session id (cookie) owns the cart, orders and conversations. |
 | FR-USR-2 | After auth: register / log in with email and password (ASP.NET Core Identity). The anonymous cart is merged into the account on login. |
-| FR-USR-3 | Admin role for admin endpoints (ingestion, reindex). |
+| FR-USR-3 | Admin role for admin endpoints (ingestion, reindex) and the admin pages of the web app (I22). |
 
 ## Non-functional requirements
 

@@ -17,8 +17,15 @@ public static class SearchModule
     public const int DefaultSimilarLimit = 10;
     public const int MaxSimilarLimit = 50;
 
-    public static IServiceCollection AddSearchModule(this IServiceCollection services, IConfiguration configuration) =>
-        services.AddSearchInfrastructure(configuration);
+    public static IServiceCollection AddSearchModule(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<SearchDefaultsOptions>()
+            .Bind(configuration.GetSection(SearchDefaultsOptions.SectionName))
+            .Validate(o => Enum.IsDefined(o.Mode), "Search:Defaults:Mode must be keyword, semantic or hybrid.")
+            .ValidateOnStart();
+
+        return services.AddSearchInfrastructure(configuration);
+    }
 
     public static IEndpointRouteBuilder MapSearchEndpoints(this IEndpointRouteBuilder app)
     {
@@ -28,6 +35,11 @@ public static class SearchModule
             .WithSummary("Searches movies by free text with catalog filters. Movie texts in the Accept-Language locale.")
             .RequireRateLimiting(RateLimitPolicies.Search)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
+
+        app.MapGet("/api/search/settings", GetSettings)
+            .WithTags("Search")
+            .WithName("GetSearchSettings")
+            .WithSummary("Defaults of the search page (Search:Defaults): the mode and whether query understanding starts switched on.");
 
         app.MapGet("/api/movies/{id:guid}/similar", Similar)
             .WithTags("Search")
@@ -48,13 +60,17 @@ public static class SearchModule
         }
     }
 
+    private static Ok<SearchSettings> GetSettings(IOptions<SearchDefaultsOptions> defaults) =>
+        TypedResults.Ok(new SearchSettings(defaults.Value.Mode, defaults.Value.Understand));
+
     private static async Task<Results<Ok<SearchResponse>, ValidationProblem>> Search(
         SearchRequest request,
         IMovieSearch search,
+        IOptions<SearchDefaultsOptions> defaults,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        var query = request.ToQuery(httpContext.GetLocale());
+        var query = request.ToQuery(httpContext.GetLocale(), defaults.Value.Mode);
 
         if (!search.Supports(query.Mode))
         {

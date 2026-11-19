@@ -53,11 +53,12 @@ The full learning map is in [learning-path.md](../learning-path.md).
 - Data: seed of about 1000 top movies, then TMDB import and sync with re-embedding.
 - Authentication (ASP.NET Core Identity) for order history and the library. Before it exists, an anonymous session is used.
 - Observability, evaluation, guardrails, CI, containerized deployment.
+- Admin pages in the web app (I22, [ADR-0013](../adr/0013-admin-pages-in-the-store-app.md)): seed load, TMDB import, background jobs, search index, AI profiles — views over the admin API.
 
 ### Out of scope (non-goals)
 - Real video streaming. A purchased movie only appears in the library and is marked as owned or rented on its page.
 - Real money and live Stripe mode.
-- Admin UI for catalog editing. Admin actions are API endpoints or CLI commands.
+- Editing the catalog by hand (single movies, prices). Movies come from the seed and TMDB; configuration (AI profiles, budgets, payment provider) is changed by the operator, not in the admin pages.
 - Mobile apps.
 - Training our own models. Fine-tuning may appear as a stretch goal.
 

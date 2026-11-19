@@ -67,11 +67,14 @@ or environment only.
 
 ## Search
 
-`Search:Semantic` (`SemanticSearchOptions`), `Search:Hybrid` (`HybridSearchOptions`), `Search:QueryUnderstanding`
-(`QueryUnderstandingOptions`), `Search:Embeddings` (`EmbeddingIndexOptions`). Changes need a search evaluation run.
+`Search:Defaults` (`SearchDefaultsOptions`, I22), `Search:Semantic` (`SemanticSearchOptions`), `Search:Hybrid`
+(`HybridSearchOptions`), `Search:QueryUnderstanding` (`QueryUnderstandingOptions`), `Search:Embeddings`
+(`EmbeddingIndexOptions`). Changes need a search evaluation run, except `Search:Defaults` (a product choice).
 
 | Key | Default (Dev / Demo) | Meaning | Who | Secret |
 |---|---|---|---|---|
+| `Search:Defaults:Mode` | `Hybrid` | Mode of the search page when the URL names none, and of `POST /api/search` without `mode`: `Keyword`, `Semantic` or `Hybrid` (checked at startup) | Product owner | no |
+| `Search:Defaults:Understand` | `true` | Whether "Understand the query (AI)" starts switched on in the search page. The API itself understands only when a request says `understand: true` | Product owner | no |
 | `Search:Semantic:MaxResults` | `100` | Length of the semantic result list (1–1000); the `total` of a semantic search is at most this | AI engineer | no |
 | `Search:Hybrid:RrfK` | `20` | RRF constant k (0–1000); larger flattens rank differences | AI engineer | no |
 | `Search:Hybrid:KeywordWeight` | `1.0` | Weight of the keyword list when every query word matched (≥ 0) | AI engineer | no |

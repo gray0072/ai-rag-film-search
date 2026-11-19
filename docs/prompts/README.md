@@ -79,6 +79,7 @@ Rules:
 | [S25](sessions/2026-11-19_S25_guide-core.md) | 2026-11-19 | I21 | Guide: core chapters 01–14 |
 | [S26](sessions/2026-11-19_S26_guide-advanced-handbook.md) | 2026-11-19 | I21 | Guide: advanced chapters, handbook role pages |
 | [S27](sessions/2026-11-19_S27_docs-site.md) | 2026-11-19 | I21 | Documentation website (VitePress, GitHub Pages), link checker |
+| [S28](sessions/2026-11-19_S28_admin-ui.md) | 2026-11-19 | I22 | Admin UI, search defaults setting, image labels |
 
 ---
 

@@ -32,7 +32,7 @@ flowchart LR
 |---|---|---|---|
 | 🛒 **Customer** (or demoing the app) | How to search, ask the assistant, buy and watch | [Handbook: customer](handbook/customer.md) | — |
 | 📊 **Product owner / manager** | What the system can do, its limits, quality and cost numbers, the levers | [Handbook: product owner](handbook/product-owner.md) | [Guide ch. 1: the business problem](guide/01-business-problem.md), [Journal](journal/README.md) |
-| 🛠️ **Administrator** | Catalog, TMDB import, embeddings, jobs, payment provider, budgets | [Handbook: administrator](handbook/administrator.md) | [Local setup](handbook/local-setup.md) |
+| 🛠️ **Administrator** | Admin pages: catalog, TMDB import, embeddings, jobs, AI profiles; payment provider, budgets | [Handbook: administrator](handbook/administrator.md) | [Local setup](handbook/local-setup.md) |
 | 🚦 **Operator / DevOps** | Environments, deploy, monitoring, incidents, backup, rollback | [Handbook: operator](handbook/operator.md) | [Deploy runbook](../deploy/README.md), [Observability runbook](runbooks/observability.md) |
 | 💻 **Developer** | Setup, architecture, code map, conventions, tests | [Handbook: developer](handbook/developer.md) | [Local setup](handbook/local-setup.md), [Architecture](spec/02-architecture.md), [AGENTS.md](../AGENTS.md) |
 | 🧪 **AI engineer** | Models, prompts, search parameters, evaluation suites | [Handbook: AI engineer](handbook/ai-engineer.md) | [Guide](guide/README.md), [Evaluations](../evals/README.md), [reports](../evals/reports/) |

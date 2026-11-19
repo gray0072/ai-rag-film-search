@@ -4,21 +4,37 @@
 
 This page is for the person who runs the store's content and day-to-day settings: loads and imports movies, keeps the
 search index in step with the catalog, watches background jobs, switches the payment provider and answers "my payment
-did not arrive". It assumes you can send an HTTP request with `curl` (or a `.http` file) and read JSON. Starting and
+did not arrive". Most of it is done in the **admin pages** of the web app; the same actions are an HTTP API for
+scripts (`curl` or a `.http` file). Starting and
 deploying the system is the [operator's](operator.md) job; changing models and prompts is the
 [AI engineer's](ai-engineer.md).
 
-**Contents:** [No admin UI](#there-is-no-admin-ui) · [Admin account](#the-admin-account) · [Admin API](#the-admin-api) · [Jobs](#background-jobs) ·
+**Contents:** [Admin pages](#admin-pages) · [Admin account](#the-admin-account) · [Admin API](#the-admin-api) · [Jobs](#background-jobs) ·
 [Payment provider](#switch-the-payment-provider) · [Budgets and rate limits](#budgets-and-rate-limits) · Recipes:
 [add 500 movies](#add-500-movies-from-tmdb), [switch the embedding model](#switch-the-embedding-model),
 [a job is stuck](#a-job-is-stuck), [a payment did not arrive](#a-customer-says-the-payment-did-not-arrive)
 
-## There is no admin UI
+## Admin pages
 
-The web app has no admin pages: its routes are the catalog, movie, search, cart, checkout result, library, sign-in,
-registration and chat pages ([routes.tsx](../../src/web/src/app/routes.tsx)). An admin signs in like any customer and
-sees the same store. Everything admin-only is the HTTP API under `/api/admin`, by design ([spec 00 §4](../spec/00-overview.md#4-scope)).
-The OpenAPI document (`/openapi/v1.json`, Development) lists these endpoints under the tag `Admin`.
+Sign in with the [admin account](#the-admin-account): the header gets an **Admin** link to `/admin` (since I22,
+[ADR-0013](../adr/0013-admin-pages-in-the-store-app.md)). Other users who open `/admin` see "No access", visitors go to
+the sign-in page. The pages are views over the [admin API](#the-admin-api), which checks the role on every call, and
+they speak English, Russian and Swedish like the store. Configuration (AI profiles, budgets, the payment provider) is
+shown but not changed here: that is the [operator's](operator.md) job.
+
+| Page | What you do there |
+|---|---|
+| **Catalog** (`/admin`) | Load the seed file (the result shows created, updated and unchanged movies); queue a TMDB import of a list (popular or top rated, N pages) or of exact TMDB ids. When an import is already queued or running, the page links to that job |
+| **Jobs** (`/admin/jobs`) | All background jobs, newest first, filtered by kind; progress while a job runs (refreshed every 2 s), counters when it succeeded, the error when it failed; **Cancel** for a queued or running job; **Details** for parameters, progress, result, attempts, worker and heartbeat |
+| **Search index** (`/admin/embeddings`) | The active embedding profile and model, stored vectors per model and locale, the current or last reindex; queue a reindex (profile, only changed texts or all, locales); delete the vectors of a model that is not active |
+| **AI models** (`/admin/ai`) | Chat and embedding profiles: model, whether a key is set, tools, which one is active or the fallback; send one message to a chat profile and see the answer, tokens and estimated cost (also a trace in the Aspire dashboard) |
+
+<img src="../images/screenshots/admin-catalog.png" alt="Admin catalog page: seed load result and the TMDB import form" width="900">
+
+<img src="../images/screenshots/admin-jobs.png" alt="Admin jobs page: reindex and TMDB import jobs with state, duration and counters" width="900">
+
+More: [job details](../images/screenshots/admin-job.png) ·
+[search index](../images/screenshots/admin-embeddings.png) · [AI models](../images/screenshots/admin-ai.png).
 
 ## The admin account
 
@@ -50,7 +66,8 @@ the address bar of the web app.
 
 ## The admin API
 
-Contract: [spec 04, Admin](../spec/04-api.md#admin-role-admin-401-without-a-user-403-without-the-role).
+The admin pages call these endpoints; use them directly for scripts and automation. The OpenAPI document
+(`/openapi/v1.json`, Development) lists them under the tag `Admin`. Contract: [spec 04, Admin](../spec/04-api.md#admin-role-admin-401-without-a-user-403-without-the-role).
 
 | Request | What it does | Answer |
 |---|---|---|
@@ -62,6 +79,7 @@ Contract: [spec 04, Admin](../spec/04-api.md#admin-role-admin-401-without-a-user
 | `GET /api/admin/embeddings` | Active embedding profile, model and dimensions; vector counts per model and locale; the current or last reindex job | 200 |
 | `POST /api/admin/embeddings/reindex` | Queues a reindex: `{ "profile"?, "onlyStale": true, "locales"?: ["en","ru","sv"] }` | 202 with the job; 409 while one runs; 400 unknown profile or locale |
 | `DELETE /api/admin/embeddings?model=<model id>` | Deletes every vector of a model that is not the active one | 200 `{ model, deleted }`; 400 for the active model |
+| `GET /api/admin/ai/profiles` | Chat and embedding profiles: names, models, dimensions, whether a key is set, the active and fallback ones (no endpoints, no keys) | 200 |
 | `POST /api/admin/ai/chat` | Sends one message to a chat profile (`{ "message": "Hi", "profile": "openrouter" }`; the active one when empty) | 200 `{ profile, model, text, inputTokens, outputTokens, estimatedCostUsd }`; 503 when the provider is down |
 
 Examples:
@@ -136,6 +154,9 @@ budget; rate-limited requests get 429 and appear in `aspnetcore.rate_limiting.re
 
 ## Add 500 movies from TMDB
 
+In the admin pages: **Catalog** → *Import from TMDB* → list and pages (or exact movies) → **Queue the import** →
+**Open the job**. The steps below say what to choose and what to check; the API calls are for scripts.
+
 1. Check the key is set (`Tmdb:ApiKey`) and note the catalog size: `curl -s "$API/api/movies?pageSize=1"` → `total`.
 2. Pick a source. An import reads the **first** N pages of a list. The seed already holds most of the top-rated list:
    50 pages of `topRated` gave 987 movies, of which 180 were new. For about 500 new movies take more pages (e.g.
@@ -150,6 +171,9 @@ budget; rate-limited requests get 429 and appear in `aspnetcore.rate_limiting.re
    number of movies. If the job failed in the `embeddings` phase, queue a reindex with `{}`.
 
 ## Switch the embedding model
+
+In the admin pages: **Search index** → *Reindex* with the new profile; after the switch, the trash button next to the
+old model deletes its vectors.
 
 The search index stores vectors per model, so the new model is built next to the old one and search switches only when
 the active profile changes ([spec 08 §4](../spec/08-data-ingestion.md#4-embeddings-pipeline)). The profile itself
@@ -168,6 +192,8 @@ In the demo the [deploy runbook](../../deploy/README.md#operate) does it in one 
 cover only the movies embedded so far.
 
 ## A job is stuck
+
+In the admin pages: **Jobs** → **Details** of the job shows the fields below; **Cancel** is on both pages.
 
 1. `GET /api/admin/jobs?limit=10`: look at `state`, `heartbeatAt`, `attempts`, `progress`.
 2. **`queued` and never starts:** the Worker is not running or is busy with another job (one at a time). Check the

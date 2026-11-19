@@ -1,18 +1,25 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { SearchRequest, SearchResponse } from "@/api/types";
+import type { SearchRequest, SearchResponse, SearchSettings } from "@/api/types";
 import i18n from "@/i18n";
 import { aCart, aMovie, genres, mockApi, requestsTo } from "@/test/mockApi";
 import { renderApp } from "@/test/renderApp";
 
-/** Answers like the API: the request filters plus what query understanding found (when it is on). */
-function stubSearch(understood?: {
-  genres?: string[];
-  excludeGenres?: string[];
-  yearFrom?: number;
-}) {
+/**
+ * Answers like the API: the request filters plus what query understanding found (when it is on). Without `settings`
+ * the settings request fails (404) and the page uses its built-in defaults, which are the API's defaults.
+ */
+function stubSearch(
+  understood?: {
+    genres?: string[];
+    excludeGenres?: string[];
+    yearFrom?: number;
+  },
+  settings?: SearchSettings,
+) {
   return mockApi({
+    ...(settings && { "GET /api/search/settings": settings }),
     "GET /api/genres": genres,
     "GET /api/cart": aCart(),
     "POST /api/search": async (request: Request): Promise<SearchResponse> => {
@@ -176,5 +183,34 @@ describe("SearchPage", () => {
     expect(screen.getByText("#3 0.7100")).toBeInTheDocument();
     const bodies = await searchBodies(fetchMock);
     expect(bodies.at(-1)).toMatchObject({ mode: "keyword", debug: true });
+  });
+
+  it("starts with the configured defaults and keeps a different choice in the URL", async () => {
+    const fetchMock = stubSearch(undefined, { mode: "keyword", understand: false });
+    const user = userEvent.setup();
+    const { router } = renderApp("/search?q=heist");
+    await screen.findByText("The Matrix");
+
+    const [first] = await searchBodies(fetchMock);
+    expect(first).toMatchObject({ mode: "keyword", understand: false });
+    const modes = screen.getByRole("group", { name: "Search mode" });
+    expect(within(modes).getByRole("button", { name: "Keyword" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByRole("checkbox", { name: "Understand the query (AI)" })).not.toBeChecked();
+
+    await user.click(within(modes).getByRole("button", { name: "Hybrid" }));
+    await user.click(screen.getByRole("checkbox", { name: "Understand the query (AI)" }));
+    expect(router.state.location.search).toBe("?q=heist&mode=hybrid&understand=1");
+    await waitFor(async () => {
+      expect((await searchBodies(fetchMock)).at(-1)).toMatchObject({
+        mode: "hybrid",
+        understand: true,
+      });
+    });
+
+    await user.click(within(modes).getByRole("button", { name: "Keyword" }));
+    expect(router.state.location.search).toBe("?q=heist&understand=1");
   });
 });

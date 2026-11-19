@@ -14,7 +14,8 @@
     "library": "Mitt bibliotek",
     "chat": "Assistent",
     "cart": "Varukorg",
-    "cartWithItems": "Varukorg, artiklar: {{items}}"
+    "cartWithItems": "Varukorg, artiklar: {{items}}",
+    "admin": "Admin"
   },
   "search": {
     "label": "Sök filmer",
@@ -308,6 +309,171 @@
       "title": "Sidan hittades inte",
       "description": "Sidan du letar efter finns inte.",
       "backHome": "Tillbaka till katalogen"
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "nav": {
+      "label": "Administrationsavsnitt",
+      "catalog": "Katalog",
+      "jobs": "Jobb",
+      "embeddings": "Sökindex",
+      "ai": "AI-modeller"
+    },
+    "forbidden": {
+      "title": "Ingen åtkomst",
+      "description": "De här sidorna är för administratörer. Logga in med ett administratörskonto."
+    },
+    "yes": "ja",
+    "no": "nej",
+    "catalog": {
+      "description": "Läs in seed-filen eller importera filmer från TMDB. Importer körs i bakgrunden i Worker.",
+      "seed": {
+        "title": "Seed-fil",
+        "description": "Läser in de 1000 filmerna i data/seed/movies.seed.json. Kan upprepas: filmer matchas på sitt TMDB-id.",
+        "submit": "Läs in seed",
+        "running": "Läser in… (cirka 10 s)",
+        "result": "Genrer: {{genres}}. Filmer skapade: {{created}}, uppdaterade: {{updated}}, oförändrade: {{unchanged}}. Tog {{seconds}} s.",
+        "reindexHint": "Nya och ändrade filmer hittas direkt med nyckelord, efter betydelse först efter en omindexering."
+      },
+      "import": {
+        "title": "Importera från TMDB",
+        "description": "Worker läser de första sidorna av en TMDB-lista (20 filmer per sida) eller filmerna du anger, sparar dem och skapar embeddings för nya texter. Cirka 4 filmer i sekunden.",
+        "source": "Vad ska importeras",
+        "fromList": "En TMDB-lista",
+        "fromIds": "Bestämda filmer",
+        "list": "Lista",
+        "topRated": "Högst betyg",
+        "popular": "Populära",
+        "pages": "Sidor",
+        "ids": "TMDB-id",
+        "idsHint": "Åtskilda med komma eller mellanslag, t.ex. 27205, 157336.",
+        "invalidIds": "Ange TMDB-id: positiva heltal åtskilda med komma eller mellanslag.",
+        "submit": "Köa importen",
+        "queued": "Importen är köad.",
+        "conflict": "En import är redan köad eller pågår.",
+        "openJob": "Öppna jobbet"
+      }
+    },
+    "jobs": {
+      "description": "Bakgrundsjobb i Worker, nyaste först. Listan uppdateras medan ett jobb är köat eller pågår.",
+      "kind": {
+        "label": "Typ",
+        "all": "Alla",
+        "tmdbImport": "TMDB-import",
+        "embeddingReindex": "Omindexering"
+      },
+      "state": {
+        "queued": "Köad",
+        "running": "Pågår",
+        "succeeded": "Klar",
+        "failed": "Misslyckades",
+        "cancelled": "Avbruten"
+      },
+      "trigger": {
+        "admin": "Admin",
+        "schedule": "Schema",
+        "startup": "Uppstart"
+      },
+      "columns": {
+        "kind": "Typ",
+        "state": "Status",
+        "trigger": "Startat av",
+        "queuedAt": "Köad",
+        "duration": "Tid",
+        "summary": "Förlopp eller resultat"
+      },
+      "list": "Jobb",
+      "empty": "Inga jobb än.",
+      "cancel": "Avbryt",
+      "cancelRequested": "Avbryts vid nästa heartbeat",
+      "details": "Detaljer",
+      "phase": {
+        "genres": "Genrer",
+        "listing": "Läser listan",
+        "movies": "Filmer",
+        "embeddings": "Embeddings"
+      },
+      "importProgress": "{{phase}}: {{fetched}} av {{movies}} filmer",
+      "reindexProgress": "{{processed}} av {{total}} texter",
+      "importResult": "Skapade {{created}}, uppdaterade {{updated}}, oförändrade {{unchanged}}, misslyckade {{failed}}",
+      "reindexResult": "Inbäddade {{embedded}}, oförändrade {{unchanged}}",
+      "job": {
+        "back": "Alla jobb",
+        "title": "Jobb",
+        "parameters": "Parametrar",
+        "progress": "Förlopp",
+        "result": "Resultat",
+        "error": "Fel",
+        "attempts": "Försök",
+        "worker": "Worker",
+        "startedAt": "Startad",
+        "heartbeatAt": "Senaste heartbeat",
+        "finishedAt": "Avslutad",
+        "notFound": "Jobbet finns inte."
+      }
+    },
+    "embeddings": {
+      "description": "Vektorer lagras per modell och språk. Bygg vektorerna för en ny modell bredvid de gamla, byt aktiv profil och ta sedan bort den gamla modellen.",
+      "active": {
+        "title": "Aktiv modell",
+        "profile": "Profil",
+        "model": "Modell",
+        "dimensions": "Dimensioner"
+      },
+      "sets": {
+        "title": "Lagrade vektorer",
+        "model": "Modell",
+        "dimensions": "Dimensioner",
+        "locale": "Språk",
+        "count": "Vektorer",
+        "active": "aktiv",
+        "empty": "Inga vektorer än: köa en omindexering.",
+        "delete": "Ta bort {{model}}",
+        "confirmDelete": "Ta bort alla vektorer för {{model}}? Att använda modellen igen kräver en fullständig omindexering.",
+        "deleted": "Tog bort {{deleted}} vektorer för {{model}}."
+      },
+      "reindex": {
+        "title": "Omindexering",
+        "description": "Worker skapar embeddings för filmtexterna med vald profil. Som standard bara ändrade texter; en full körning gör om alla filmer.",
+        "profile": "Embedding-profil",
+        "onlyStale": "Bara filmer vars text ändrats",
+        "locales": "Språk",
+        "localesHint": "Inget markerat: språken i konfigurationen. Vektorer för omarkerade språk i den här modellen tas bort.",
+        "submit": "Köa omindexeringen",
+        "queued": "Omindexeringen är köad.",
+        "conflict": "En omindexering är redan köad eller pågår."
+      },
+      "lastJob": "Pågående eller senaste omindexering"
+    },
+    "ai": {
+      "description": "Profilerna kommer från konfigurationen (AI:ChatProfiles, AI:EmbeddingProfiles); operatören ändrar dem. Nycklar visas aldrig.",
+      "chatProfiles": "Chattprofiler",
+      "embeddingProfiles": "Embedding-profiler",
+      "columns": {
+        "name": "Profil",
+        "model": "Modell",
+        "apiKey": "API-nyckel",
+        "tools": "Verktyg",
+        "dimensions": "Dimensioner"
+      },
+      "active": "aktiv",
+      "fallback": "reserv",
+      "test": {
+        "title": "Prova en chattprofil",
+        "description": "Skickar ett meddelande till modellen och visar svaret med tokens och kostnad. Anropet syns också som en trace i Aspire-dashboarden.",
+        "profile": "Chattprofil",
+        "message": "Meddelande",
+        "defaultMessage": "Tipsa om en film för en regnig kväll, i en mening.",
+        "submit": "Skicka",
+        "sending": "Väntar på modellen…",
+        "answer": "Svar från {{model}}",
+        "usage": "In: {{input}} tokens · ut: {{output}} tokens",
+        "cost": "Uppskattad kostnad: {{cost}}",
+        "noCost": "Inget pris är konfigurerat för den här modellen.",
+        "unavailable": "Leverantören svarade inte.",
+        "noKey": "Profilen har ingen API-nyckel."
+      }
     }
   }
 }

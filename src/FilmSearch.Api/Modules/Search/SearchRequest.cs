@@ -15,7 +15,7 @@ public sealed class SearchRequest
     [StringLength(500, MinimumLength = 1)]
     public string Query { get; init; } = string.Empty;
 
-    /// <summary><c>hybrid</c> (default), <c>keyword</c> or <c>semantic</c>.</summary>
+    /// <summary><c>hybrid</c>, <c>keyword</c> or <c>semantic</c>; <c>Search:Defaults:Mode</c> (hybrid) when empty.</summary>
     public SearchMode? Mode { get; init; }
 
     /// <summary>The same filters as <c>GET /api/movies</c>, applied inside the search query.</summary>
@@ -33,9 +33,9 @@ public sealed class SearchRequest
     /// <summary>Include per-item retrieval scores (<c>debug</c>).</summary>
     public bool Debug { get; init; }
 
-    public SearchQuery ToQuery(string locale) => new(
+    public SearchQuery ToQuery(string locale, SearchMode defaultMode) => new(
         Query.Trim(),
-        Mode ?? SearchMode.Hybrid,
+        Mode ?? defaultMode,
         (Filters ?? new SearchFilters()).ToFilter(),
         locale,
         Page ?? 1,

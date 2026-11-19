@@ -20,10 +20,10 @@ known limitations. Technical terms are explained where they first appear.
 | Assistant | A chat that searches the catalog, explains its picks, shows movie cards with real prices, edits the cart and prepares the order; the customer must press **Go to payment** | [Customer guide: assistant](customer.md#the-assistant) |
 | Commerce | Cart, orders, buy or rent (48 h), library; a simulated payment page or Stripe in test mode; no real money | [Customer guide: payment](customer.md#cart-and-payment) |
 | Accounts | Email and password; a guest's cart, purchases and chats move to the account on sign-in; one admin account | [Customer guide: account](customer.md#my-library-and-your-account) |
-| Operations | Admin API for imports and the search index, budgets and rate limits, telemetry, Docker deployment | [Administrator](administrator.md), [Operator](operator.md) |
+| Operations | Admin pages (and API) for imports, jobs, the search index and AI profiles; budgets and rate limits, telemetry, Docker deployment | [Administrator](administrator.md), [Operator](operator.md) |
 
-Out of scope by design ([spec 00 §4](../spec/00-overview.md#4-scope)): real money, video streaming, an admin UI for
-editing the catalog, mobile apps.
+Out of scope by design ([spec 00 §4](../spec/00-overview.md#4-scope)): real money, video streaming, editing single
+movies or prices by hand, mobile apps.
 
 ## Quality in numbers
 
@@ -119,12 +119,12 @@ and restarts the service. Defaults and the exact place of each one are in the [c
 | Time to press the assistant's **Go to payment** | `Assistant:ConfirmationTtlMinutes` | 15 | Product owner | Operator |
 | Movies per assistant search | `Assistant:SearchResultLimit` | 6 (max 10) | AI engineer | Operator |
 | Daily TMDB import | `Tmdb:Schedule` (`Enabled`, `TimeUtc`, `List`, `Pages`) | off; 03:00, popular, 5 pages | Product owner | Operator |
-| One-off catalog growth | admin API, a TMDB list or ids | — | Product owner | [Administrator](administrator.md#add-500-movies-from-tmdb) |
+| One-off catalog growth | admin pages (Catalog), a TMDB list or ids | — | Product owner | [Administrator](administrator.md#add-500-movies-from-tmdb) |
 | Languages with search vectors | `Search:Embeddings:Locales` | `en` | AI engineer | Administrator (reindex) |
+| Default search mode and "Understand the query" | `Search:Defaults:Mode`, `Search:Defaults:Understand` | `Hybrid`, on | Product owner | Operator |
 
 ## Changes that need code
 
-- **Default search mode** (hybrid, with "Understand the query" on): set in the web app, not in configuration.
 - **Prices and the rental period**: a pricing rule in code (`PricingRule`): buy $7.99–$14.99 and rent $2.99–$4.99 by
   the movie's age, plus $2 / $1 for movies with 10 000+ votes; rentals last 48 hours. There is no price editor.
 - **Assistant behavior** (what it says, when it asks, how it sells): the system prompt, a versioned file. A change needs

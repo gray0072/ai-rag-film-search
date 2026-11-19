@@ -5,7 +5,13 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { api } from "@/api/client";
 import { problemStatus } from "@/api/problem";
-import type { SearchItem, SearchMode, SearchRequest, UnderstoodQuery } from "@/api/types";
+import type {
+  SearchItem,
+  SearchMode,
+  SearchRequest,
+  SearchSettings,
+  UnderstoodQuery,
+} from "@/api/types";
 import { EmptyState, ErrorState, PageTitle } from "@/components/StatusMessages";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,22 +44,44 @@ const modeKeys = {
   semantic: "search.mode.semantic",
 } as const;
 
-function parseMode(value: string | null): SearchMode {
-  return searchModes.find((mode) => mode === value) ?? "hybrid";
+/** Used when `GET /api/search/settings` fails: the defaults of `Search:Defaults` in the API. */
+const builtInSettings: SearchSettings = { mode: "hybrid", understand: true };
+
+function parseMode(value: string | null, fallback: SearchMode): SearchMode {
+  return searchModes.find((mode) => mode === value) ?? fallback;
+}
+
+function parseFlag(value: string | null, fallback: boolean): boolean {
+  return value === "1" ? true : value === "0" ? false : fallback;
+}
+
+/**
+ * The defaults of the search page come from the API (`Search:Defaults`, I22); undefined while they load. A failed
+ * request is not retried: the page then uses the built-in defaults.
+ */
+function useSearchSettings(): SearchSettings | undefined {
+  const settings = api.useQuery("get", "/api/search/settings", undefined, {
+    staleTime: Infinity,
+    retry: false,
+  });
+  return settings.data ?? (settings.isError ? builtInSettings : undefined);
 }
 
 /**
  * Search results (FR-SRCH-*): mode switch, query understanding with removable chips, catalog filters
- * and a debug view of the ranking scores. State lives in the URL: `q`, `mode`, `understand=0`, `debug=1`,
- * `page` and the filters.
+ * and a debug view of the ranking scores. State lives in the URL: `q`, `mode`, `understand=0|1`, `debug=1`,
+ * `page` and the filters. `mode` and `understand` are in the URL only when they differ from the configured defaults.
  */
 export function SearchPage() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const settings = useSearchSettings();
+  const defaults = settings ?? builtInSettings;
   const query = searchParams.get("q")?.trim() ?? "";
-  const mode = parseMode(searchParams.get("mode"));
-  // Query understanding is on by default: it turns "dramas from the 90s" into filters (I07).
-  const understand = searchParams.get("understand") !== "0";
+  const defaultMode = defaults.mode ?? "hybrid";
+  const mode = parseMode(searchParams.get("mode"), defaultMode);
+  // Query understanding turns "dramas from the 90s" into filters (I07); on by default (Search:Defaults:Understand).
+  const understand = parseFlag(searchParams.get("understand"), defaults.understand);
   const debug = searchParams.get("debug") === "1";
   const page = parsePage(searchParams.get("page"));
   const filters = parseFilters(searchParams);
@@ -71,7 +99,8 @@ export function SearchPage() {
     "post",
     "/api/search",
     { body },
-    { enabled: query.length > 0, placeholderData: keepPreviousData },
+    // Wait for the defaults: a search with the built-in ones first would be thrown away.
+    { enabled: query.length > 0 && settings !== undefined, placeholderData: keepPreviousData },
   );
 
   const setParam = (key: string, value: string | null) => {
@@ -125,10 +154,10 @@ export function SearchPage() {
           understand={understand}
           debug={debug}
           onMode={(value) => {
-            setParam("mode", value === "hybrid" ? null : value);
+            setParam("mode", value === defaultMode ? null : value);
           }}
           onUnderstand={(value) => {
-            setParam("understand", value ? null : "0");
+            setParam("understand", value === defaults.understand ? null : value ? "1" : "0");
           }}
           onDebug={(value) => {
             setParam("debug", value ? "1" : null);

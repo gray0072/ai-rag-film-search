@@ -40,7 +40,9 @@ with tools, evaluations, observability and deployment, all in one small but comp
 More screenshots: [catalog](docs/images/screenshots/catalog.png) · [movie page](docs/images/screenshots/movie.png) ·
 [Swedish assistant](docs/images/screenshots/assistant-sv.png) · [cart](docs/images/screenshots/cart.png) ·
 [payment](docs/images/screenshots/fake-payment.png) · [library](docs/images/screenshots/library.png) ·
-[model call span](docs/images/screenshots/aspire-span.png)
+[model call span](docs/images/screenshots/aspire-span.png) · admin pages:
+[catalog](docs/images/screenshots/admin-catalog.png), [jobs](docs/images/screenshots/admin-jobs.png),
+[search index](docs/images/screenshots/admin-embeddings.png), [AI models](docs/images/screenshots/admin-ai.png)
 
 ## Why it is interesting
 

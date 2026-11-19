@@ -12,5 +12,7 @@ COPY src/web/ ./
 RUN npm run build
 
 FROM caddy:2.11-alpine
+# Every image of the project carries this label: docker images --filter label=project=filmsearch finds them.
+LABEL project=filmsearch
 COPY deploy/Caddyfile /etc/caddy/Caddyfile
 COPY --from=build /web/dist /srv

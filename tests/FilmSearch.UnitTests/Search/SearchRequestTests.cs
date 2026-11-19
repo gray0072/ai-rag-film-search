@@ -7,12 +7,12 @@ namespace FilmSearch.UnitTests.Search;
 public sealed class SearchRequestTests
 {
     [Fact]
-    public void Defaults_to_hybrid_mode_first_page_no_filters_and_no_understanding()
+    public void Defaults_to_the_configured_mode_first_page_no_filters_and_no_understanding()
     {
-        var query = new SearchRequest { Query = "  godfather  " }.ToQuery("sv");
+        var query = new SearchRequest { Query = "  godfather  " }.ToQuery("sv", SearchMode.Semantic);
 
         query.Text.ShouldBe("godfather");
-        query.Mode.ShouldBe(SearchMode.Hybrid);
+        query.Mode.ShouldBe(SearchMode.Semantic);
         query.Understand.ShouldBeFalse();
         query.Locale.ShouldBe("sv");
         query.Page.ShouldBe(1);
@@ -20,6 +20,22 @@ public sealed class SearchRequestTests
         query.Debug.ShouldBeFalse();
         query.Filter.GenreSlugs.ShouldBeEmpty();
         query.Filter.ShouldBe(MovieFilter.None with { GenreSlugs = query.Filter.GenreSlugs });
+    }
+
+    [Fact]
+    public void A_mode_in_the_request_wins_over_the_default()
+    {
+        new SearchRequest { Query = "godfather", Mode = SearchMode.Keyword }.ToQuery("en", SearchMode.Hybrid)
+            .Mode.ShouldBe(SearchMode.Keyword);
+    }
+
+    [Fact]
+    public void Default_search_settings_are_hybrid_with_query_understanding()
+    {
+        var defaults = new SearchDefaultsOptions();
+
+        defaults.Mode.ShouldBe(SearchMode.Hybrid);
+        defaults.Understand.ShouldBeTrue();
     }
 
     [Fact]

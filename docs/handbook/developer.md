@@ -49,7 +49,7 @@ flowchart TB
 | `src/FilmSearch.Worker` | `WorkerHost` (same module registrations as the API plus `AddBackgroundWork`), `Program.cs` with the `migrate` command |
 | `src/FilmSearch.ServiceDefaults` | OpenTelemetry (meters, sources, OTLP and Langfuse exporters), `/health` and `/alive` |
 | `src/FilmSearch.AppHost` | PostgreSQL container, API, Worker, Vite app, optional Langfuse (`Langfuse.cs`) |
-| `src/web` | `src/api/` (generated `schema.d.ts`, typed `client.ts`), `src/pages/`, `src/features/{auth,cart,chat,checkout,filters,movies}`, `src/components/ui` (shadcn/ui), `src/i18n/locales/{en,ru,sv}.json`, `src/test/` (test helpers), `e2e/` (Playwright), `openapi/v1.json` (written by the API build) |
+| `src/web` | `src/api/` (generated `schema.d.ts`, typed `client.ts`), `src/pages/` (`admin/` for the admin pages), `src/features/{admin,auth,cart,chat,checkout,filters,movies}`, `src/components/ui` (shadcn/ui), `src/i18n/locales/{en,ru,sv}.json`, `src/test/` (test helpers), `e2e/` (Playwright), `openapi/v1.json` (written by the API build) |
 | `tests/FilmSearch.UnitTests` | `AI/`, `Assistant/`, `Catalog/`, `Commerce/` (with captured `StripeEvents/`), `Evals/`, `Owners/`, `Search/`, `Tmdb/` |
 | `tests/FilmSearch.IntegrationTests` | One file per area (`CatalogApiTests`, `HybridSearchApiTests`, `AssistantApiTests`, `CommerceStripeTests`, `WorkerTests`, …) and `Infrastructure/` with the fixtures and fakes |
 | `tests/fixtures` | `TmdbStub` and recorded TMDB responses, shared by unit and integration tests |

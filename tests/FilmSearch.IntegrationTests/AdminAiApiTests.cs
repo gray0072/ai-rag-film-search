@@ -39,6 +39,41 @@ public sealed class AdminAiApiTests(PostgresFixture postgres) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Profiles_list_the_configured_profiles_without_keys()
+    {
+        using var factory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("AI:ChatProfiles:keyless:Endpoint", "http://keyless.test/v1");
+            builder.UseSetting("AI:ChatProfiles:keyless:Model", "keyless-model");
+            builder.UseSetting("AI:ChatProfiles:keyless:ApiKey", "");
+            builder.UseSetting("AI:ChatProfiles:keyless:SupportsTools", "false");
+        });
+        using var client = await factory.CreateAdminClientAsync();
+
+        var response = await client.GetAsync("/api/admin/ai/profiles", Ct);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var json = await response.Content.ReadAsStringAsync(Ct);
+        json.ShouldNotContain("keyless.test");
+        var body = await response.Content.ReadFromJsonAsync<AdminAiProfiles>(Ct);
+        body.ShouldNotBeNull();
+        body.ChatProfiles.ShouldContain(p => p.Name == body.ActiveChatProfile);
+        body.EmbeddingProfiles.ShouldContain(p => p.Name == body.ActiveEmbeddingProfile && p.Dimensions > 0);
+        body.ChatProfiles.ShouldContain(new AdminChatProfile("keyless", "keyless-model", HasApiKey: false, SupportsTools: false));
+    }
+
+    [Fact]
+    public async Task Profiles_need_the_admin_role()
+    {
+        using var client = _factory.CreateBrowser();
+        await AuthTestExtensions.RegisterAsync(client);
+
+        var response = await client.GetAsync("/api/admin/ai/profiles", Ct);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
     public async Task Unknown_profile_returns_validation_problem()
     {
         using var client = await _factory.CreateAdminClientAsync();

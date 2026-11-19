@@ -3,6 +3,8 @@ import { useState, type SubmitEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, useMatch, useNavigate, useSearchParams } from "react-router";
 import { Button } from "@/components/ui/button";
+import { isAdmin } from "@/features/admin/admin";
+import { useCurrentUser } from "@/features/auth/auth";
 import { useCart } from "@/features/cart/cart";
 import { ChatDrawer } from "@/features/chat/ChatDrawer";
 import { Input } from "@/components/ui/input";
@@ -16,6 +18,7 @@ export function Header() {
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   // The chat page has the assistant already; elsewhere it opens in a drawer.
   const onChatPage = useMatch("/chat/*") !== null;
+  const user = useCurrentUser();
 
   const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -40,6 +43,11 @@ export function Header() {
           <Button asChild variant="ghost" size="sm">
             <NavLink to="/library">{t("nav.library")}</NavLink>
           </Button>
+          {isAdmin(user.data) && (
+            <Button asChild variant="ghost" size="sm">
+              <NavLink to="/admin">{t("nav.admin")}</NavLink>
+            </Button>
+          )}
         </nav>
 
         <form

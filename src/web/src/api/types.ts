@@ -19,6 +19,7 @@ export type SearchItem = Schemas["SearchItem"];
 export type SearchDebug = Schemas["SearchDebug"];
 export type UnderstoodQuery = Schemas["UnderstoodQuery"];
 export type SearchMode = NonNullable<Schemas["SearchMode"]>;
+export type SearchSettings = Schemas["SearchSettings"];
 export type ConversationListItem = Schemas["ConversationListItem"];
 export type ConversationView = Schemas["ConversationView"];
 export type MessageView = Schemas["MessageView"];

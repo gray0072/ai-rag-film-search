@@ -135,8 +135,9 @@ Markdown. No application behavior changed.
   Pages (source "GitHub Actions") on pushes to `main`.
 
 **Follow-ups** (outside I21)
-- `LABEL project=filmsearch` in the Dockerfiles of `deploy/docker/` (global Docker rule).
-- No admin UI; the default search mode is fixed in the web app, not a setting (found while writing the handbook).
+- `LABEL project=filmsearch` in the Dockerfiles of `deploy/docker/` (global Docker rule). Done in [I22](I22-admin-ui.md).
+- No admin UI; the default search mode is fixed in the web app, not a setting (found while writing the handbook). Done
+  in [I22](I22-admin-ui.md): admin pages and `Search:Defaults`.
 - A public demo URL (I20's open criterion) would let the README link to a live store.
 
 **Sessions:** [S24](../../prompts/sessions/2026-11-19_S24_documentation.md),

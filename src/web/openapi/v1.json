@@ -56,6 +56,27 @@
         }
       }
     },
+    "/api/search/settings": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Defaults of the search page (Search:Defaults): the mode and whether query understanding starts switched on.",
+        "operationId": "GetSearchSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchSettings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/movies/{id}/similar": {
       "get": {
         "tags": [
@@ -1076,6 +1097,47 @@
         }
       }
     },
+    "/api/admin/ai/profiles": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Configured chat and embedding profiles (name, model, whether an API key is set) and the active ones. Keys and endpoints are not returned.",
+        "operationId": "AdminAiProfiles",
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAiProfiles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/ai/chat": {
       "post": {
         "tags": [
@@ -1656,6 +1718,97 @@
           }
         },
         "description": "Answer of a chat profile with token usage and estimated cost (null when the model has no price)."
+      },
+      "AdminAiProfiles": {
+        "required": [
+          "activeChatProfile",
+          "fallbackChatProfile",
+          "chatProfiles",
+          "activeEmbeddingProfile",
+          "embeddingProfiles"
+        ],
+        "type": "object",
+        "properties": {
+          "activeChatProfile": {
+            "type": "string",
+            "description": "Profile of the assistant and query understanding."
+          },
+          "fallbackChatProfile": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Profile that answers when the active chat profile fails; null when none."
+          },
+          "chatProfiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminChatProfile"
+            },
+            "description": "Chat profiles by name."
+          },
+          "activeEmbeddingProfile": {
+            "type": "string",
+            "description": "Profile of the search vectors."
+          },
+          "embeddingProfiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminEmbeddingProfile"
+            },
+            "description": "Embedding profiles by name."
+          }
+        },
+        "description": "The AI profiles of the configuration (`AI:ChatProfiles`, `AI:EmbeddingProfiles`) without endpoints and keys."
+      },
+      "AdminChatProfile": {
+        "required": [
+          "name",
+          "model",
+          "hasApiKey",
+          "supportsTools"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "hasApiKey": {
+            "type": "boolean"
+          },
+          "supportsTools": {
+            "type": "boolean"
+          }
+        },
+        "description": "A chat profile: name, model, whether its API key is set and whether it supports tools."
+      },
+      "AdminEmbeddingProfile": {
+        "required": [
+          "name",
+          "model",
+          "dimensions",
+          "hasApiKey"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "dimensions": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasApiKey": {
+            "type": "boolean"
+          }
+        },
+        "description": "An embedding profile: name, model, vector dimensions and whether its API key is set."
       },
       "AdminReindexRequest": {
         "type": "object",
@@ -3901,7 +4054,7 @@
                 "type": "null"
               },
               {
-                "description": "`hybrid` (default), `keyword` or `semantic`.",
+                "description": "`hybrid`, `keyword` or `semantic`; `Search:Defaults:Mode` (hybrid) when empty.",
                 "$ref": "#/components/schemas/SearchMode"
               }
             ]
@@ -3999,6 +4152,24 @@
             "default": false
           }
         }
+      },
+      "SearchSettings": {
+        "required": [
+          "mode",
+          "understand"
+        ],
+        "type": "object",
+        "properties": {
+          "mode": {
+            "description": "Search mode the page starts with; also the API default when a request has no mode.",
+            "$ref": "#/components/schemas/SearchMode"
+          },
+          "understand": {
+            "type": "boolean",
+            "description": "Whether \"Understand the query\" starts switched on."
+          }
+        },
+        "description": "Defaults of the search page, from `Search:Defaults`."
       },
       "SeedResult": {
         "required": [
