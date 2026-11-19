@@ -1,5 +1,7 @@
 # I03 — Catalog module and 1000-movie seed
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I03 · ← [I02](I02-web-skeleton.md) · [I04](I04-keyword-search.md) → · [Journal: what happened](../../journal/m1-store-without-ai.md#i03--catalog-module-and-seed)
+
 | | |
 |---|---|
 | **Status** | done |

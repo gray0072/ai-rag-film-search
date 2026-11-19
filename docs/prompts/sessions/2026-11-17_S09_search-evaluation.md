@@ -1,5 +1,7 @@
 # Session S09 — 2026-11-17 — Search evaluation harness
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S09 · ← [S08](2026-11-17_S08_hybrid-query-understanding.md) · [S10](2026-11-18_S10_cart-orders-fake-payment.md) → · [I08 plan](../../plan/iterations/I08-search-evaluation.md)
+
 - **Iteration:** I08 (Search evaluation harness)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** I08 done: evaluation runner `evals/FilmSearch.Evals` (fresh pgvector container per run, the API's DI, suites search / qu / validate, markdown + JSON reports), metrics with unit tests, golden sets (105 search queries, 40 QU queries, checked against the seed), dataset validation in CI. Baseline: hybrid Recall@10 0.873 / MRR 0.788, targets met in en / ru / sv and raised in spec 05 §7; RRF and per-locale vector experiments kept the defaults; QU 100% valid, 83% exact, year and implied-genre errors as follow-ups.

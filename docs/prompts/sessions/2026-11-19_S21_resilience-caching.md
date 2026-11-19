@@ -1,5 +1,7 @@
 # Session S21 — 2026-11-19 — Resilience, caching, rate limiting
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S21 · ← [S20](2026-11-19_S20_observability-cost.md) · [S22](2026-11-19_S22_deployment.md) → · [I19 plan](../../plan/iterations/I19-resilience-caching.md)
+
 - **Iteration:** I19 (Resilience, caching, rate limiting)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** I19 done.

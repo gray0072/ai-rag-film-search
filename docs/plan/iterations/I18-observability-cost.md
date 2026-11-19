@@ -1,5 +1,7 @@
 # I18 — Observability and cost tracking
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I18 · ← [I17](I17-authentication.md) · [I19](I19-resilience-caching.md) → · [Journal: what happened](../../journal/m5-production-ready.md#i18--observability-and-cost-tracking)
+
 | | |
 |---|---|
 | **Status** | done |

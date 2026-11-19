@@ -1,4 +1,6 @@
-# ADR-XXXX — <Title>
+# ADR-XXXX — Title
+
+> [Docs](../README.md) › [ADRs](README.md) › ADR-XXXX
 
 - **Status:** Proposed | Accepted | Superseded by ADR-YYYY
 - **Date:** YYYY-MM-DD

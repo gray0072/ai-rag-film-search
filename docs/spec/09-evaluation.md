@@ -1,5 +1,7 @@
 # 09 — Evaluation
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 09 — Evaluation
+
 Evaluation is the main difference between "it seems to work" and AI engineering. Every change to prompts, models, embedding text, or search parameters is checked with numbers.
 
 ## 1. Runner
@@ -62,3 +64,9 @@ How datasets are built: hand-written first (they are small), then extended with 
 - Thumbs up / down per assistant message (FR-AST-9).
 - Grounding violations, tool errors, iteration limit hits, JSON retries: as metrics in OpenTelemetry.
 - A weekly manual review of thumbs-down conversations feeds new dataset cases.
+
+---
+
+**Previous:** [08 — Data ingestion](08-data-ingestion.md) ·
+**Next:** [10 — Operations and security](10-ops-security.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

@@ -1,5 +1,7 @@
 # Session S24 — 2026-11-19 — Documentation system
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S24 · ← [S23](2026-11-19_S23_remove-ollama.md) · [S25](2026-11-19_S25_guide-core.md) → · [I21 plan](../../plan/iterations/I21-documentation.md)
+
 - **Iteration:** I21 (Documentation and project showcase)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** session 1 of 4 of I21. Documentation structure designed (README → hub → guide / journal / handbook /

@@ -71,7 +71,8 @@ flowchart LR
 ## How these pages are written
 
 - Markdown in the repository is the source. It reads on GitHub (diagrams are Mermaid) and is also published as a
-  website with search (I21, see the [plan](plan/iterations/I21-documentation.md)).
+  **[website with search](https://gray0072.github.io/ai-rag-film-search/)**, built from the same files by [tools/docs-site](../tools/docs-site/README.md)
+  (I21, see the [plan](plan/iterations/I21-documentation.md)). A link check runs on every change.
 - Every page starts with a breadcrumb line and ends with "See also" links, so you can switch between the guide, the
   journal and the handbook at any point.
 - English only. The product itself speaks English, Russian and Swedish.

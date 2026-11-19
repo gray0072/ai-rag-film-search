@@ -1,5 +1,7 @@
 # ADR-0003 — TMDB as the movie data source (seed first)
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0003
+
 - **Status:** Accepted
 - **Date:** 2026-11-17
 - **Iteration:** I00
@@ -20,3 +22,7 @@ TMDB. Start with a committed seed of about 1000 top movies (built once from TMDB
 - TMDB attribution in the UI is required.
 - TMDB ratings differ from IMDb ratings. We show TMDB rating.
 - Rate limits and resilience must be handled in the import job.
+
+---
+
+**Previous:** [ADR-0002](0002-ai-abstraction-meai.md) · **Next:** [ADR-0004](0004-payment-gateway-abstraction.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

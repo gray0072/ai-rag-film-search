@@ -1,5 +1,7 @@
 # I00 — Preparation: spec, plan, conventions
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I00 · [I01](I01-solution-skeleton.md) → · [Journal: what happened](../../journal/m1-store-without-ai.md#i00--preparation)
+
 | | |
 |---|---|
 | **Status** | done |

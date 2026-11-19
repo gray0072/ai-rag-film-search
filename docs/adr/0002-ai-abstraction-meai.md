@@ -1,5 +1,7 @@
 # ADR-0002 — Microsoft.Extensions.AI with OpenAI-compatible providers
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0002
+
 - **Status:** Accepted
 - **Date:** 2026-11-17
 - **Iteration:** I00
@@ -19,3 +21,7 @@ Option 1. LM Studio and OpenRouter both speak the OpenAI API, so one adapter cov
 - Provider-specific features (e.g. OpenRouter routing options, reasoning settings) go through `AdditionalProperties` or a small adapter.
 - Differences between models (tool-calling quality, JSON reliability) are real and must be measured, not hidden by the abstraction → evaluations.
 - Once in the project, raw HTTP requests are captured once (logging handler) so the owner sees what is actually sent on the wire.
+
+---
+
+**Previous:** [ADR-0001](0001-postgresql-pgvector.md) · **Next:** [ADR-0003](0003-movie-data-source-tmdb.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

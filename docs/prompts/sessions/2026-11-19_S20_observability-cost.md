@@ -1,5 +1,7 @@
 # Session S20 — 2026-11-19 — Observability and cost tracking
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S20 · ← [S19](2026-11-18_S19_authentication.md) · [S21](2026-11-19_S21_resilience-caching.md) → · [I18 plan](../../plan/iterations/I18-observability-cost.md)
+
 - **Iteration:** I18 (Observability and cost tracking)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** I18 done.

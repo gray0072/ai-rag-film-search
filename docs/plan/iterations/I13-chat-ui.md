@@ -1,5 +1,7 @@
 # I13 — Chat UI
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I13 · ← [I12](I12-agent-tools.md) · [I14](I14-assistant-eval-guardrails.md) → · [Journal: what happened](../../journal/m3-ai-assistant.md#i13--chat-ui)
+
 | | |
 |---|---|
 | **Status** | done |

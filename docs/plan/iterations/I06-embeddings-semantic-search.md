@@ -1,5 +1,7 @@
 # I06 — Embeddings and semantic search
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I06 · ← [I05](I05-ai-providers.md) · [I07](I07-hybrid-query-understanding.md) → · [Journal: what happened](../../journal/m2-smart-search.md#i06--embeddings-and-semantic-search)
+
 | | |
 |---|---|
 | **Status** | done |

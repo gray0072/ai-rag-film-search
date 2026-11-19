@@ -1,5 +1,7 @@
 # I12 — Agent: tools, cart, checkout confirmation
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I12 · ← [I11](I11-chat-foundation.md) · [I13](I13-chat-ui.md) → · [Journal: what happened](../../journal/m3-ai-assistant.md#i12--agent-tools-cart-checkout-confirmation)
+
 | | |
 |---|---|
 | **Status** | done |

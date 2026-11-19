@@ -1,5 +1,7 @@
 # I10 — Store UI: catalog, search, cart, checkout
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I10 · ← [I09](I09-cart-orders-fake-payment.md) · [I11](I11-chat-foundation.md) → · [Journal: what happened](../../journal/m1-store-without-ai.md#i10--store-ui)
+
 | | |
 |---|---|
 | **Status** | done |

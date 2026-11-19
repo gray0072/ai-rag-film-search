@@ -1,5 +1,7 @@
 # 02 — Architecture
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 02 — Architecture
+
 ## 1. Style
 
 **Modular monolith** on ASP.NET Core with feature modules: Catalog, Search, Assistant, Commerce (cart, orders, payments), Ingestion, Identity. One PostgreSQL database, one schema per module where practical. A separate **Worker** process runs background jobs (ingestion, embeddings, order expiry).
@@ -117,3 +119,9 @@ Rule: the Assistant calls the same services as the HTTP endpoints. A tool is a t
 - **Money:** integer minor units (`AmountMinor` in cents) + ISO currency (`USD`).
 - **Configuration:** strongly typed options with validation on start (`ValidateOnStart`).
 - **Each module registers itself** with one extension method (`services.AddCatalogModule(config)`, `app.MapCatalogEndpoints()`). This keeps `Program.cs` small and reduces merge conflicts between parallel iterations.
+
+---
+
+**Previous:** [01 — Requirements](01-requirements.md) ·
+**Next:** [03 — Domain model](03-domain-model.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

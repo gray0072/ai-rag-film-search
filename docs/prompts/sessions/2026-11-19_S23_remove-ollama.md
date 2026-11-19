@@ -1,5 +1,7 @@
 # Session S23 — 2026-11-19 — Remove Ollama
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S23 · ← [S22](2026-11-19_S22_deployment.md) · [S24](2026-11-19_S24_documentation.md) →
+
 - **Iteration:** — (follow-up of I20)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** Ollama removed from the demo stack (compose services and volume, the `ollama` embedding profile, release workflow, docs; ADR-0012 revision note).

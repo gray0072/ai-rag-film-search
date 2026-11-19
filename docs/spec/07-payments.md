@@ -1,5 +1,7 @@
 # 07 — Payments
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 07 — Payments
+
 ## 1. Abstraction
 
 ```csharp
@@ -91,3 +93,9 @@ Answer of the webhook endpoints: `{ eventId, result: "applied" | "duplicate" | "
 
 ## 6. Expiry
 A job every minute (`Commerce:ExpiryScanSeconds`) expires unpaid (`PendingPayment` or `Failed`) orders past `ExpiresAt` and closes their open sessions at the provider. It was a hosted service in the API until I16 and runs in the Worker since then. Several replicas may run it: the row version keeps that safe. The Worker has no Fake gateway (it lives in the API): the payment of an expired fake order is marked expired, and the fake session expires by its own time. `POST /api/orders/{id}/checkout` past `ExpiresAt` expires the order at once. A late success webhook after expiry is handled as described in spec 03.
+
+---
+
+**Previous:** [06 — AI assistant and AI providers](06-ai-assistant.md) ·
+**Next:** [08 — Data ingestion](08-data-ingestion.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

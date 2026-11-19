@@ -1,5 +1,7 @@
 # ADR-0009 — Background jobs: a job table in PostgreSQL, claimed with SKIP LOCKED
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0009
+
 - **Status:** Accepted
 - **Date:** 2026-11-18
 - **Iteration:** I16
@@ -45,3 +47,7 @@ session advisory lock.
   if the delay ever matters.
 - Reversal: `IBackgroundJobs` hides the storage; Hangfire or a broker can replace `JobStore` and `JobWorker` without
   changing the handlers or the endpoints.
+
+---
+
+**Previous:** [ADR-0008](0008-vector-storage-per-dimension.md) · **Next:** [ADR-0010](0010-authentication-identity-cookie.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

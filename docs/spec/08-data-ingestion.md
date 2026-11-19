@@ -1,5 +1,7 @@
 # 08 — Data ingestion
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 08 — Data ingestion
+
 ## 1. Sources
 
 | Stage | Source | Content |
@@ -62,3 +64,9 @@ flowchart LR
 ## 5. Legal notes
 - TMDB: "This product uses the TMDB API but is not endorsed or certified by TMDB." plus logo in the footer. Non-commercial use.
 - The seed file contains descriptive metadata only. No posters, no trailers, no full plots from other sites.
+
+---
+
+**Previous:** [07 — Payments](07-payments.md) ·
+**Next:** [09 — Evaluation](09-evaluation.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

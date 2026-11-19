@@ -1,5 +1,7 @@
 # 03 — Domain model
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 03 — Domain model
+
 The schema below is a target. Iterations add tables gradually. Column names are in snake_case in PostgreSQL (EF Core naming convention), PascalCase in C#.
 
 ## 1. Entities
@@ -107,3 +109,9 @@ Rules:
 - An `OrderItem` price never changes after the order is created.
 - One active `Rental` per (owner, movie) at a time; buying a movie that is rented is allowed. An owned movie cannot be bought or rented again. Checked when a movie is added to the cart and when the order is created (two orders paid in parallel could still both grant a rental; accepted).
 - A `MovieEmbedding` row is valid only if `ContentHash` equals the hash of the current embedding text built from the movie.
+
+---
+
+**Previous:** [02 — Architecture](02-architecture.md) ·
+**Next:** [04 — API](04-api.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

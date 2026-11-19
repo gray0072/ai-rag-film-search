@@ -1,5 +1,7 @@
 # ADR-0006 — Own agent loop first, frameworks later
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0006
+
 - **Status:** Accepted
 - **Date:** 2026-11-17
 - **Iteration:** I00
@@ -15,3 +17,7 @@ After the assistant works and has evaluations (I14), a stretch task compares the
 ## Consequences
 - Full control over streaming events, confirmation flow, limits and logging, and a clear understanding of how agents work inside.
 - More code to own and test. Edge cases (parallel tool calls, malformed arguments, models that write tool calls as text) are our problem → test cases.
+
+---
+
+**Previous:** [ADR-0005](0005-dotnet-aspire.md) · **Next:** [ADR-0007](0007-frontend-stack.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

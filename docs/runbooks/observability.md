@@ -1,5 +1,7 @@
 # Runbook: observability
 
+> [Docs](../README.md) › Runbooks › Observability
+
 How to find a slow, expensive or bad assistant turn (or search request) and see what happened inside it. Background: [spec 10 §3](../spec/10-ops-security.md#3-observability), NFR-4, NFR-5.
 
 ## Where telemetry goes
@@ -86,3 +88,7 @@ Other meters: `resilience.polly.strategy.events` (meter `Polly`; tags `pipeline.
 - Reset: stop the AppHost, then run `docker volume rm filmsearch-langfuse-postgres filmsearch-langfuse-clickhouse filmsearch-langfuse-minio`. Headless init creates the organization, the project, its API keys and the admin again on the next start.
 - If the AppHost was killed (not stopped with Ctrl+C), the containers may keep running. Remove them with `docker rm -f $(docker ps -q --filter name=langfuse)`.
 - Traces arrive in Langfuse a few seconds after the turn (batch export, then the Langfuse worker). A trace missing after a minute usually means the API was started without the `Langfuse__*` variables, which the AppHost sets only when `Langfuse:Enabled` is true.
+
+---
+
+**See also:** [Handbook: operator](../handbook/operator.md) · [Guide ch. 13: observability and cost](../guide/13-observability-and-cost.md) · [Spec 10](../spec/10-ops-security.md) · [Docs hub](../README.md)

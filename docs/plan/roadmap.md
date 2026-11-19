@@ -1,5 +1,7 @@
 # Roadmap
 
+> [Docs](../README.md) › Roadmap
+
 Work goes in **iterations** (`Ixx`). One iteration = one or more sessions with an AI agent, committed directly to `main` (no feature branches). Each iteration has a plan file in [iterations/](iterations/) with tasks, acceptance criteria and a "Result" section filled in at the end.
 
 Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the single source of truth for status.** Update it when an iteration starts and ends.
@@ -40,7 +42,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I18 | [Observability and cost tracking](iterations/I18-observability-cost.md) | I12 | 7 | 1 | done |
 | I19 | [Resilience, caching, rate limiting](iterations/I19-resilience-caching.md) | I12 | 8 | 1 | done |
 | I20 | [Containers and deployment](iterations/I20-deployment.md) | I15, I17 | 8 | 1–2 | done |
-| I21 | [Documentation and project showcase](iterations/I21-documentation.md) | I20 | 9 | 3–4 | in progress |
+| I21 | [Documentation and project showcase](iterations/I21-documentation.md) | I20 | 9 | 3–4 | done |
 
 IDs are stable and do not follow the execution order. Order is defined by **waves**.
 
@@ -124,3 +126,7 @@ Shortest path to a working AI assistant: I01 → I03 + I05 → I06 → I04 → I
 | S09 | User simulator for multi-turn evaluations | Advanced evaluation |
 | S10 | Small fine-tune / LoRA of an embedding or chat model on project data | Fine-tuning basics |
 | S11 | Prompt caching and semantic cache, measured | Cost optimization |
+
+---
+
+**See also:** [Journal: plan vs fact](../journal/README.md) · [Learning path](../learning-path.md) · [Prompt history](../prompts/README.md) · [Docs hub](../README.md)

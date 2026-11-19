@@ -1,5 +1,7 @@
 # I09 — Cart, orders, fake payment
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I09 · ← [I08](I08-search-evaluation.md) · [I10](I10-store-ui.md) → · [Journal: what happened](../../journal/m1-store-without-ai.md#i09--cart-orders-fake-payment)
+
 | | |
 |---|---|
 | **Status** | done |

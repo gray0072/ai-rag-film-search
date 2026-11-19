@@ -1,5 +1,7 @@
 # ADR-0011 — AI resilience: a pipeline per profile, a fallback chat profile, keyword search without embeddings
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0011
+
 - **Status:** Accepted
 - **Date:** 2026-11-19
 - **Iteration:** I19
@@ -34,3 +36,7 @@ Option 2.
 - The fallback costs money when it is a cloud profile: `ai.fallbacks` (from, to, operation) shows how often it happens. Query understanding also goes through the fallback, because it uses the unkeyed client.
 - Tests: unit tests drive the real pipeline with a fake HTTP handler (`AiResilienceTests`), and integration tests switch profile clients between up, refused, timed out and circuit open (`SwitchableChatClient`).
 - To reverse it: set `MaxRetries` / `CircuitBreakSeconds` per profile, or drop `FallbackChatProfile`. Going back to SDK retries means setting `ClientRetryPolicy(profile.MaxRetries)` in `AiClientFactory` and removing the resilience handler.
+
+---
+
+**Previous:** [ADR-0010](0010-authentication-identity-cookie.md) · **Next:** [ADR-0012](0012-deployment-docker-compose-vps.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

@@ -1,5 +1,7 @@
 # ADR-0010 — Authentication: ASP.NET Core Identity, own cookie endpoints, merge of anonymous data
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0010
+
 - **Status:** Accepted
 - **Date:** 2026-11-18
 - **Iteration:** I17
@@ -28,3 +30,7 @@ Option 2.
 - New owner-scoped data needs an `IOwnerMergeHandler`, or it stays with the anonymous id after login.
 - Not done yet: email confirmation and password reset (they need a mail sender), external logins, 2FA, account deletion. The register endpoint tells that an email is taken (account enumeration). That is accepted for a store; rate limiting comes in I19.
 - To reverse: Identity stays the user store; the endpoints can be swapped for `MapIdentityApi` or OIDC without changing the owner model.
+
+---
+
+**Previous:** [ADR-0009](0009-job-queue-in-postgresql.md) · **Next:** [ADR-0011](0011-ai-resilience-and-fallback.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

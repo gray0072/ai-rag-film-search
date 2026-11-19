@@ -1,5 +1,7 @@
 # Session S22 — 2026-11-19 — Containers and deployment
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S22 · ← [S21](2026-11-19_S21_resilience-caching.md) · [S23](2026-11-19_S23_remove-ollama.md) → · [I20 plan](../../plan/iterations/I20-deployment.md)
+
 - **Iteration:** I20 (Containers and deployment)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** I20 done, without a public URL (owner's decision).

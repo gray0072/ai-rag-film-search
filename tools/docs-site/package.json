@@ -1,0 +1,19 @@
+{
+  "name": "filmsearch-docs-site",
+  "private": true,
+  "type": "module",
+  "description": "VitePress site that renders docs/ for GitHub Pages (I21)",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "check-links": "node check-links.mjs"
+  },
+  "devDependencies": {
+    "mermaid": "12.2.0",
+    "vitepress": "1.6.4"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

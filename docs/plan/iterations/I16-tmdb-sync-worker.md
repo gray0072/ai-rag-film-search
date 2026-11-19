@@ -1,5 +1,7 @@
 # I16 — TMDB sync and Worker
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I16 · ← [I15](I15-stripe-test-mode.md) · [I17](I17-authentication.md) → · [Journal: what happened](../../journal/m4-real-integrations.md#i16--tmdb-sync-and-worker)
+
 | | |
 |---|---|
 | **Status** | done |

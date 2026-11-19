@@ -1,5 +1,7 @@
 # Session S06 — 2026-11-17 — AI provider layer
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S06 · ← [S05](2026-11-17_S05_keyword-search.md) · [S07](2026-11-17_S07_embeddings-semantic-search.md) → · [I05 plan](../../plan/iterations/I05-ai-providers.md)
+
 - **Iteration:** I05 (AI provider layer)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** I05 done: AI provider layer (profiles, keyed clients, OpenTelemetry + usage/cost pipeline, raw HTTP logging, health checks, admin chat endpoint), AI playground with a model benchmark (6 local + 5 OpenRouter chat models, 2 embedding models). Defaults: gemma-4-e4b with reasoning off, DeepSeek V4.1 Flash on OpenRouter, EmbeddingGemma 300M. Stripe and OpenRouter keys moved to user secrets.

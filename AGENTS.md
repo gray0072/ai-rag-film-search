@@ -22,6 +22,8 @@ Instructions for AI coding agents (Claude Code, Codex, Cursor, …) working in t
 | Seed data | `data/seed/` (from I03) |
 | Background jobs, TMDB import | `src/FilmSearch.Worker`, `src/FilmSearch.Infrastructure/Ingestion` (from I16) |
 | Deployment: Dockerfiles, compose, Caddy, deploy scripts, runbook | [deploy/](deploy/README.md) (from I20) |
+| Documentation hub, guide, journal, handbook | [docs/README.md](docs/README.md) (I21) |
+| Documentation website (VitePress, GitHub Pages) and link checker | [tools/docs-site/](tools/docs-site/README.md) (I21) |
 
 ## Session workflow
 
@@ -140,6 +142,14 @@ docker compose down -v                                        # stop and delete 
 dotnet run --project src/FilmSearch.Worker -- migrate         # apply migrations and exit (the deploy's migration step)
 ```
 
+Documentation (I21; `tools/docs-site`, Node 24, see [tools/docs-site/README.md](tools/docs-site/README.md)):
+
+```bash
+node tools/docs-site/check-links.mjs     # every relative link and anchor in all Markdown (CI: Docs workflow)
+npm run dev                              # in tools/docs-site: live preview of the website
+npm run build                            # in tools/docs-site: static site in dist/, fails on dead page links
+```
+
 Evaluations (I08, I14; Docker + LM Studio, a fresh pgvector container per run, see [evals/README.md](evals/README.md)):
 
 ```bash
@@ -174,6 +184,7 @@ Notes:
 - Resilience (I19) tests: `FilmSearchApiFactory` turns rate limiting off (`RateLimiting:Enabled=false`); `RateLimitingApiTests` turn it on with small limits, one factory per test (limiter state). Pass `configureServices` to the factory for a failing client of one profile: a keyed registration (`"local"`) wins over the `AnyKey` fakes. `SwitchableChatClient` fails like a provider (refused, timed out, circuit open); the fallback needs `AI:FallbackChatProfile` plus that profile's `ApiKey`. Unit tests of the real HTTP pipeline use `AiTestHost` (every HTTP client ends in `FakeProviderHandler`, `Delay` for a slow model; base config sets `RetryDelayMs` 1) and record metrics with `OwnedMeasurements(TestMeterFactory)`, never process-wide. Search no longer returns 503 when embeddings fail: assert `degraded`. Query vectors are cached per normalized text for the factory's lifetime: a degraded-search test needs a query text that no earlier test embedded.
 - Testing Cyrillic or Swedish queries with `curl -d "..."` from Git Bash on Windows mangles the text; send a UTF-8 file (`--data-binary @query.json`) or use a script.
 - Demo environment (I20): environment name `Demo` (`appsettings.Demo.json`, linked into the Worker too), not `Production`, because the fake payment gateway is refused in Production. Images are chiseled (no shell): containers have no `curl`; `deploy.sh` checks health through the Caddy container (`wget`). The API skips `UseHttpsRedirection` when `ASPNETCORE_FORWARDEDHEADERS_ENABLED` is set (behind Caddy). An EF Core migrations bundle failed to load `System.Diagnostics.DiagnosticSource` 11 (OpenTelemetry): migrations run as `FilmSearch.Worker migrate` instead (ADR-0012). Embeddings and chat run on OpenRouter; `CHAT_PROFILE=local` / `EMBEDDING_PROFILE=local` in `deploy/.env` use LM Studio on the host through `host.docker.internal` (no Ollama). On Windows port 80 may be taken by `System`: `HTTP_PORT=8080` in `deploy/.env`. Caddy holds requests up to 30 s while the API restarts. OpenRouter lists embedding models under `/embeddings/models` (profile `ModelsPath`), not `/models`.
+- Documentation (I21): Markdown in `docs/` is the single source; the website renders it as is. Pages start with a breadcrumb line under the title (`> [Docs](../README.md) › …`) and stable pages end with Previous / Next / See also links; iteration plans and session logs carry their navigation in the breadcrumb line, so appended text stays at the end. Use relative links; links to files outside `docs/` become GitHub links on the site. A raw tag in prose (`<Title>` outside backticks) breaks the site build. Run the link checker after moving or renaming any Markdown file or heading.
 - Playwright (I20): `src/web/e2e`, config `playwright.config.ts`, typed by `tsconfig.e2e.json`, excluded from Vitest. Install the browser once with `npx playwright install chromium`. With `CI` set it retries once and writes `playwright-report/`.
 - The AppHost Postgres container is named `filmsearch-postgres`, uses `ContainerLifetime.Persistent` and the named volume `filmsearch-postgres-data`: it keeps running after the AppHost stops. Its password is stored in the AppHost user secrets. To reset the DB: `docker rm -f filmsearch-postgres` and `docker volume rm filmsearch-postgres-data`.
 

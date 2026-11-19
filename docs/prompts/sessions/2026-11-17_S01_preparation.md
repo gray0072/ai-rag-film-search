@@ -1,5 +1,7 @@
 # Session S01 — 2026-11-17 — Project preparation
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S01 · [S02](2026-11-17_S02_solution-skeleton.md) → · [I00 plan](../../plan/iterations/I00-preparation.md)
+
 - **Iteration:** I00 (preparation: spec, plan, repo conventions)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** spec, roadmap, iteration plans, ADRs, AGENTS.md created. No code.

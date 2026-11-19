@@ -1,5 +1,7 @@
 # 01 — Requirements
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 01 — Requirements
+
 IDs are referenced from iteration plans and tests. `FR` = functional, `NFR` = non-functional.
 
 ## Functional requirements
@@ -79,3 +81,9 @@ IDs are referenced from iteration plans and tests. `FR` = functional, `NFR` = no
 | NFR-9 Quality gate | CI: build, lint, unit and integration tests. Changes to AI behavior (prompts, models, search parameters) come with an evaluation report. |
 | NFR-10 i18n | All UI strings in resource files (`en`, `ru`, `sv`). No hard-coded user-facing text. |
 | NFR-11 Accessibility | Keyboard navigation, alt texts, sufficient contrast (basic level). |
+
+---
+
+**Previous:** [00 — Overview](00-overview.md) ·
+**Next:** [02 — Architecture](02-architecture.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

@@ -1,5 +1,7 @@
 # I05 — AI provider layer (LM Studio / OpenRouter)
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I05 · ← [I04](I04-keyword-search.md) · [I06](I06-embeddings-semantic-search.md) → · [Journal: what happened](../../journal/m2-smart-search.md#i05--ai-provider-layer)
+
 | | |
 |---|---|
 | **Status** | done |

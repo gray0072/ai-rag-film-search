@@ -1,5 +1,7 @@
 # 05 — Search
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 05 — Search
+
 Search is the retrieval part of RAG. The UI and the assistant use the same `IMovieSearch` service.
 
 ## 1. Pipeline
@@ -98,3 +100,9 @@ Measured on `evals/datasets/search.golden.jsonl` (105 queries, 35 per language) 
 | sv | 0.834 | 0.721 | ≥ 0.80 | ≥ 0.70 |
 
 The initial targets (Recall@10 ≥ 0.8, MRR ≥ 0.6 per language) were met by the first run, so they are raised to just below the baseline: a change that drops a language below its target is a regression to explain. Swedish keeps a lower target until its gap is closed (weakest language since I05). Also tracked, without a target: excluded-genre rate of negative queries (hybrid 0.17, hybrid + QU 0.00), p50 latency in process (hybrid 78 ms, hybrid + QU 3.9 s on the laptop).
+
+---
+
+**Previous:** [04 — API](04-api.md) ·
+**Next:** [06 — AI assistant and AI providers](06-ai-assistant.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

@@ -1,5 +1,7 @@
 # I07 — Hybrid search and query understanding
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I07 · ← [I06](I06-embeddings-semantic-search.md) · [I08](I08-search-evaluation.md) → · [Journal: what happened](../../journal/m2-smart-search.md#i07--hybrid-search-and-query-understanding)
+
 | | |
 |---|---|
 | **Status** | done |

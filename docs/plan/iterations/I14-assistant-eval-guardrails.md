@@ -1,5 +1,7 @@
 # I14 — Assistant evaluation and guardrails
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I14 · ← [I13](I13-chat-ui.md) · [I15](I15-stripe-test-mode.md) → · [Journal: what happened](../../journal/m3-ai-assistant.md#i14--assistant-evaluation-and-guardrails)
+
 | | |
 |---|---|
 | **Status** | done |

@@ -1,5 +1,7 @@
 # Learning path: from full-stack developer to AI engineer
 
+> [Docs](README.md) › Learning path
+
 What an AI engineer does: builds products on top of foundation models. That means choosing and integrating models, building retrieval (RAG), designing tools and agents, **measuring quality** with evaluations, keeping systems safe, observable and affordable, and shipping them. This project covers each area. The table shows where.
 
 ## Skill map
@@ -43,3 +45,7 @@ What an AI engineer does: builds products on top of foundation models. That mean
 - Hamel Husain's and Eugene Yan's writing on LLM evaluations.
 - OWASP Top 10 for LLM Applications.
 - Anthropic's "Building effective agents" article (when to use agents vs workflows).
+
+---
+
+**See also:** [Guide](guide/README.md) · [Journal](journal/README.md) · [Roadmap](plan/roadmap.md) · [Docs hub](README.md)

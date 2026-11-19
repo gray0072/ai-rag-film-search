@@ -13,8 +13,9 @@ with tools, evaluations, observability and deployment, all in one small but comp
 ![PostgreSQL + pgvector](https://img.shields.io/badge/PostgreSQL-pgvector-4169E1?logo=postgresql&logoColor=white)
 ![Local-first AI](https://img.shields.io/badge/AI-LM%20Studio%20%7C%20OpenRouter-111)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Docs](https://github.com/gray0072/ai-rag-film-search/actions/workflows/docs.yml/badge.svg)](https://gray0072.github.io/ai-rag-film-search/)
 
-[Quick start](#quick-start) · [Documentation](docs/README.md) · [RAG guide](docs/guide/README.md) ·
+[Quick start](#quick-start) · [Documentation](docs/README.md) ([website](https://gray0072.github.io/ai-rag-film-search/)) · [RAG guide](docs/guide/README.md) ·
 [Build journal](docs/journal/README.md) · [Roadmap](docs/plan/roadmap.md)
 
 <img src="docs/images/screenshots/assistant.png" alt="The AI assistant recommends movies from the catalog, with movie cards and prices" width="900">
@@ -107,7 +108,9 @@ test mode, TMDB import, Langfuse, evaluations and the production-like Docker sta
 
 ## Documentation
 
-The documentation is one connected set. Start where your question is; every page links onward.
+The documentation is one connected set. Start where your question is; every page links onward. The same pages are
+published as a **[website with search](https://gray0072.github.io/ai-rag-film-search/)** (built from `docs/` by
+[VitePress](tools/docs-site/README.md)).
 
 | I want to… | Start here |
 |---|---|
@@ -127,7 +130,8 @@ All of it is mapped in the **[documentation hub](docs/README.md)**.
 
 All five milestones of the [roadmap](docs/plan/roadmap.md) are done: store without AI (M1), smart search (M2), the AI
 sales assistant (M3), real integrations: Stripe test mode, TMDB, accounts (M4), production readiness: observability,
-resilience, containers (M5). The demo environment is prepared but has no public URL yet. Now: documentation (I21).
+resilience, containers (M5), and the documentation with its website (I21). The demo environment is prepared but has no
+public URL yet.
 Ideas for later (MCP server, rerankers, agent frameworks, a semantic cache) are the
 [stretch goals](docs/plan/roadmap.md#stretch-goals-after-m5-or-when-a-topic-is-interesting).
 

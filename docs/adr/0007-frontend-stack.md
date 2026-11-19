@@ -1,5 +1,7 @@
 # ADR-0007 — Frontend stack: npm, shadcn/ui + Tailwind, OpenAPI-generated client
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0007
+
 - **Status:** Accepted
 - **Date:** 2026-11-17
 - **Iteration:** I02
@@ -33,3 +35,7 @@ npm; shadcn/ui (Radix base, `new-york` style, neutral colors) with Tailwind CSS 
 - Build-time generation runs `Program.cs` up to `builder.Build()` in the `GetDocument.Insider` process. Code that needs configuration (the database) is skipped there (`BuildTimeOpenApi.IsGeneratingDocument`). New modules that read required configuration at registration time must do the same or defer validation.
 - New UI components are added with `npx shadcn add <component>` and reviewed like our own code. shadcn uses its `cn` package (class merging) instead of a local `clsx` + `tailwind-merge` helper.
 - To switch to Mantine later, only `src/components/ui` and the Tailwind classes change; routing, data and i18n stay.
+
+---
+
+**Previous:** [ADR-0006](0006-agent-own-loop-first.md) · **Next:** [ADR-0008](0008-vector-storage-per-dimension.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

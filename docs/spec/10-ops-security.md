@@ -1,5 +1,7 @@
 # 10 — Operations and security
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 10 — Operations and security
+
 ## 1. Local environment
 
 Prerequisites (checked in I01, written to README):
@@ -60,3 +62,8 @@ Decided in [ADR-0012](../adr/0012-deployment-docker-compose-vps.md): one Linux h
 - Environment `Demo` (`appsettings.Demo.json`): production behavior, migrations not on startup, seed and embedding index on first start, chat and embeddings (Qwen3-Embedding-8B) on OpenRouter, LM Studio on the Docker host for local runs (`CHAT_PROFILE` / `EMBEDDING_PROFILE=local`), the fake payment gateway by default (refused only in `Production`), Stripe test mode as a setting, data protection keys in a volume (`DataProtection:KeysPath`), stricter rate limits and token budgets.
 - Spend: the OpenRouter key of the demo has a credit limit (hard cap); the service-wide daily token budget refuses assistant turns with `serviceBudgetExceeded` before the cap is reached.
 - Deploy and rollback: `deploy.sh <tag>` (dump, migrate, start, wait for health); rollback to an earlier tag with the same script, across a non-backward-compatible migration with `restore.sh <dump> <tag>`. Migrations must be expand / contract so that the previous version runs on the new schema.
+
+---
+
+**Previous:** [09 — Evaluation](09-evaluation.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

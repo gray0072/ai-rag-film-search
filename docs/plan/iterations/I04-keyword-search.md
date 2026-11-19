@@ -1,5 +1,7 @@
 # I04 — Keyword search and filters
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I04 · ← [I03](I03-catalog-seed.md) · [I05](I05-ai-providers.md) → · [Journal: what happened](../../journal/m1-store-without-ai.md#i04--keyword-search-and-filters)
+
 | | |
 |---|---|
 | **Status** | done |

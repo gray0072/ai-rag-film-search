@@ -1,5 +1,7 @@
 # I02 — Web app skeleton (React, i18n, API client)
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I02 · ← [I01](I01-solution-skeleton.md) · [I03](I03-catalog-seed.md) → · [Journal: what happened](../../journal/m1-store-without-ai.md#i02--web-skeleton)
+
 | | |
 |---|---|
 | **Status** | done |

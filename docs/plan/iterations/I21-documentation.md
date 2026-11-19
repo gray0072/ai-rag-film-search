@@ -1,8 +1,10 @@
 # I21 — Documentation and project showcase
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I21 · ← [I20](I20-deployment.md)
+
 | | |
 |---|---|
-| **Status** | in progress |
+| **Status** | done |
 | **Depends on** | I20 |
 | **Parallel with** | — |
 | **Spec** | all (documentation only, no behavior change) |
@@ -46,7 +48,7 @@ docs/
     ai-engineer.md           (technical) models, profiles, prompts, evaluation suites, safe change process
     configuration.md         reference: every setting, default, where to set it, who changes it
   plan/ spec/ adr/ runbooks/ prompts/        existing, linked from the hub
-tools/docs-site/             VitePress config that renders docs/ (and README) for GitHub Pages
+tools/docs-site/             VitePress config that renders docs/ for GitHub Pages, link checker
 .github/workflows/docs.yml   builds and publishes the site on pushes to main that touch docs
 ```
 
@@ -85,26 +87,62 @@ of the box.
   screenshots.
 
 ### Session 4: website and polish
-- [ ] VitePress site in `tools/docs-site`, link rewriting for files outside `docs/`, Mermaid, local search.
-- [ ] `.github/workflows/docs.yml` (build + deploy to Pages), Pages enabled, homepage set in the repository info.
-- [ ] Link check over all Markdown, breadcrumbs and "next" blocks everywhere, README and hub point to the site.
+- [x] VitePress site in `tools/docs-site`, link rewriting for files outside `docs/`, Mermaid, local search.
+- [x] `.github/workflows/docs.yml` (build + deploy to Pages), Pages enabled, homepage set in the repository info.
+- [x] Link check over all Markdown, breadcrumbs and "next" blocks everywhere, README and hub point to the site.
 
 ## Out of scope
 - Changes to application behavior.
 - Translating the documentation to Russian or Swedish.
 
 ## Acceptance criteria
-- [ ] README shows the project in screenshots and gets a new developer to a running app.
-- [ ] From the README every role finds its page in one click, and every docs page links onward.
-- [ ] The journal covers I00–I20 with problems and solutions, linked to plans, sessions and reports.
-- [ ] The textbook explains RAG from the business problem to production with diagrams and evidence from the reports.
-- [ ] The GitHub Pages site builds in CI and is linked from the repository header.
-- [ ] No broken relative links (checked by a script).
+- [x] README shows the project in screenshots and gets a new developer to a running app.
+- [x] From the README every role finds its page in one click, and every docs page links onward.
+- [x] The journal covers I00–I20 with problems and solutions, linked to plans, sessions and reports.
+- [x] The textbook explains RAG from the business problem to production with diagrams and evidence from the reports.
+- [x] The GitHub Pages site builds in CI and is linked from the repository header. (Built locally with the CI
+  commands; Pages is enabled and the homepage set. The first Docs workflow run, which publishes it, starts with the
+  push of this commit.)
+- [x] No broken relative links (checked by a script).
 
 ## Open questions
 - None. (License: MIT, chosen by the owner in S24.)
 
 ## Result
+
+Done in four sessions (S24–S27), as planned. The repository has a showcase README with screenshots, a documentation
+hub, a 14-chapter guide with six advanced chapters, a build journal for I00–I20, a handbook with six role pages and a
+configuration reference, and a website at **https://gray0072.github.io/ai-rag-film-search/** built from the same
+Markdown. No application behavior changed.
+
+**Deviations from the plan**
+- The root README is not part of the website: the hub `docs/README.md` is the site's home page, and the site links to
+  the README on GitHub. Including it would have meant a second copy or a page outside `docs/` with its own link rules.
+- Breadcrumbs and onward links were added to the reference pages too (spec, ADRs, roadmap, iteration plans, prompt
+  sessions, runbook, learning path), not only to the new parts. Iteration plans and session logs, which agents append
+  to, carry Previous / Next in the breadcrumb line instead of a footer.
+- Mermaid is rendered by a small component of the site (`theme/Mermaid.vue`) instead of `vitepress-plugin-mermaid`:
+  the plugin supports Mermaid 10–11 only and adds a dependency for about 30 lines of code.
+- The link checker is a Node script (`tools/docs-site/check-links.mjs`, no dependencies) rather than a link checker
+  package: it follows GitHub's anchor rules, which the site uses too.
+
+**Decisions**
+- VitePress 1.6.4 and Mermaid 12.2.0 in `tools/docs-site` (own `package.json`, not part of the web app's
+  dependencies). Reason: plain Markdown in, local search and dark mode built in, Node 24 already in the toolchain.
+- The site maps GitHub's conventions instead of changing the Markdown: `README.md` → `index.md` (`rewrites`), links to
+  files outside `docs/` or to non-Markdown files → GitHub URLs, GitHub's heading slugs (`#i05--ai-provider-layer`).
+- `.github/workflows/docs.yml`: link check + build on every Markdown change (pushes and pull requests), deploy to
+  Pages (source "GitHub Actions") on pushes to `main`.
+
+**Follow-ups** (outside I21)
+- `LABEL project=filmsearch` in the Dockerfiles of `deploy/docker/` (global Docker rule).
+- No admin UI; the default search mode is fixed in the web app, not a setting (found while writing the handbook).
+- A public demo URL (I20's open criterion) would let the README link to a live store.
+
+**Sessions:** [S24](../../prompts/sessions/2026-11-19_S24_documentation.md),
+[S25](../../prompts/sessions/2026-11-19_S25_guide-core.md),
+[S26](../../prompts/sessions/2026-11-19_S26_guide-advanced-handbook.md),
+[S27](../../prompts/sessions/2026-11-19_S27_docs-site.md).
 
 ### Progress
 _Updated at the end of every session; the next session continues from the first unchecked task._
@@ -169,6 +207,22 @@ _Updated at the end of every session; the next session continues from the first 
 - Follow-ups found, not done (outside I21): the Dockerfiles in `deploy/docker/` have no `LABEL project=filmsearch`;
   there is no admin UI (admin work is API only, as spec 00 says); the default search mode is fixed in the web app, not
   a setting.
+
+**After S27 (session 4 of 4): done.**
+- Website: [tools/docs-site](../../../tools/docs-site/README.md) (VitePress; sidebar built from the files' first
+  headings; nav Guide / Journal / Handbook / Reference; local search; edit links; Mermaid component). Checked in a
+  browser: the hub and guide diagrams render in light mode, links into the journal resolve.
+- Problems on the way, all in the site's README "Pitfalls": the pages live outside the site folder (no
+  `node_modules` next to them → a resolver plugin for `vue` / `vitepress`), a lower-case drive letter broke page
+  rendering (real paths), `<Title>` placeholders in two templates broke the Vue compile (now plain `Title`), the doc
+  styles clipped Mermaid labels (`<p>` margins inside `foreignObject`).
+- [check-links.mjs](../../../tools/docs-site/check-links.mjs): 1865 relative links in 164 Markdown files, 0 broken;
+  it also catches a missing file and a missing heading (checked with a deliberately broken page).
+- Breadcrumbs and Previous / Next / See also links on every reference page (79 files changed by a one-off script).
+- README: Docs badge, website links; hub "How these pages are written"; journal numbers, timeline and an M6 row;
+  AGENTS.md: where the site is, its commands, the page conventions.
+- GitHub: Pages enabled with the source "GitHub Actions", homepage set to the site URL.
+- Not run: the .NET and web checks (no file under `src/` or `tests/` changed).
 
 **Notes for the next sessions.**
 - Page conventions: a breadcrumb line under the title (`> [Docs](../README.md) › [Guide](README.md) › Title`), a

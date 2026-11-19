@@ -1,5 +1,7 @@
 # ADR-0001 — PostgreSQL + pgvector as the only database
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0001
+
 - **Status:** Accepted
 - **Date:** 2026-11-17
 - **Iteration:** I00
@@ -19,3 +21,7 @@ Option 1. Hybrid search is implemented ourselves (FTS + vectors + RRF), which is
 - Pre-filtering with vectors in one query is simple.
 - Index on a `vector` column needs a fixed dimension → embedding models are tied to a dimension (see spec 03).
 - A dedicated vector DB can be tried later as a stretch experiment behind `IMovieSearch`.
+
+---
+
+**Next:** [ADR-0002](0002-ai-abstraction-meai.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

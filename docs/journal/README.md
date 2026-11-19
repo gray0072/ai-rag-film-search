@@ -12,8 +12,8 @@ session's prompts, the commit and the evaluation reports. It is written from the
 | | |
 |---|---|
 | Calendar time | 3 days, 2026-11-17 to 2026-11-19 |
-| Sessions with a coding agent | 24 (Claude Code), some of them in parallel worktrees |
-| Iterations | I00–I20 done (I21, this documentation, in progress) |
+| Sessions with a coding agent | 27 (Claude Code), some of them in parallel worktrees |
+| Iterations | I00–I21 done (I21 is this documentation and its [website](https://gray0072.github.io/ai-rag-film-search/)) |
 | Architecture decisions | 12 [ADRs](../adr/README.md) |
 | Evaluation reports | 30 in [evals/reports](../../evals/reports/) |
 | Tests at the end of M5 | 524 .NET (375 unit, 149 integration with real PostgreSQL), 66 web, 6 Playwright smoke tests |
@@ -25,7 +25,7 @@ timeline
     title Sessions per day
     2026-11-17 : S01 spec and plan : S02 skeleton : S03 web : S04 catalog : S05 keyword search : S06 AI providers : S07 embeddings : S08 hybrid and QU : S09 search evals
     2026-11-18 : S10 cart and payment : S11 store UI : S12 linear history : S13 chat : S14 agent tools : S15 chat UI : S16 assistant evals : S17 Stripe : S18 Worker and TMDB : S19 accounts
-    2026-11-19 : S20 observability : S21 resilience : S22 deployment : S23 remove Ollama : S24 documentation
+    2026-11-19 : S20 observability : S21 resilience : S22 deployment : S23 remove Ollama : S24 documentation : S25 guide : S26 handbook : S27 docs website
 ```
 
 ## Plan vs fact
@@ -53,8 +53,9 @@ timeline
 | [M5](m5-production-ready.md) | [I18 Observability](m5-production-ready.md#i18--observability-and-cost-tracking) | 1 | S20 | Daily budget per owner added |
 | | [I19 Resilience](m5-production-ready.md#i19--resilience-caching-rate-limiting) | 1 | S21 | Timeouts no longer retried; semantic search degrades |
 | | [I20 Deployment](m5-production-ready.md#i20--containers-and-deployment) | 1–2 | S22, S23 | No public URL yet; migrations by the Worker; Ollama removed |
+| M6 | [I21 Documentation](../plan/iterations/I21-documentation.md) | 3–4 | S24–S27 | Writing against the code found stale facts in specs and runbooks; reference pages got navigation too |
 
-Every iteration took one session (I20 had a short follow-up), at the low end of the estimate. The estimate assumed a person; the agents
+Every iteration of M1–M5 took one session (I20 had a short follow-up), at the low end of the estimate; I21, documentation only, took the planned four. The estimate assumed a person; the agents
 wrote, tested and documented an iteration in a few hours. The time went into decisions, reviews and manual checks.
 
 ## Tests over time
@@ -108,7 +109,7 @@ can be found together.
 
 ### Platform and tooling (.NET, Windows, CI)
 - xUnit v3 and the .NET 10 test runner; EF Core version conflicts ([I01](m1-store-without-ai.md#i01--solution-skeleton-aspire-db-ci))
-- Vitest and Vite broke with a lower-case drive letter on Windows ([I02](m1-store-without-ai.md#i02--web-skeleton), [I10](m1-store-without-ai.md#i10--store-ui))
+- Vitest and Vite broke with a lower-case drive letter on Windows ([I02](m1-store-without-ai.md#i02--web-skeleton), [I10](m1-store-without-ai.md#i10--store-ui)); so did the VitePress docs build, fixed with real paths ([I21](../../tools/docs-site/README.md#pitfalls))
 - OpenAPI document differed between Windows and Linux (line endings) ([I04](m1-store-without-ai.md#i04--keyword-search-and-filters))
 - Spans did not nest across an async iterator ([I11](m3-ai-assistant.md#i11--chat-foundation))
 - Telemetry tests flaked because meters and spans are process-wide ([I06](m2-smart-search.md#i06--embeddings-and-semantic-search), [I18](m5-production-ready.md#i18--observability-and-cost-tracking))

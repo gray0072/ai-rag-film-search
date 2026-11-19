@@ -1,5 +1,7 @@
 # 04 — API
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 04 — API
+
 Base path: `/api`. JSON with camelCase; numbers are JSON numbers only (`"12"` in a body is a 400), so the OpenAPI document types them as plain `integer` / `number`. Errors: RFC 9457 Problem Details. The OpenAPI document is served at `/openapi/v1.json` in Development. Every API build also writes it to `src/web/openapi/v1.json` (committed), and the frontend generates its types from that file ([ADR-0007](../adr/0007-frontend-stack.md)).
 
 Owner identification: the user id of a signed-in user (Identity cookie `fs_auth`, I17), otherwise the anonymous cookie `fs_sid` (HttpOnly, Secure, SameSite=Lax, 128 random bits as 32 hex chars, max-age 1 year; set on the first `/api` request of an anonymous visitor). Every user-scoped endpoint resolves `OwnerId` from them. Login and registration move the anonymous owner's data to the user (see "Auth"). A request without the cookie gets a new owner, so parallel first requests would get different owners: the web client sends the first call of a page load alone and the others after its response (I13).
@@ -102,3 +104,9 @@ Merge (FR-USR-2): when an anonymous request registers or logs in, the anonymous 
 
 ## Health
 `/health` (readiness: DB, AI provider reachable) and `/alive` (liveness), from ServiceDefaults.
+
+---
+
+**Previous:** [03 — Domain model](03-domain-model.md) ·
+**Next:** [05 — Search](05-search.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

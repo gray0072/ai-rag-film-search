@@ -1,5 +1,7 @@
 # 06 — AI assistant and AI providers
 
+> [Docs](../README.md) › [Spec](00-overview.md) › 06 — AI assistant and AI providers
+
 ## 1. Providers and profiles
 
 All AI calls go through `Microsoft.Extensions.AI`:
@@ -130,3 +132,9 @@ v3 (I14, current; chosen by the assistant evaluation, see `evals/reports/2026-11
 - Server: `IAsyncEnumerable` from `GetStreamingResponseAsync` → SSE writer. Client disconnect cancels the LLM call.
   - I11: the SSE writer is ASP.NET Core's `TypedResults.ServerSentEvents` (.NET 10) over `SseItem<AssistantEvent>`; the event data is JSON with the configured API options and a `type` discriminator. Validation (400) and ownership (404) are checked before the stream starts. `HttpContext.RequestAborted` cancels the model call; the user message is stored before the model runs, the answer only when it is complete.
 - Client: `fetch` + `ReadableStream` parser (POST body is needed, so `EventSource` is not used).
+
+---
+
+**Previous:** [05 — Search](05-search.md) ·
+**Next:** [07 — Payments](07-payments.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

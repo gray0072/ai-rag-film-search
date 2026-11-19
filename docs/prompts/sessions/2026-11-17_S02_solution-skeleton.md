@@ -1,5 +1,7 @@
 # Session S02 — 2026-11-17 — Solution skeleton
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S02 · ← [S01](2026-11-17_S01_preparation.md) · [S03](2026-11-17_S03_web-skeleton.md) → · [I01 plan](../../plan/iterations/I01-solution-skeleton.md)
+
 - **Iteration:** I01 (solution skeleton, Aspire, DB, CI)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** I01 implemented: Aspire AppHost with Postgres + pgvector (container `filmsearch-postgres`), API skeleton (health, ProblemDetails, OpenAPI, owner cookie), first migration, unit + integration tests, CI workflow. Spec updated: Swedish locale, seed of about 1000 movies. Branch and `main` pushed, PR #1 opened, CI green.

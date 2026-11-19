@@ -1,5 +1,7 @@
 # 00 — Overview
 
+> [Docs](../README.md) › Spec
+
 > Product working name: **FilmSearch** (code namespace `FilmSearch`).
 
 ## 1. What it is
@@ -92,3 +94,8 @@ The full learning map is in [learning-path.md](../learning-path.md).
 | 08 | [Data ingestion](08-data-ingestion.md): seed, TMDB, embeddings pipeline |
 | 09 | [Evaluation](09-evaluation.md): datasets, metrics, how to run |
 | 10 | [Ops and security](10-ops-security.md): observability, config, secrets, deployment |
+
+---
+
+**Next:** [01 — Requirements](01-requirements.md) ·
+**See also:** [Docs hub](../README.md) · [ADRs](../adr/README.md) · [Guide](../guide/README.md)

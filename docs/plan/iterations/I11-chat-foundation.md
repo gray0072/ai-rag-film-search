@@ -1,5 +1,7 @@
 # I11 — Chat foundation: conversations, streaming, grounded answers
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I11 · ← [I10](I10-store-ui.md) · [I12](I12-agent-tools.md) → · [Journal: what happened](../../journal/m3-ai-assistant.md#i11--chat-foundation)
+
 | | |
 |---|---|
 | **Status** | done |

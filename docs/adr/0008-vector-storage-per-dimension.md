@@ -1,5 +1,7 @@
 # ADR-0008 — Vector storage: one table, untyped vector column, partial HNSW index per dimension
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0008
+
 - **Status:** Accepted
 - **Date:** 2026-11-17
 - **Iteration:** I06
@@ -45,3 +47,7 @@ unique per (movie, model, kind, locale).
   separate migration user in I20). Large reindexes leave dead index entries: the indexer vacuums after changes.
 - Reverse: if only one model is kept long term, a migration can change the column to `vector(N)` with an ordinary
   index and drop the expression indexes; the query then becomes plain LINQ.
+
+---
+
+**Previous:** [ADR-0007](0007-frontend-stack.md) · **Next:** [ADR-0009](0009-job-queue-in-postgresql.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

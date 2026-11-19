@@ -1,5 +1,7 @@
 # ADR-0012 — Deployment: Docker Compose on one host, Caddy in front, images from CI, migrations by the Worker
 
+> [Docs](../README.md) › [ADRs](README.md) › ADR-0012
+
 - **Status:** Accepted
 - **Date:** 2026-11-19
 - **Iteration:** I20
@@ -82,3 +84,7 @@ text below is the original decision.
 - Reversal: the images and the configuration are platform-neutral, so Azure Container Apps or Kubernetes can run the
   same images later (managed PostgreSQL with pgvector, the `migrate` command as a job, Caddy replaced by the
   platform's ingress).
+
+---
+
+**Previous:** [ADR-0011](0011-ai-resilience-and-fallback.md) · **See also:** [All ADRs](README.md) · [Docs hub](../README.md)

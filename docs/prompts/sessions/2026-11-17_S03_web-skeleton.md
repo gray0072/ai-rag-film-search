@@ -1,5 +1,7 @@
 # Session S03 — 2026-11-17 — Web app skeleton
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S03 · ← [S02](2026-11-17_S02_solution-skeleton.md) · [S04](2026-11-17_S04_catalog-seed.md) → · [I02 plan](../../plan/iterations/I02-web-skeleton.md)
+
 - **Iteration:** I02 (web app skeleton: React, i18n, API client)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** I02 implemented: React app in `src/web` (Vite, TS strict, shadcn/ui + Tailwind, React Router, TanStack Query, i18next en/ru/sv), typed API client generated from the OpenAPI document written by the API build, Vite app in the AppHost with an `/api` proxy, web CI job. ADR-0007. Branch pushed, PR opened.

@@ -1,5 +1,7 @@
 # I01 — Solution skeleton, Aspire, DB, CI
 
+> [Docs](../../README.md) › [Roadmap](../roadmap.md) › I01 · ← [I00](I00-preparation.md) · [I02](I02-web-skeleton.md) → · [Journal: what happened](../../journal/m1-store-without-ai.md#i01--solution-skeleton-aspire-db-ci)
+
 | | |
 |---|---|
 | **Status** | done |

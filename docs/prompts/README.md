@@ -1,5 +1,7 @@
 # Prompt history
 
+> [Docs](../README.md) › Prompt history
+
 Every prompt the owner sends to an AI agent in this repo is saved here **verbatim**, one file per session.
 Agents do this themselves; see the "Prompt logging" rule in [AGENTS.md](../../AGENTS.md).
 
@@ -76,3 +78,8 @@ Rules:
 | [S24](sessions/2026-11-19_S24_documentation.md) | 2026-11-19 | I21 | Documentation system: README, journal, RAG guide, role guides, GitHub Pages |
 | [S25](sessions/2026-11-19_S25_guide-core.md) | 2026-11-19 | I21 | Guide: core chapters 01–14 |
 | [S26](sessions/2026-11-19_S26_guide-advanced-handbook.md) | 2026-11-19 | I21 | Guide: advanced chapters, handbook role pages |
+| [S27](sessions/2026-11-19_S27_docs-site.md) | 2026-11-19 | I21 | Documentation website (VitePress, GitHub Pages), link checker |
+
+---
+
+**See also:** [Roadmap](../plan/roadmap.md) · [Journal](../journal/README.md) · [Docs hub](../README.md)

@@ -1,5 +1,7 @@
 # Session S05 — 2026-11-17 — Keyword search and filters
 
+> [Docs](../../README.md) › [Prompt history](../README.md) › S05 · ← [S04](2026-11-17_S04_catalog-seed.md) · [S06](2026-11-17_S06_ai-providers.md) → · [I04 plan](../../plan/iterations/I04-keyword-search.md)
+
 - **Iteration:** I04 (keyword search and filters)
 - **Agent:** Claude Code (VS Code)
 - **Outcome:** I04 implemented: search documents with en/ru/sv `tsvector` columns, `IMovieSearch` with keyword retrieval and filters, `POST /api/search`, 40 new tests (p95 40 ms). Seed rebuilt from TMDB (1000 movies). TMDB secrets moved to user secrets; LM Studio models checked through the `lms` CLI.
