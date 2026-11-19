@@ -74,7 +74,7 @@ of the box.
 - [x] Journal: `docs/journal/` README (plan vs fact, timeline, problem index) and milestone files M1–M5.
 
 ### Session 2: textbook core
-- [ ] `docs/guide/README.md` and core chapters 01–14 (business problem, architecture, LLM basics, embeddings, vector
+- [x] `docs/guide/README.md` and core chapters 01–14 (business problem, architecture, LLM basics, embeddings, vector
   search, hybrid search, query understanding, RAG and grounding, agents and tools, evaluation, guardrails,
   observability and cost, resilience, shipping). Mermaid diagrams, links to plan, journal, code, ADRs and reports.
 
@@ -125,6 +125,23 @@ _Updated at the end of every session; the next session continues from the first 
 - Journal: [docs/journal/](../../journal/README.md) with the plan vs fact table, numbers, timeline, test growth, the
   problem index by kind, cross-cutting lessons, and M1–M5 with a section per iteration (problem → cause → solution
   tables, commits, links to plans, sessions and reports).
+
+**After S25 (session 2 of 4): done.**
+- Guide core chapters [01](../../guide/01-business-problem.md)–[14](../../guide/14-resilience-and-shipping.md), each
+  with the parts business problem → theory → what FilmSearch does (code links) → why (ADRs, alternatives) → evidence
+  (numbers from the reports, journal sections) → pitfalls → previous / next. 16 Mermaid diagrams; screenshots
+  `search-scores`, `search-ru`, `assistant`, `assistant-checkout`, `aspire-trace`, `aspire-span`.
+- [guide/README.md](../../guide/README.md): chapters linked from the contents, a "How to read it" section and a reading
+  map; status note says the advanced chapters come in session 3.
+- Links to specific chapters from the hub (product owner row, "What is RAG", "Why pgvector", "How good is search") and
+  from the journal (I04, I12, M2 and M3 "See also").
+- Facts checked against the code while writing: the embedding sync is a stale-only reindex job (not the catalog change
+  hook, which only updates keyword documents), rate limits are per owner for chat and per IP for search and new
+  conversations, the hybrid experiments of I08 changed the all-words keyword weight (not the relaxed weight).
+- The throw-away link check of S24 was run again: all relative links and anchors resolve (false alarms: inline code in
+  this plan).
+- The advanced chapters are still linked as `README.md#advanced` from chapters 5, 6, 7 and 11; session 3 replaces those
+  links with the real files.
 
 **Notes for the next sessions.**
 - Page conventions: a breadcrumb line under the title (`> [Docs](../README.md) › [Guide](README.md) › Title`), a

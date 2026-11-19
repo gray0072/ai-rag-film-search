@@ -140,4 +140,4 @@ turn "should we use the LLM here?" into a product decision (see [I19](m5-product
 ---
 
 **Previous:** [M1 Store without AI](m1-store-without-ai.md) · **Next:** [M3 AI sales assistant](m3-ai-assistant.md) ·
-**See also:** [Guide](../guide/README.md) · [Evaluation reports](../../evals/reports/)
+**See also:** [Guide: retrieval, ch. 4–8](../guide/04-keyword-search.md) · [Evaluation reports](../../evals/reports/)

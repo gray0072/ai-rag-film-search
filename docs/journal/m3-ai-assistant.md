@@ -64,7 +64,7 @@ agent's shell in this session.
 ## I12 — Agent tools, cart, checkout confirmation
 
 [Plan](../plan/iterations/I12-agent-tools.md) · [Session S14](../prompts/sessions/2026-11-18_S14_agent-tools.md) ·
-[Guide: agents and tools](../guide/README.md)
+[Guide: agents and tools](../guide/10-agents-and-tools.md)
 
 **Built:** six more tools (`get_movie_details`, `find_similar_movies`, `view_cart`, `add_to_cart`,
 `remove_from_cart`, `request_checkout`) as thin adapters over module services; argument validation whose errors tell
@@ -142,4 +142,4 @@ the grounding check, not in the model.
 ---
 
 **Previous:** [M2 Smart search](m2-smart-search.md) · **Next:** [M4 Real integrations](m4-real-integrations.md) ·
-**See also:** [Guide](../guide/README.md) · [Assistant reports](../../evals/reports/)
+**See also:** [Guide: RAG and agents, ch. 9–12](../guide/09-rag-grounded-answers.md) · [Assistant reports](../../evals/reports/)

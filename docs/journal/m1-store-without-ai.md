@@ -91,7 +91,7 @@ prices would change with every sync).
 ## I04 — Keyword search and filters
 
 [Plan](../plan/iterations/I04-keyword-search.md) · [Session S05](../prompts/sessions/2026-11-17_S05_keyword-search.md) ·
-[Guide: keyword search](../guide/README.md)
+[Guide: keyword search](../guide/04-keyword-search.md)
 
 **Built:** the real seed (1000 TMDB movies; Russian titles for 976, Swedish for 483), a search document table with
 weighted `tsvector` columns per language (`english`, `russian`, `swedish` configurations) and GIN indexes,

@@ -31,7 +31,7 @@ flowchart LR
 | You are… | What you get | Start with | Then |
 |---|---|---|---|
 | 🛒 **Customer** (or demoing the app) | How to search, ask the assistant, buy and watch | [Handbook: customer](handbook/README.md#roles) | — |
-| 📊 **Product owner / manager** | What the system can do, its limits, quality and cost numbers, the levers | [Handbook: product owner](handbook/README.md#roles) | [Guide ch. 1: the business problem](guide/README.md), [Journal](journal/README.md) |
+| 📊 **Product owner / manager** | What the system can do, its limits, quality and cost numbers, the levers | [Handbook: product owner](handbook/README.md#roles) | [Guide ch. 1: the business problem](guide/01-business-problem.md), [Journal](journal/README.md) |
 | 🛠️ **Administrator** | Catalog, TMDB import, embeddings, jobs, payment provider, budgets | [Handbook: administrator](handbook/README.md#roles) | [Local setup](handbook/local-setup.md) |
 | 🚦 **Operator / DevOps** | Environments, deploy, monitoring, incidents, backup, rollback | [Handbook: operator](handbook/README.md#roles) | [Deploy runbook](../deploy/README.md), [Observability runbook](runbooks/observability.md) |
 | 💻 **Developer** | Setup, architecture, code map, conventions, tests | [Local setup](handbook/local-setup.md) | [Architecture](spec/02-architecture.md), [AGENTS.md](../AGENTS.md), [Journal](journal/README.md) |
@@ -43,9 +43,9 @@ flowchart LR
 | Question | Answer |
 |---|---|
 | How do I run it on my machine? | [README quick start](../README.md#quick-start), then [local setup](handbook/local-setup.md) |
-| What is RAG and where is it in the code? | [Guide](guide/README.md) |
-| Why PostgreSQL + pgvector and not a vector database? | [ADR-0001](adr/0001-postgresql-pgvector.md), [ADR-0008](adr/0008-vector-storage-per-dimension.md) |
-| How good is search, in numbers? | [Search evaluation reports](../evals/reports/), [I08 in the journal](journal/m2-smart-search.md) |
+| What is RAG and where is it in the code? | [Guide ch. 9: RAG](guide/09-rag-grounded-answers.md), [ch. 10: agents and tools](guide/10-agents-and-tools.md) |
+| Why PostgreSQL + pgvector and not a vector database? | [Guide ch. 6](guide/06-vector-search.md), [ADR-0001](adr/0001-postgresql-pgvector.md), [ADR-0008](adr/0008-vector-storage-per-dimension.md) |
+| How good is search, in numbers? | [Guide ch. 11](guide/11-evaluation.md), [search evaluation reports](../evals/reports/), [I08 in the journal](journal/m2-smart-search.md) |
 | How good is the assistant, and on which model? | [I14 assistant evaluation](../evals/reports/2026-11-18_I14_assistant-evaluation.md) |
 | What does a chat answer cost, and how is spending capped? | [Local setup: demo environment](handbook/local-setup.md#demo-environment), [observability runbook](runbooks/observability.md) |
 | A user complains about an answer. How do I see what happened? | [Observability runbook](runbooks/observability.md) |
