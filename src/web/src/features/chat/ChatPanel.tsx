@@ -31,6 +31,7 @@ const errorKeys = {
   conversationBusy: "chat.errors.conversationBusy",
   budgetExceeded: "chat.errors.budgetExceeded",
   dailyBudgetExceeded: "chat.errors.dailyBudgetExceeded",
+  serviceBudgetExceeded: "chat.errors.serviceBudgetExceeded",
   toolsNotSupported: "chat.errors.toolsNotSupported",
   internalError: "chat.errors.internalError",
   connectionLost: "chat.errors.connectionLost",

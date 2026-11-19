@@ -33,6 +33,9 @@ public interface IConversationStore
     /// <summary>Tokens (input + output) of the owner's answers created at or after <paramref name="since"/>, over all conversations (NFR-5).</summary>
     Task<long> GetOwnerTokensSinceAsync(DateTimeOffset since, CancellationToken cancellationToken);
 
+    /// <summary>Tokens (input + output) of all owners' answers created at or after <paramref name="since"/> (the service budget, I20).</summary>
+    Task<long> GetTotalTokensSinceAsync(DateTimeOffset since, CancellationToken cancellationToken);
+
     /// <summary>Trace id of an answer of the owner, or null (unknown message, another owner's, or written without tracing).</summary>
     Task<string?> GetTraceIdAsync(Guid messageId, CancellationToken cancellationToken);
 }

@@ -221,6 +221,12 @@ internal sealed class InMemoryConversationStore : IConversationStore
             .Where(m => m.Role == MessageRole.Assistant && m.CreatedAt >= since)
             .Sum(m => (m.InputTokens ?? 0) + (m.OutputTokens ?? 0)));
 
+    /// <summary>Tokens of answers of other owners (the service budget, I20).</summary>
+    public long OtherOwnerTokens { get; set; }
+
+    public async Task<long> GetTotalTokensSinceAsync(DateTimeOffset since, CancellationToken cancellationToken) =>
+        OtherOwnerTokens + await GetOwnerTokensSinceAsync(since, cancellationToken);
+
     public Task<string?> GetTraceIdAsync(Guid messageId, CancellationToken cancellationToken) =>
         Task.FromResult(Messages.SingleOrDefault(m => m.Id == messageId)?.TraceId);
 }

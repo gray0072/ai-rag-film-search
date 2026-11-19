@@ -1,0 +1,160 @@
+name: Release
+
+# I20 (ADR-0012): on a version tag, build the images, start the whole stack on the runner and run the Playwright smoke
+# tests against it, push the images to GHCR, then deploy to the demo server (only when it is configured) and run the
+# smoke tests against the public URL. Manual runs (workflow_dispatch) build and test; they push and deploy on request.
+#
+# Deploy configuration (repository settings → Environments → demo; README "Demo environment"):
+#   variables DEPLOY_HOST, DEPLOY_USER, DEPLOY_PATH (folder with compose.yaml and .env), DEMO_URL,
+#             E2E_FAKE_PAYMENTS ("0" when the demo uses Stripe)
+#   secrets   DEPLOY_SSH_KEY (private key of a deploy user), DEPLOY_KNOWN_HOSTS (ssh-keyscan of the host)
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Push the images to GHCR and deploy (when the demo server is configured)
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  images:
+    name: Build, smoke test and push images
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      publish: ${{ steps.meta.outputs.publish }}
+    env:
+      COMPOSE_FILE: compose.yaml:compose.build.yaml
+      # The runner has no OpenRouter key: the chat profile points at an unreachable LM Studio, so search falls back from
+      # query understanding and the assistant test is skipped. Embeddings run in Ollama as on the server.
+      CHAT_PROFILE: local
+      EMBEDDING_PROFILE: ollama
+      COMPOSE_PROFILES: ollama
+      POSTGRES_PASSWORD: ci0123456789abcdef
+      ADMIN_EMAIL: admin@filmsearch.local
+      ADMIN_PASSWORD: Ci-Admin-Password-1234
+      SITE_ADDRESS: localhost
+      PUBLIC_URL: https://localhost
+    defaults:
+      run:
+        working-directory: deploy
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Image names and tag
+        id: meta
+        run: |
+          owner="$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          if [ "${{ github.ref_type }}" = "tag" ]; then tag="${{ github.ref_name }}"; else tag="sha-${GITHUB_SHA::12}"; fi
+          publish="${{ github.event_name == 'push' || inputs.publish }}"
+          echo "IMAGE_PREFIX=ghcr.io/${owner}/filmsearch" >> "$GITHUB_ENV"
+          echo "IMAGE_SOURCE=${{ github.server_url }}/${{ github.repository }}" >> "$GITHUB_ENV"
+          echo "FILMSEARCH_TAG=${tag}" >> "$GITHUB_ENV"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "publish=${publish}" >> "$GITHUB_OUTPUT"
+
+      - name: Build images
+        run: docker compose build
+
+      - name: Start the stack
+        run: |
+          docker compose up -d --wait postgres
+          docker compose run --rm migrate
+          docker compose up -d
+          # Degraded is expected here: the chat profile is not reachable from the runner.
+          for _ in $(seq 1 60); do
+            if curl -ksf https://localhost/health; then exit 0; fi
+            sleep 5
+          done
+          echo "The API did not become healthy." >&2
+          exit 1
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: src/web/.nvmrc
+          cache: npm
+          cache-dependency-path: src/web/package-lock.json
+
+      - name: Smoke tests (Playwright)
+        working-directory: src/web
+        env:
+          E2E_BASE_URL: https://localhost
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npm run e2e
+
+      - name: Logs of the stack
+        if: failure()
+        run: docker compose logs --no-color --tail 300
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: src/web/playwright-report
+          retention-days: 7
+
+      - name: Push images
+        if: steps.meta.outputs.publish == 'true'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker compose push api worker web
+
+  deploy:
+    name: Deploy to the demo server
+    needs: images
+    if: needs.images.outputs.publish == 'true' && vars.DEPLOY_HOST != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: demo
+      url: ${{ vars.DEMO_URL }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: SSH key
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Copy the deploy files and deploy
+        env:
+          TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          TAG: ${{ needs.images.outputs.tag }}
+        run: |
+          scp deploy/compose.yaml deploy/deploy.sh deploy/backup.sh deploy/restore.sh "${TARGET}:${DEPLOY_PATH}/"
+          ssh "${TARGET}" "cd '${DEPLOY_PATH}' && chmod +x ./*.sh && ./deploy.sh '${TAG}'"
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: src/web/.nvmrc
+          cache: npm
+          cache-dependency-path: src/web/package-lock.json
+
+      - name: Smoke tests against the demo URL
+        working-directory: src/web
+        env:
+          E2E_BASE_URL: ${{ vars.DEMO_URL }}
+          E2E_FAKE_PAYMENTS: ${{ vars.E2E_FAKE_PAYMENTS }}
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npm run e2e

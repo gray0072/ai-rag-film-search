@@ -81,6 +81,9 @@ public abstract class AiProfileOptions
     /// <summary>API key. LM Studio accepts any non-empty value; cloud keys come from user secrets.</summary>
     public string? ApiKey { get; set; }
 
+    /// <summary>Path of the model list the health check reads, relative to <see cref="Endpoint"/>. OpenRouter lists embedding models under <c>/embeddings/models</c>.</summary>
+    public string ModelsPath { get; set; } = "/models";
+
     /// <summary>Timeout of one attempt. Local models on a laptop are slow, so the default is generous.</summary>
     public int TimeoutSeconds { get; set; } = 120;
 

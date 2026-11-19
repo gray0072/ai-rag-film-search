@@ -100,6 +100,11 @@ internal sealed class ConversationStore(AppDbContext db, IOwnerContext owner, Ti
             .Where(m => db.Set<Conversation>().Any(c => c.Id == m.ConversationId && c.OwnerId == owner.OwnerId))
             .SumAsync(m => (m.InputTokens ?? 0) + (m.OutputTokens ?? 0), cancellationToken);
 
+    public async Task<long> GetTotalTokensSinceAsync(DateTimeOffset since, CancellationToken cancellationToken) =>
+        await db.Set<ConversationMessage>()
+            .Where(m => m.Role == MessageRole.Assistant && m.CreatedAt >= since && m.InputTokens != null)
+            .SumAsync(m => (m.InputTokens ?? 0) + (m.OutputTokens ?? 0), cancellationToken);
+
     public Task<string?> GetTraceIdAsync(Guid messageId, CancellationToken cancellationToken) =>
         db.Set<ConversationMessage>()
             .Where(m => m.Id == messageId)

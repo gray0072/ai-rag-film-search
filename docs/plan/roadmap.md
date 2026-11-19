@@ -38,7 +38,7 @@ Status values: `todo`, `in progress`, `done`, `skipped`. **This table is the sin
 | I14 | [Assistant evaluation and guardrails](iterations/I14-assistant-eval-guardrails.md) | I12, I08 | 7 | 2 | done |
 | I18 | [Observability and cost tracking](iterations/I18-observability-cost.md) | I12 | 7 | 1 | done |
 | I19 | [Resilience, caching, rate limiting](iterations/I19-resilience-caching.md) | I12 | 8 | 1 | done |
-| I20 | [Containers and deployment](iterations/I20-deployment.md) | I15, I17 | 8 | 1–2 | todo |
+| I20 | [Containers and deployment](iterations/I20-deployment.md) | I15, I17 | 8 | 1–2 | done |
 
 IDs are stable and do not follow the execution order. Order is defined by **waves**.
 

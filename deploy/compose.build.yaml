@@ -1,0 +1,24 @@
+# Builds the images from source instead of pulling them (local runs, the release workflow):
+#   docker compose -f compose.yaml -f compose.build.yaml build
+# IMAGE_SOURCE (the repository URL, set by the release workflow) links the GHCR packages to the repository.
+x-labels: &labels
+  org.opencontainers.image.source: ${IMAGE_SOURCE:-}
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/docker/dotnet.Dockerfile
+      target: api
+      labels: *labels
+  worker:
+    build:
+      context: ..
+      dockerfile: deploy/docker/dotnet.Dockerfile
+      target: worker
+      labels: *labels
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/docker/web.Dockerfile
+      labels: *labels

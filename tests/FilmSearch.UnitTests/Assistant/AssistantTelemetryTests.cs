@@ -37,6 +37,35 @@ public sealed class AssistantTelemetryTests : IDisposable
     }
 
     [Fact]
+    public async Task The_service_budget_refuses_every_owner_once_all_owners_used_it()
+    {
+        _harness.Options.MaxConversationTokens = 1000;
+        _harness.Options.MaxOwnerTokensPerDay = 5000;
+        _harness.Options.MaxTotalTokensPerDay = 10_000;
+        _harness.Store.OtherOwnerTokens = 10_000;
+        var conversation = _harness.Store.Add("en", "local");
+
+        var events = await _harness.SendAsync(conversation, "space");
+
+        events.Single().ShouldBeOfType<ErrorEvent>().Code.ShouldBe(AssistantErrorCodes.ServiceBudgetExceeded);
+        _harness.Chat.StreamRequests.ShouldBeEmpty();
+        _harness.Store.Messages.ShouldBeEmpty();
+        _meters.Of("assistant.turns").ShouldHaveSingleItem().Tag("outcome").ShouldBe(AssistantErrorCodes.ServiceBudgetExceeded);
+    }
+
+    [Fact]
+    public async Task The_service_budget_is_off_by_default()
+    {
+        _harness.Store.OtherOwnerTokens = 100_000_000;
+        _harness.Chat.Answer(Text("Hello."));
+        var conversation = _harness.Store.Add("en", "local");
+
+        var events = await _harness.SendAsync(conversation, "hi there");
+
+        events[^1].ShouldBeOfType<MessageCompletedEvent>();
+    }
+
+    [Fact]
     public async Task Answers_of_the_last_24_hours_count_for_the_daily_budget()
     {
         _harness.Options.MaxOwnerTokensPerDay = 300_000;

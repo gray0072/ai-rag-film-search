@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 // Aspire injects the API address through service discovery variables (WithReference(api)).
 // Without Aspire (plain `npm run dev`), the API launch profile address is used.
@@ -66,5 +66,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     css: false,
+    // Playwright smoke tests of a deployment (npm run e2e), not unit tests.
+    exclude: [...configDefaults.exclude, "e2e/**"],
   },
 });

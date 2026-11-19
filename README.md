@@ -13,7 +13,7 @@ Stack: .NET 10, ASP.NET Core, EF Core, PostgreSQL + pgvector, .NET Aspire, Micro
 
 ## Status
 
-The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); hybrid search (keyword + semantic fused with RRF, the default mode) and LLM query understanding that turns free text into filters with structured output, retry and fallback (I07); cart, orders and a fake payment provider (I09), the store UI (I10) and Stripe Checkout in test mode with signed webhooks (I15); the assistant chat API: conversations, answers streamed over SSE, an own agent loop with a `search_movies` tool so recommendations come only from the catalog, rolling summary, token usage and cost per message, feedback (I11); a Worker process with a job queue in PostgreSQL that imports movies from TMDB (lists or ids, rate-limited, idempotent) and keeps embeddings fresh, and runs order expiry (I16); accounts with login and an admin role (I17); observability: metrics for search, assistant, payments and orders, a span per agent and search stage, the trace id stored with each answer, a daily token budget per owner, and optional Langfuse with user ratings as scores (I18); resilience: a retry, circuit breaker and timeout pipeline per AI profile, an optional fallback chat profile, keyword results when embeddings are down, cached query vectors and query understanding with hit-rate metrics, rate limits on search and chat (I19); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
+The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with health checks (I01), a React app with routing, i18n (`en`, `ru`, `sv`) and a typed API client (I02), and the catalog: movies, genres, people and offers with filters, sorting and localized texts, loaded from a committed seed file of 1000 TMDB movies (I03); keyword search in English, Russian and Swedish with the same filters, `POST /api/search` (I04); the AI provider layer: `IChatClient` / `IEmbeddingGenerator` from config profiles (LM Studio or OpenRouter), GenAI traces with tokens and cost, and an AI playground console with a model benchmark (I05); movie embeddings in pgvector and semantic search across English, Russian and Swedish, similar movies, a background reindex job (I06); hybrid search (keyword + semantic fused with RRF, the default mode) and LLM query understanding that turns free text into filters with structured output, retry and fallback (I07); cart, orders and a fake payment provider (I09), the store UI (I10) and Stripe Checkout in test mode with signed webhooks (I15); the assistant chat API: conversations, answers streamed over SSE, an own agent loop with a `search_movies` tool so recommendations come only from the catalog, rolling summary, token usage and cost per message, feedback (I11); a Worker process with a job queue in PostgreSQL that imports movies from TMDB (lists or ids, rate-limited, idempotent) and keeps embeddings fresh, and runs order expiry (I16); accounts with login and an admin role (I17); observability: metrics for search, assistant, payments and orders, a span per agent and search stage, the trace id stored with each answer, a daily token budget per owner, and optional Langfuse with user ratings as scores (I18); resilience: a retry, circuit breaker and timeout pipeline per AI profile, an optional fallback chat profile, keyword results when embeddings are down, cached query vectors and query understanding with hit-rate metrics, rate limits on search and chat (I19); a production-like demo environment: container images, Docker Compose with Caddy (HTTPS), Ollama embeddings or OpenRouter, migrations as a deploy step, a release workflow that smoke-tests the images with Playwright before it pushes and deploys them, backup and rollback scripts (I20; no public URL yet); tests and CI for all of it. Seed details: [data/seed](data/seed/README.md). See the [roadmap](docs/plan/roadmap.md).
 
 ## Documentation
 
@@ -25,6 +25,7 @@ The skeleton is in place: Aspire AppHost, PostgreSQL + pgvector, an API with hea
 | [Learning path](docs/learning-path.md) | AI-engineering skills mapped to iterations |
 | [AGENTS.md](AGENTS.md) | Rules for AI coding agents |
 | [Prompt history](docs/prompts/README.md) | All prompts used to build the project, by session |
+| [Deploy runbook](deploy/README.md) | Demo environment: run, deploy, roll back, operate |
 
 ## Getting started
 
@@ -171,6 +172,28 @@ dotnet run --project evals/FilmSearch.Evals -- --suite qu --label my-change     
 ```
 
 Reports go to `evals/reports/`; options, metrics and dataset rules: [evals/README.md](evals/README.md).
+
+### Demo environment
+
+The demo runs as containers on one Linux host with Docker Compose: Caddy (HTTPS, the static web app, reverse proxy), the API, the Worker, PostgreSQL with pgvector and Ollama with EmbeddingGemma, chat on OpenRouter ([ADR-0012](docs/adr/0012-deployment-docker-compose-vps.md)). The same stack runs locally from source:
+
+```bash
+cd deploy
+cp .env.example .env    # see the comments; for a local run: IMAGE_PREFIX=filmsearch, FILMSEARCH_TAG=local, SITE_ADDRESS=localhost
+docker compose -f compose.yaml -f compose.build.yaml build
+SKIP_PULL=1 ./deploy.sh local    # Git Bash on Windows; open https://localhost
+cd ../src/web && npm run e2e     # Playwright smoke tests against it (E2E_ASSISTANT=1 also asks the assistant)
+```
+
+A tag `v*` runs the [release workflow](.github/workflows/release.yml): images → the stack on the runner → smoke tests → GHCR → deploy over SSH and smoke tests against the demo URL (once a server is configured; [deploy/README.md](deploy/README.md) has the server setup, the rollback procedure and day-to-day commands).
+
+Configuration is `appsettings.Demo.json` (environment `Demo`) plus `deploy/.env` on the server. Embeddings: `EMBEDDING_PROFILE=ollama` (default, the dev model, same search quality) or `openrouter` (Qwen3-Embedding-8B: better in the evaluation, especially in Russian and Swedish, but a network call per query; [reports](evals/reports/2026-11-19_search_i20-openrouter-qwen3-embedding-8b.md)).
+
+**Spending limits.** A public chat with a paid model needs a hard cap:
+
+1. Create an OpenRouter key only for the demo (openrouter.ai → Keys → Create) with a **credit limit** (e.g. $5) and put it in `deploy/.env` (`OPENROUTER_API_KEY`). When the limit is used up OpenRouter refuses the calls: chat turns end with an error, search runs without query understanding.
+2. The app stops earlier: `Assistant:MaxTotalTokensPerDay` (5M tokens a day for all users together, about $0.2–0.3 with the default model), `MaxOwnerTokensPerDay` (200k per visitor) and `MaxConversationTokens` (100k) in `appsettings.Demo.json`, plus the rate limits of search and chat. Query understanding in search is not in these budgets; it is cached per query and rate limited, and the key's limit covers it.
+3. Watch the spend in the OpenRouter activity page or with the cost metrics (`ai.cost_usd`) in the Aspire dashboard of the demo.
 
 More commands (migrations, single test project) are in [AGENTS.md](AGENTS.md#commands). Rebuilding the seed file from TMDB: [data/seed/README.md](data/seed/README.md).
 

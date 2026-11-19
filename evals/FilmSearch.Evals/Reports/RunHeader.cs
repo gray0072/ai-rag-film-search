@@ -110,7 +110,7 @@ public sealed record RunHeader
             SeedGeneratedAt = seedGeneratedAt.ToString("u", CultureInfo.InvariantCulture),
             EmbeddingProfile = usesEmbeddings ? ai.ActiveEmbeddingProfile : null,
             EmbeddingModel = usesEmbeddings
-                ? $"{embedding.Model} ({Format(embedding.Dimensions)} dims, query prefix \"{embedding.QueryPrefix}\", document prefix \"{embedding.DocumentPrefix}\")"
+                ? $"{embedding.Model} ({Format(embedding.Dimensions)} dims, query prefix \"{OneLine(embedding.QueryPrefix)}\", document prefix \"{OneLine(embedding.DocumentPrefix)}\")"
                 : null,
             EmbeddingText = usesEmbeddings ? MovieEmbeddingText.Version : null,
             EmbeddingLocales = usesEmbeddings ? index.ResolveLocales() : [],
@@ -175,6 +175,9 @@ public sealed record RunHeader
     }
 
     private static string Format(double value) => value.ToString(CultureInfo.InvariantCulture);
+
+    /// <summary>A prefix with a line break (Qwen3's "Instruct: …\nQuery: ") written as <c>\n</c>: the header is a Markdown table row.</summary>
+    private static string OneLine(string text) => text.Replace("\r", "\\r", StringComparison.Ordinal).Replace("\n", "\\n", StringComparison.Ordinal);
 
     private static string GitCommit(string repositoryRoot)
     {

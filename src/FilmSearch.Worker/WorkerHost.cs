@@ -44,6 +44,10 @@ public static class WorkerHost
         return builder;
     }
 
+    /// <summary>The first argument <c>migrate</c>: apply pending migrations and exit (the deployment's migration step, I20).</summary>
+    public static bool IsMigrateCommand(string[] args) =>
+        args.Length > 0 && string.Equals(args[0], "migrate", StringComparison.OrdinalIgnoreCase);
+
     /// <summary>Applies migrations when <c>Database:MigrateOnStartup</c> is on (Development): the Worker may start before the API.</summary>
     public static async Task MigrateOnStartupAsync(this IHost host)
     {

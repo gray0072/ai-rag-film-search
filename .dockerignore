@@ -1,0 +1,24 @@
+# Build context of the images in deploy/ is the repository root: keep it small and free of secrets.
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/TestResults/
+**/test-results/
+**/playwright-report/
+**/*.user
+**/.env
+**/.env.*
+**/secrets.json
+**/*.pfx
+.git/
+.github/
+.vs/
+.vscode/
+.idea/
+docs/
+evals/
+tests/
+tools/
+deploy/*.env
+deploy/backups/

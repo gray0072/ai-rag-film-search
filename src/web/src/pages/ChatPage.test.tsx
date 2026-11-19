@@ -401,6 +401,23 @@ describe("ChatPage", () => {
     expect(screen.getByRole("textbox", { name: "Message to the assistant" })).toHaveValue("");
   });
 
+  it("explains the service budget of the day", async () => {
+    mockApi(
+      chatRoutes(
+        sseResponse([{ type: "error", code: "serviceBudgetExceeded", message: "Limit" }]),
+        [userMessage],
+      ),
+    );
+    renderApp("/chat");
+    await ask();
+
+    expect(
+      await screen.findByText(
+        "The assistant has reached its usage limit for today. Please try again tomorrow.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("explains the rate limit and gives the text back", async () => {
     mockApi(
       chatRoutes(

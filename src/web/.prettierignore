@@ -1,5 +1,8 @@
 dist
 coverage
+# Playwright output (npm run e2e)
+test-results
+playwright-report
 node_modules
 package-lock.json
 # Generated from the OpenAPI document (npm run gen:api) and by the .NET build.

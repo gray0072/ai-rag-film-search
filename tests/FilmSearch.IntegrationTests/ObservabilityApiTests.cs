@@ -57,6 +57,32 @@ public sealed class ObservabilityApiTests(CatalogApiFixture fixture) : IClassFix
     }
 
     [Fact]
+    public async Task The_service_token_count_sums_the_answers_of_all_owners()
+    {
+        const string question = "Any western? (service budget test)";
+        const string another = "Any musical? (service budget test)";
+        fixture.Factory.Chat.ScriptStream(question, [new TextContent("Try a classic one.")]);
+        fixture.Factory.Chat.ScriptStream(another, [new TextContent("Try a new one.")]);
+        using var first = CreateClient();
+        using var second = CreateClient();
+        var conversations = new[] { await CreateConversationAsync(first), await CreateConversationAsync(second) };
+        (await SendAsync(first, conversations[0].Id, question))[^1].Name.ShouldBe("message.completed");
+        (await SendAsync(second, conversations[1].Id, another))[^1].Name.ShouldBe("message.completed");
+
+        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var ids = conversations.Select(c => c.Id).ToList();
+        (await db.Set<ConversationMessage>()
+            .Where(m => ids.Contains(m.ConversationId) && m.Role == MessageRole.Assistant)
+            .ExecuteUpdateAsync(s => s.SetProperty(m => m.InputTokens, 3_000_000).SetProperty(m => m.OutputTokens, 0), Ct)).ShouldBe(2);
+
+        // Other tests share the database: their answers may add to the sum, never subtract.
+        var store = scope.ServiceProvider.GetRequiredService<IConversationStore>();
+        (await store.GetTotalTokensSinceAsync(DateTimeOffset.UtcNow.AddHours(-1), Ct)).ShouldBeGreaterThanOrEqualTo(6_000_000);
+        (await store.GetTotalTokensSinceAsync(DateTimeOffset.UtcNow.AddHours(1), Ct)).ShouldBe(0);
+    }
+
+    [Fact]
     public async Task An_answer_stores_its_trace_id_and_its_rating_becomes_a_metric_and_a_score_of_that_trace()
     {
         const string question = "Something funny (trace id test)";

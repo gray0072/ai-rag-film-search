@@ -149,7 +149,19 @@ internal sealed partial class AssistantChat(
             return;
         }
 
-        var ownerTokens = await store.GetOwnerTokensSinceAsync(time.GetUtcNow().AddDays(-1), cancellationToken);
+        var dayAgo = time.GetUtcNow().AddDays(-1);
+        if (settings.MaxTotalTokensPerDay > 0)
+        {
+            var totalTokens = await store.GetTotalTokensSinceAsync(dayAgo, cancellationToken);
+            if (totalTokens >= settings.MaxTotalTokensPerDay)
+            {
+                LogBudgetExceeded(logger, conversation.Id, "service", totalTokens, settings.MaxTotalTokensPerDay);
+                emit(new ErrorEvent(AssistantErrorCodes.ServiceBudgetExceeded, "The assistant has reached its usage limit for today. Please try again tomorrow."));
+                return;
+            }
+        }
+
+        var ownerTokens = await store.GetOwnerTokensSinceAsync(dayAgo, cancellationToken);
         if (ownerTokens >= settings.MaxOwnerTokensPerDay)
         {
             LogBudgetExceeded(logger, conversation.Id, "daily", ownerTokens, settings.MaxOwnerTokensPerDay);

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FilmSearch.AI.Providers;
+using FilmSearch.Api.Hosting;
 using FilmSearch.Api.Localization;
 using FilmSearch.Api.Modules.Admin;
 using FilmSearch.Api.Modules.AppInfo;
@@ -36,6 +37,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddOwnerContext();
 builder.Services.AddRequestLocales();
 builder.Services.AddApiRateLimiting(builder.Configuration);
+builder.AddDataProtectionKeys();
 builder.AddAiProviders();
 builder.AddIdentityModule();
 
@@ -61,7 +63,13 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Behind a TLS-terminating proxy (the deployment's Caddy, I20) the proxy redirects HTTP to HTTPS; its health probes
+// reach the API over plain HTTP and must not be redirected.
+if (!app.Configuration.GetValue<bool>("FORWARDEDHEADERS_ENABLED"))
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 // After authentication: the owner is the signed-in user, else the anonymous session (I17).
 app.UseOwnerContext();

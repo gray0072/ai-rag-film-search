@@ -56,9 +56,9 @@ Local orchestration: **.NET Aspire AppHost** starts PostgreSQL (container with p
 | Resilience | `Microsoft.Extensions.Http.Resilience` (Polly v8) | |
 | Observability | OpenTelemetry (ServiceDefaults), Aspire dashboard; Langfuse as an option | |
 | Frontend | React 19 + TypeScript + Vite, React Router, TanStack Query, i18next, shadcn/ui + Tailwind CSS v4 ([ADR-0007](../adr/0007-frontend-stack.md)) | API types generated from OpenAPI (openapi-typescript + openapi-fetch + openapi-react-query) |
-| Tests | xUnit, FluentAssertions or Shouldly, Testcontainers, Vitest + Testing Library, Playwright (e2e, later) | |
+| Tests | xUnit, Shouldly, Testcontainers, Vitest + Testing Library, Playwright (smoke tests of a deployment, I20) | |
 | CI | GitHub Actions | |
-| Containers | Dockerfiles for Api, Worker, Web; deployment target decided in I20 | |
+| Containers | Dockerfiles for Api, Worker, Web (Caddy); Docker Compose on one host | [ADR-0012](../adr/0012-deployment-docker-compose-vps.md) |
 
 Exact package versions are fixed in iteration I01 and recorded in `Directory.Packages.props` (central package management).
 
@@ -90,7 +90,7 @@ Exact package versions are fixed in iteration I01 and recorded in `Directory.Pac
 │   └── reports/                     # committed evaluation reports (markdown)
 ├── data/
 │   └── seed/movies.seed.json
-├── deploy/                          # Dockerfiles / compose / IaC (from I20)
+├── deploy/                          # Dockerfiles, compose, Caddyfile, deploy scripts (I20)
 └── docs/                            # spec, plan, ADRs, prompts
 ```
 

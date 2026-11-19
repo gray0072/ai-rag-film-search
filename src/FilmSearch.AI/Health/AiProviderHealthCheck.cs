@@ -9,7 +9,7 @@ namespace FilmSearch.AI.Health;
 
 /// <summary>
 /// Checks that the provider of the active chat or embedding profile is reachable and lists the configured model
-/// (<c>GET {Endpoint}/models</c>). The check is registered with the Degraded failure status: the store without AI
+/// (<c>GET {Endpoint}{ModelsPath}</c>, <c>/models</c> by default). The check is registered with the Degraded failure status: the store without AI
 /// keeps working when LM Studio is off, and Aspire does not block the web app on it.
 /// </summary>
 internal sealed class AiProviderHealthCheck(
@@ -29,14 +29,15 @@ internal sealed class AiProviderHealthCheck(
         try
         {
             using var client = httpClientFactory.CreateClient(HttpClientName);
-            using var request = new HttpRequestMessage(HttpMethod.Get, profile.Endpoint.TrimEnd('/') + "/models");
+            var modelsUrl = profile.Endpoint.TrimEnd('/') + "/" + profile.ModelsPath.TrimStart('/');
+            using var request = new HttpRequestMessage(HttpMethod.Get, modelsUrl);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", profile.ApiKey);
 
             using var response = await client.SendAsync(request, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 return new HealthCheckResult(context.Registration.FailureStatus,
-                    $"{kind} profile '{profileName}': {profile.Endpoint}/models returned {(int)response.StatusCode}.");
+                    $"{kind} profile '{profileName}': {modelsUrl} returned {(int)response.StatusCode}.");
             }
 
             var models = await response.Content.ReadFromJsonAsync<ModelList>(cancellationToken);

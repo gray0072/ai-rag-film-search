@@ -13,9 +13,9 @@ Run: `dotnet run --project src/FilmSearch.AppHost`. The Aspire dashboard shows e
 
 | Kind | Where |
 |---|---|
-| Non-secret defaults | `appsettings.json`, `appsettings.Development.json` |
+| Non-secret defaults | `appsettings.json`, `appsettings.Development.json`, `appsettings.Demo.json` (the demo environment, I20) |
 | Secrets in development | `dotnet user-secrets` on the AppHost / Api projects (API keys, Stripe keys, TMDB key) |
-| Secrets in deployment | Environment variables / platform secret store |
+| Secrets in deployment | `deploy/.env` on the server (`chmod 600`), passed to the containers as environment variables by `deploy/compose.yaml`; deploy credentials in the GitHub environment `demo` (I20) |
 | Frontend | Only public values (`VITE_*`). No keys in the frontend, ever. |
 
 Never committed: `.env`, `appsettings.*.local.json`, user-secrets, keys of any kind. A `.env.example` / README section lists required variables with fake values.
@@ -30,11 +30,11 @@ Never committed: `.env`, `appsettings.*.local.json`, user-secrets, keys of any k
 
 ## 4. Security checklist
 
-- [ ] HTTPS everywhere, HSTS outside Development.
-- [ ] CORS: only the web origin.
+- [x] HTTPS everywhere, HSTS outside Development (I20: Caddy terminates TLS with Let's Encrypt, redirects HTTP, sends HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`).
+- [x] CORS: none. The browser talks to one origin (Caddy serves the app and proxies `/api`), so no CORS policy is configured and cross-origin calls are refused by the browser (I20).
 - [ ] Anonymous session cookie: HttpOnly, Secure, SameSite=Lax, random 128-bit id.
-- [x] Token budgets per conversation and per owner and day (NFR-5, I18); prompt and completion texts in traces only with `AI:EnableSensitiveData` (Development).
-- [x] Rate limiting (`Microsoft.AspNetCore.RateLimiting`, I19): chat 20 msgs/min per owner, search 60 req/min per IP, new conversations 10/min per IP; 429 Problem Details with `Retry-After`. Behind a reverse proxy the client IP needs the forwarded headers (I20).
+- [x] Token budgets per conversation and per owner and day (NFR-5, I18), and for the whole service per day (`Assistant:MaxTotalTokensPerDay`, I20: a public demo has unlimited anonymous owners); prompt and completion texts in traces only with `AI:EnableSensitiveData` (Development).
+- [x] Rate limiting (`Microsoft.AspNetCore.RateLimiting`, I19): chat 20 msgs/min per owner, search 60 req/min per IP, new conversations 10/min per IP; 429 Problem Details with `Retry-After`. Behind a reverse proxy the client IP needs the forwarded headers (I20: `ASPNETCORE_FORWARDEDHEADERS_ENABLED`, Caddy is the only way in). The demo uses lower limits (`appsettings.Demo.json`).
 - [ ] Input limits: chat message ≤ 2000 chars, search query ≤ 300 chars.
 - [ ] Stripe webhook signature check; Fake webhook HMAC; Fake endpoints mapped only in Development.
 - [ ] Startup refuses live Stripe keys.
@@ -49,8 +49,14 @@ Never committed: `.env`, `appsettings.*.local.json`, user-secrets, keys of any k
 ## 5. CI/CD
 
 - GitHub Actions on PR and push to `main`: restore, build (warnings as errors), `dotnet format --verify-no-changes`, unit tests, integration tests (Testcontainers on the Linux runner), frontend lint + typecheck + unit tests + build.
-- Later (I20): build container images, push to a registry, deploy on tag.
+- Release (I20, `.github/workflows/release.yml`): on a `v*` tag build the images (`deploy/docker`), start the whole stack on the runner (Docker Compose, Ollama embeddings, no chat key) and run the Playwright smoke tests (`src/web/e2e`) against it, push the images to GHCR (`ghcr.io/<owner>/filmsearch-{api,worker,web}:<tag>`), then, when the GitHub environment `demo` has a host, deploy over SSH (`deploy.sh <tag>`) and run the smoke tests against the public URL. Manual runs build and test; they push and deploy only on request.
 
 ## 6. Deployment (I20)
 
-Target decided in I20 and recorded as an ADR. Options: a small VPS with Docker Compose (Caddy, Postgres, Api, Worker, static web) or Azure Container Apps through `azd` with Aspire. AI in deployment: OpenRouter profile (no local GPU on the server), or the deployment is only for demo with a cheap model.
+Decided in [ADR-0012](../adr/0012-deployment-docker-compose-vps.md): one Linux host with Docker Compose. Runbook: [deploy/README.md](../../deploy/README.md).
+
+- Services: `postgres` (pgvector), `ollama` + `ollama-pull` (EmbeddingGemma, profile `ollama`), `migrate` (the Worker image with the `migrate` command: applies pending migrations and exits), `api`, `worker`, `web` (Caddy: TLS, the static Vite build, reverse proxy of `/api`, `/fake-checkout`, `/health`, `/alive`), optional `dashboard` (standalone Aspire dashboard on the loopback interface).
+- Images: chiseled .NET 10 images (non-root, no shell, ICU for `ru` / `sv`); the web image is Caddy with the build.
+- Environment `Demo` (`appsettings.Demo.json`): production behavior, migrations not on startup, seed and embedding index on first start, chat on OpenRouter, embeddings in Ollama (`EMBEDDING_PROFILE=openrouter` switches to Qwen3-Embedding-8B on OpenRouter), the fake payment gateway by default (refused only in `Production`), Stripe test mode as a setting, data protection keys in a volume (`DataProtection:KeysPath`), stricter rate limits and token budgets.
+- Spend: the OpenRouter key of the demo has a credit limit (hard cap); the service-wide daily token budget refuses assistant turns with `serviceBudgetExceeded` before the cap is reached.
+- Deploy and rollback: `deploy.sh <tag>` (dump, migrate, start, wait for health); rollback to an earlier tag with the same script, across a non-backward-compatible migration with `restore.sh <dump> <tag>`. Migrations must be expand / contract so that the previous version runs on the new schema.

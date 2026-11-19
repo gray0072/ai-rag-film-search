@@ -26,6 +26,12 @@ public sealed class AssistantOptions
     /// </summary>
     public long MaxOwnerTokensPerDay { get; set; } = 1_000_000;
 
+    /// <summary>
+    /// Token budget of the whole service (all owners) over the last 24 hours; 0 = off. A public demo gets a new anonymous
+    /// owner per browser, so only this caps the spend on a paid model (I20). Counts the tokens stored with answers.
+    /// </summary>
+    public long MaxTotalTokensPerDay { get; set; }
+
     /// <summary>Movies <c>search_movies</c> returns when the model does not set a limit (at most 10).</summary>
     public int SearchResultLimit { get; set; } = 6;
 

@@ -49,3 +49,7 @@ Thumbs.db
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Demo environment on a server (deploy/): database dumps and the deploy log
+deploy/backups/
+deploy/deploy-history.log

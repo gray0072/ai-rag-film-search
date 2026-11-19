@@ -1,0 +1,147 @@
+# Demo environment of FilmSearch (I20, ADR-0012): one host, Docker Compose.
+#   cp .env.example .env   # then fill it in
+#   ./deploy.sh <tag>      # backup, pull, migrate, start (deploy/README.md)
+# Local run from source: docker compose -f compose.yaml -f compose.build.yaml up -d --build
+name: filmsearch
+
+x-dotnet-env: &dotnet-env
+  # "Demo": production behavior (no OpenAPI UI, HSTS, no prompt content in logs or traces, migrations not applied on
+  # startup) with the demo settings of appsettings.Demo.json. The fake payment gateway is refused only in Production.
+  ASPNETCORE_ENVIRONMENT: Demo
+  DOTNET_ENVIRONMENT: Demo
+  ConnectionStrings__filmsearch: Host=postgres;Database=filmsearch;Username=filmsearch;Password=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env};GSS Encryption Mode=Disable
+  AI__ActiveChatProfile: ${CHAT_PROFILE:-openrouter}
+  AI__ActiveEmbeddingProfile: ${EMBEDDING_PROFILE:-ollama}
+  AI__ChatProfiles__openrouter__ApiKey: ${OPENROUTER_API_KEY:-}
+  AI__EmbeddingProfiles__openrouter__ApiKey: ${OPENROUTER_API_KEY:-}
+  Commerce__WebBaseUrl: ${PUBLIC_URL:-https://localhost}
+  Payments__Provider: ${PAYMENTS_PROVIDER:-Fake}
+  Stripe__SecretKey: ${STRIPE_SECRET_KEY:-}
+  Stripe__PublishableKey: ${STRIPE_PUBLISHABLE_KEY:-}
+  Stripe__WebhookSecret: ${STRIPE_WEBHOOK_SECRET:-}
+  Tmdb__ApiKey: ${TMDB_API_KEY:-}
+  # Empty: no telemetry export. http://dashboard:18889 with the `dashboard` profile (deploy/README.md).
+  OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: filmsearch
+      POSTGRES_USER: filmsearch
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U filmsearch -d filmsearch"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Local embeddings (the default): EmbeddingGemma, the model of development and of the search evaluation, on the CPU.
+  ollama:
+    image: ollama/ollama:0.40.16
+    profiles: [ollama]
+    restart: unless-stopped
+    environment:
+      # Keep the model in memory: the first search after an idle hour should not wait for a load.
+      OLLAMA_KEEP_ALIVE: "-1"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Downloads the embedding model once (it stays in the volume), then exits.
+  ollama-pull:
+    image: ollama/ollama:0.40.16
+    profiles: [ollama]
+    restart: "no"
+    environment:
+      OLLAMA_HOST: ollama:11434
+    entrypoint: ["ollama", "pull", "embeddinggemma:300m"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  # Schema migrations: the Worker image with the `migrate` command, run to completion before the API and the Worker start.
+  migrate:
+    image: ${IMAGE_PREFIX:-filmsearch}-worker:${FILMSEARCH_TAG:-local}
+    restart: "no"
+    command: ["migrate"]
+    environment:
+      <<: *dotnet-env
+      OTEL_SERVICE_NAME: migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    image: ${IMAGE_PREFIX:-filmsearch}-api:${FILMSEARCH_TAG:-local}
+    restart: unless-stopped
+    environment:
+      <<: *dotnet-env
+      OTEL_SERVICE_NAME: api
+      # Behind Caddy: the scheme (https) and the client address come from X-Forwarded-Proto / X-Forwarded-For.
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      Auth__Admin__Email: ${ADMIN_EMAIL:-}
+      Auth__Admin__Password: ${ADMIN_PASSWORD:-}
+    volumes:
+      - dataprotection-keys:/var/lib/filmsearch/keys
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    image: ${IMAGE_PREFIX:-filmsearch}-worker:${FILMSEARCH_TAG:-local}
+    restart: unless-stopped
+    environment:
+      <<: *dotnet-env
+      OTEL_SERVICE_NAME: worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      # The Worker runs the embedding reindex the API queues on startup: on a fresh server the model must be pulled
+      # first (a missing model is a permanent 404 and fails the job). Not required without the ollama profile.
+      ollama-pull:
+        condition: service_completed_successfully
+        required: false
+
+  # Caddy: HTTPS (Let's Encrypt), the static web app and the reverse proxy to the API.
+  web:
+    image: ${IMAGE_PREFIX:-filmsearch}-web:${FILMSEARCH_TAG:-local}
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-localhost}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - api
+
+  # Optional: the standalone Aspire dashboard for traces, metrics and logs. Only on the host's loopback interface:
+  # open it through an SSH tunnel (deploy/README.md). Telemetry is kept in memory.
+  dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:13.6
+    profiles: [dashboard]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18888:18888"
+
+volumes:
+  postgres-data:
+  ollama-data:
+  dataprotection-keys:
+  caddy-data:
+  caddy-config:

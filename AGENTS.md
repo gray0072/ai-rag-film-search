@@ -21,6 +21,7 @@ Instructions for AI coding agents (Claude Code, Codex, Cursor, …) working in t
 | Runbooks (observability: find a slow or bad turn) | [docs/runbooks/](docs/runbooks/observability.md) |
 | Seed data | `data/seed/` (from I03) |
 | Background jobs, TMDB import | `src/FilmSearch.Worker`, `src/FilmSearch.Infrastructure/Ingestion` (from I16) |
+| Deployment: Dockerfiles, compose, Caddy, deploy scripts, runbook | [deploy/](deploy/README.md) (from I20) |
 
 ## Session workflow
 
@@ -112,6 +113,7 @@ Web app (`src/web`, Node 24, npm):
 npm install                  # once (the AppHost also runs it before starting Vite)
 npm run dev                  # Vite dev server alone; /api is proxied to https://localhost:7180
 npm run gen:api              # regenerate src/api/schema.d.ts from openapi/v1.json (written by the API build)
+npm run e2e                  # Playwright smoke tests against a running stack (E2E_BASE_URL, default https://localhost)
 npm run lint && npm run format:check && npm run typecheck && npm test && npm run build   # same as CI
 ```
 
@@ -127,6 +129,15 @@ AI playground (I05; uses the API's AI config and user secrets, needs LM Studio, 
 dotnet run --project tools/ai-playground -- chat "Recommend a sci-fi movie"     # also: stream, tools, json, embed
 dotnet run --project tools/ai-playground -- bench-chat --chat-model <id> --reasoning None --out <file>
 dotnet run --project tools/ai-playground -- bench-embed --embedding-model <id> --query-prefix "..." --document-prefix "..."
+```
+
+Demo environment (I20; `deploy/`, Docker; scripts run in Git Bash, see [deploy/README.md](deploy/README.md)):
+
+```bash
+docker compose -f compose.yaml -f compose.build.yaml build   # in deploy/: build the api, worker and web images from source
+SKIP_PULL=1 ./deploy.sh local                                 # backup, migrate, start, wait for health (needs deploy/.env)
+docker compose down -v                                        # stop and delete the local stack with its data
+dotnet run --project src/FilmSearch.Worker -- migrate         # apply migrations and exit (the deploy's migration step)
 ```
 
 Evaluations (I08, I14; Docker + LM Studio, a fresh pgvector container per run, see [evals/README.md](evals/README.md)):
@@ -162,6 +173,8 @@ Notes:
 - Observability (I18) tests: `MeterRecorder(factory.Services, "instrument", …)` records only the meters of that app's `IMeterFactory` (meters carry their factory as scope), so parallel tests do not count; unit tests use `TestMeterFactory.Owns`. `SpanRecorder` gives a random trace id; send its `TraceParent` as the `traceparent` header, and the server spans of that request land in `Spans`. The integration factory replaces the chat and embedding clients with fakes, so there are no GenAI `chat` / `embeddings` spans there (the provider pipeline is tested in `AiProviderPipelineTests`). Langfuse scores go to `Factory.FeedbackScores`. Langfuse in the AppHost is optional (`Langfuse:Enabled`); a killed AppHost leaves its containers running: `docker rm -f $(docker ps -q --filter name=langfuse)`.
 - Resilience (I19) tests: `FilmSearchApiFactory` turns rate limiting off (`RateLimiting:Enabled=false`); `RateLimitingApiTests` turn it on with small limits, one factory per test (limiter state). Pass `configureServices` to the factory for a failing client of one profile: a keyed registration (`"local"`) wins over the `AnyKey` fakes. `SwitchableChatClient` fails like a provider (refused, timed out, circuit open); the fallback needs `AI:FallbackChatProfile` plus that profile's `ApiKey`. Unit tests of the real HTTP pipeline use `AiTestHost` (every HTTP client ends in `FakeProviderHandler`, `Delay` for a slow model; base config sets `RetryDelayMs` 1) and record metrics with `OwnedMeasurements(TestMeterFactory)`, never process-wide. Search no longer returns 503 when embeddings fail: assert `degraded`. Query vectors are cached per normalized text for the factory's lifetime: a degraded-search test needs a query text that no earlier test embedded.
 - Testing Cyrillic or Swedish queries with `curl -d "..."` from Git Bash on Windows mangles the text; send a UTF-8 file (`--data-binary @query.json`) or use a script.
+- Demo environment (I20): environment name `Demo` (`appsettings.Demo.json`, linked into the Worker too), not `Production`, because the fake payment gateway is refused in Production. Images are chiseled (no shell): containers have no `curl`; `deploy.sh` checks health through the Caddy container (`wget`). The API skips `UseHttpsRedirection` when `ASPNETCORE_FORWARDEDHEADERS_ENABLED` is set (behind Caddy). An EF Core migrations bundle failed to load `System.Diagnostics.DiagnosticSource` 11 (OpenTelemetry): migrations run as `FilmSearch.Worker migrate` instead (ADR-0012). The Worker waits for `ollama-pull`: a missing Ollama model is a permanent 404 that fails the startup reindex. On Windows port 80 may be taken by `System`: `HTTP_PORT=8080` in `deploy/.env`. Caddy holds requests up to 30 s while the API restarts. OpenRouter lists embedding models under `/embeddings/models` (profile `ModelsPath`), not `/models`.
+- Playwright (I20): `src/web/e2e`, config `playwright.config.ts`, typed by `tsconfig.e2e.json`, excluded from Vitest. Install the browser once with `npx playwright install chromium`. With `CI` set it retries once and writes `playwright-report/`.
 - The AppHost Postgres container is named `filmsearch-postgres`, uses `ContainerLifetime.Persistent` and the named volume `filmsearch-postgres-data`: it keeps running after the AppHost stops. Its password is stored in the AppHost user secrets. To reset the DB: `docker rm -f filmsearch-postgres` and `docker volume rm filmsearch-postgres-data`.
 
 ## Git

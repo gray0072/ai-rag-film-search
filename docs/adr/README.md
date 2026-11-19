@@ -17,3 +17,4 @@ Template: [0000-template.md](0000-template.md).
 | [0009](0009-job-queue-in-postgresql.md) | Background jobs: a job table in PostgreSQL, claimed with SKIP LOCKED | Accepted |
 | [0010](0010-authentication-identity-cookie.md) | Authentication: ASP.NET Core Identity, own cookie endpoints, merge of anonymous data | Accepted |
 | [0011](0011-ai-resilience-and-fallback.md) | AI resilience: a pipeline per profile, a fallback chat profile, keyword search without embeddings | Accepted |
+| [0012](0012-deployment-docker-compose-vps.md) | Deployment: Docker Compose on one host, Caddy in front, images from CI, migrations by the Worker | Accepted |

@@ -71,3 +71,4 @@ Rules:
 | [S19](sessions/2026-11-18_S19_authentication.md) | 2026-11-18 | I17 | Authentication (Identity) |
 | [S20](sessions/2026-11-19_S20_observability-cost.md) | 2026-11-19 | I18 | Observability and cost tracking |
 | [S21](sessions/2026-11-19_S21_resilience-caching.md) | 2026-11-19 | I19 | Resilience, caching, rate limiting |
+| [S22](sessions/2026-11-19_S22_deployment.md) | 2026-11-19 | I20 | Containers and deployment |

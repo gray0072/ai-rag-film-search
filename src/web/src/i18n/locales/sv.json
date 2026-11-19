@@ -284,6 +284,7 @@
       "conversationBusy": "Det förra svaret skrivs fortfarande. Vänta en stund och försök igen.",
       "budgetExceeded": "Konversationen är för lång. Starta en ny.",
       "dailyBudgetExceeded": "Du har använt assistenten mycket i dag. Försök igen i morgon.",
+      "serviceBudgetExceeded": "Assistenten har nått sin användningsgräns för i dag. Försök igen i morgon.",
       "toolsNotSupported": "Den valda AI-modellen kan inte söka i katalogen, så assistenten är avstängd.",
       "internalError": "Något gick fel när svaret skrevs.",
       "connectionLost": "Anslutningen bröts innan svaret var klart.",
