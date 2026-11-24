@@ -14,7 +14,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
     <!-- Writes the OpenAPI document to src/web/openapi on build; the web app generates its types from it. -->
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.15" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.11.1" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.11.0" />
   </ItemGroup>
   <ItemGroup Label="AI">
